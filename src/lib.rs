@@ -146,10 +146,16 @@ impl LolzteamClient {
     }
 
     pub fn forum(&self) -> forum::ForumApi {
-        forum::ForumApi::new(self.make_forum_client().expect("forum client already validated"))
+        forum::ForumApi::new(
+            self.make_forum_client()
+                .expect("forum client already validated"),
+        )
     }
 
     pub fn market(&self) -> market::MarketApi {
-        market::MarketApi::new(self.make_market_client().expect("market client already validated"))
+        market::MarketApi::new(
+            self.make_market_client()
+                .expect("market client already validated"),
+        )
     }
 }

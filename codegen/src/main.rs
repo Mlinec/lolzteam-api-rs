@@ -417,8 +417,7 @@ fn extract_endpoints(root: &Value, response_model_names: &BTreeSet<String>) -> V
                 }
             }
 
-            let response_type =
-                extract_response_type(details, root, response_model_names);
+            let response_type = extract_response_type(details, root, response_model_names);
 
             endpoints.push(Endpoint {
                 operation_id: op_id,
@@ -474,9 +473,7 @@ fn extract_response_models(root: &Value) -> Vec<(String, SchemaModel)> {
         };
 
         for (method, details) in methods_map {
-            if !["get", "post", "put", "delete", "patch"]
-                .contains(&method.as_str())
-            {
+            if !["get", "post", "put", "delete", "patch"].contains(&method.as_str()) {
                 continue;
             }
 
@@ -656,21 +653,13 @@ fn emit_model_struct(out: &mut String, model: &SchemaModel) {
         let rust_name = sanitize_field_name(&field.name);
         let raw_rust_name = rust_name.strip_prefix("r#").unwrap_or(&rust_name);
         if raw_rust_name != field.name {
-            out.push_str(&format!(
-                "    #[serde(rename = \"{}\")]\n",
-                field.name
-            ));
+            out.push_str(&format!("    #[serde(rename = \"{}\")]\n", field.name));
         }
         // Special handling: ItemList.items needs custom deserializer
         if model.name == "ItemList" && field.name == "items" {
-            out.push_str(
-                "    #[serde(deserialize_with = \"deserialize_items\", default)]\n",
-            );
+            out.push_str("    #[serde(deserialize_with = \"deserialize_items\", default)]\n");
         }
-        out.push_str(&format!(
-            "    pub {}: {},\n",
-            rust_name, field.rust_type
-        ));
+        out.push_str(&format!("    pub {}: {},\n", rust_name, field.rust_type));
     }
 
     out.push_str("}\n\n");
@@ -720,18 +709,12 @@ fn generate_param_types(endpoints: &[Endpoint], prefix: &str) -> String {
                 }
                 let raw_name = p.rust_name.strip_prefix("r#").unwrap_or(&p.rust_name);
                 if raw_name != p.name {
-                    out.push_str(&format!(
-                        "    #[serde(rename = \"{}\")]\n",
-                        p.name
-                    ));
+                    out.push_str(&format!("    #[serde(rename = \"{}\")]\n", p.name));
                 }
                 if !p.required {
                     out.push_str("    #[serde(skip_serializing_if = \"Option::is_none\")]\n");
                 }
-                out.push_str(&format!(
-                    "    pub {}: {},\n",
-                    p.rust_name, p.rust_type
-                ));
+                out.push_str(&format!("    pub {}: {},\n", p.rust_name, p.rust_type));
             }
 
             out.push_str("}\n\n");
@@ -804,10 +787,7 @@ fn generate_method(out: &mut String, ep: &Endpoint, prefix: &str) {
     if let Some(summary) = &ep.summary {
         out.push_str(&format!("    /// {}\n", summary));
     }
-    out.push_str(&format!(
-        "    /// `{} {}`\n",
-        ep.method, ep.path
-    ));
+    out.push_str(&format!("    /// `{} {}`\n", ep.method, ep.path));
 
     // Function signature
     out.push_str(&format!("    pub async fn {}(\n        &self,\n", fn_name));
@@ -835,10 +815,7 @@ fn generate_method(out: &mut String, ep: &Endpoint, prefix: &str) {
         }
     }
 
-    out.push_str(&format!(
-        "    ) -> Result<{}> {{\n",
-        ep.response_type
-    ));
+    out.push_str(&format!("    ) -> Result<{}> {{\n", ep.response_type));
 
     // url
     for p in &ep.path_params {
@@ -983,10 +960,7 @@ fn simplify_path_param_type(t: &str) -> &str {
 fn main() {
     let args: Vec<String> = std::env::args().collect();
     if args.len() < 4 {
-        eprintln!(
-            "Usage: {} <forum.json> <market.json> <output_dir>",
-            args[0]
-        );
+        eprintln!("Usage: {} <forum.json> <market.json> <output_dir>", args[0]);
         std::process::exit(1);
     }
 
@@ -1050,10 +1024,7 @@ fn main() {
 
     let forum_methods = generate_api_methods(&forum_endpoints, "forum");
     fs::write(out.join("forum/methods.rs"), &forum_methods).unwrap();
-    eprintln!(
-        "  ✓ forum/methods.rs ({} endpoints)",
-        forum_endpoints.len()
-    );
+    eprintln!("  ✓ forum/methods.rs ({} endpoints)", forum_endpoints.len());
 
     // market
     let market_types = generate_param_types(&market_endpoints, "market");

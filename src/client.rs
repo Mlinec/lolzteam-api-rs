@@ -59,22 +59,17 @@ impl ApiClientBuilder {
     }
 
     pub fn build(self) -> Result<ApiClient> {
-        let mut builder = Client::builder()
-            .timeout(self.timeout)
-            .default_headers({
-                let mut h = reqwest::header::HeaderMap::new();
-                h.insert(
-                    reqwest::header::AUTHORIZATION,
-                    format!("Bearer {}", self.token)
-                        .parse()
-                        .expect("invalid token"),
-                );
-                h.insert(
-                    reqwest::header::ACCEPT,
-                    "application/json".parse().unwrap(),
-                );
-                h
-            });
+        let mut builder = Client::builder().timeout(self.timeout).default_headers({
+            let mut h = reqwest::header::HeaderMap::new();
+            h.insert(
+                reqwest::header::AUTHORIZATION,
+                format!("Bearer {}", self.token)
+                    .parse()
+                    .expect("invalid token"),
+            );
+            h.insert(reqwest::header::ACCEPT, "application/json".parse().unwrap());
+            h
+        });
 
         if let Some(proxy_url) = &self.proxy {
             builder = builder.proxy(Proxy::all(proxy_url)?);

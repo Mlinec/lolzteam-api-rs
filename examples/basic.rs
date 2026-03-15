@@ -4,9 +4,7 @@ use lolzteam::LolzteamClient;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let token = std::env::args()
-        .nth(1)
-        .expect("Usage: basic <TOKEN>");
+    let token = std::env::args().nth(1).expect("Usage: basic <TOKEN>");
 
     let client = LolzteamClient::new(&token);
 

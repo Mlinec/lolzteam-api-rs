@@ -2735,4 +2735,3 @@ pub struct ManagingSteamUpdateValueResponse {
     pub status: String,
     pub system_info: SystemInfo,
 }
-
