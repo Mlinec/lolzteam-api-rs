@@ -686,7 +686,7 @@ where
     }
 }
 
-// ── Response wrappers ────────────────────────────────────────────
+// ── Response wrappers ──
 
 /// UsersSaResetResponse model from the LOLZTEAM API.
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
