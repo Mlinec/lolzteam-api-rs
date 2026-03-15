@@ -44,6 +44,9 @@ jobs:
       - name: Run codegen
         run: cargo run -p lolzteam-codegen -- schemas/forum.json schemas/market.json src
 
+      - name: Format generated code
+        run: cargo fmt --all
+
       - name: Check for diff
         run: |
           if ! git diff --exit-code src/; then
