@@ -6,10 +6,11 @@ Rust клиент для [LOLZTEAM API](https://github.com/AS7RIDENIED/LOLZTEAM)
 ## Возможности
 
 - 266 эндпоинтов — Forum (151) + Market (115)
-- Прокси — HTTP / HTTPS / SOCKS5
+- Типизированные модели ответов
+- Прокси — HTTP / HTTPS / SOCKS5 (раздельные для форума и маркета)
 - Авто-ретрай на 429 / 502 / 503 с экспоненциальным бэкоффом
-- Типизированные модели ответов (serde)
 - Кодогенерация из OpenAPI JSON
+- CI/CD — GitHub Actions
 
 ## Установка
 
@@ -55,6 +56,21 @@ let client = LolzteamClient::builder("YOUR_TOKEN")
     .build()?;
 ```
 
+## Обработка ошибок
+
+```rust
+use lolzteam::Error;
+
+match client.forum().users_get(1, None).await {
+    Ok(resp) => println!("{:?}", resp),
+    Err(Error::Auth { message }) => eprintln!("401: {}", message),
+    Err(Error::Forbidden { message }) => eprintln!("403: {}", message),
+    Err(Error::NotFound { message }) => eprintln!("404: {}", message),
+    Err(Error::RateLimited { attempts }) => eprintln!("429: {} attempts", attempts),
+    Err(e) => eprintln!("other: {}", e),
+}
+```
+
 ## Ретрай
 
 Автоматический ретрай с экспоненциальным бэкоффом:
@@ -90,21 +106,16 @@ make generate
 ```
 
 Кодогенератор (`codegen/`) читает OpenAPI 3.1 JSON и генерирует:
-- `src/models.rs`
+- `src/models.rs` — модели данных и response-обёртки
 - `src/forum/{types,methods}.rs`
 - `src/market/{types,methods}.rs`
 
 ## CI/CD
 
-- `ci.yml` — fmt + clippy + build + test на каждый push/PR, проверка актуальности кодогена
-- `release.yml` — публикация на crates.io по тегу `v*`
+- `ci.yml` — fmt + clippy + build на каждый push/PR, проверка актуальности кодогена
+- `release.yml` — публикация на crates.io при создании GitHub Release
 
-```bash
-git tag v0.1.0
-git push origin v0.1.0
-```
-
-Нужен секрет `CARGO_REGISTRY_TOKEN` в настройках репозитория.
+Для публикации нужен секрет `CARGO_REGISTRY_TOKEN` в настройках репозитория.
 
 ## Лицензия
 

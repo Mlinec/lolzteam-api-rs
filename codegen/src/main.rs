@@ -1,14 +1,13 @@
 // openapi -> rust codegen
-
-//! Usage:
-//!   cargo run -p lolzteam-codegen -- schemas/forum.json schemas/market.json src/generated
+//
+// Usage: cargo run -p lolzteam-codegen -- schemas/forum.json schemas/market.json src
 
 use heck::{ToSnakeCase, ToUpperCamelCase};
 use serde_json::Value;
 use std::collections::{BTreeMap, BTreeSet};
 use std::fs;
 
-// ── Schema representation ────────────────────────────────────────────
+// ── Schema representation ──
 
 #[derive(Debug, Clone)]
 struct SchemaField {
@@ -46,7 +45,7 @@ struct Param {
     is_vec: bool,
 }
 
-// ── JSON helpers ─────────────────────────────────────────────────────
+// ── JSON helpers ──
 
 fn resolve_ref<'a>(root: &'a Value, reference: &str) -> &'a Value {
     let path = reference.trim_start_matches("#/");
@@ -61,8 +60,6 @@ fn json_type_to_rust(schema: &Value, root: &Value, nullable: bool) -> String {
     if let Some(r) = schema.get("$ref").and_then(|v| v.as_str()) {
         let type_name = r.rsplit('/').next().unwrap_or("Value");
 
-        // Check if the referenced schema has properties; if not, it's a
-        // marker type → use serde_json::Value.
         let resolved = resolve_ref(root, r);
         let has_props = resolved
             .get("properties")
@@ -73,7 +70,6 @@ fn json_type_to_rust(schema: &Value, root: &Value, nullable: bool) -> String {
         let rust_name = if has_props {
             sanitize_type_name(type_name)
         } else {
-            // Marker / enum-only schemas → fallback
             "serde_json::Value".to_string()
         };
 
@@ -103,7 +99,7 @@ fn json_type_to_rust(schema: &Value, root: &Value, nullable: bool) -> String {
         }
     }
 
-    // Handle multiple types in "type" field (OpenAPI 3.1 allows arrays)
+    // Handle multiple types in "type" field (OpenAPI 3.1)
     if let Some(types) = schema.get("type").and_then(|v| v.as_array()) {
         let non_null: Vec<_> = types
             .iter()
@@ -194,7 +190,7 @@ fn method_name_from_op_id(op_id: &str) -> String {
     op_id.replace('.', "_").to_snake_case()
 }
 
-// ── Schema extraction ────────────────────────────────────────────────
+// ── Schema extraction ──
 
 fn extract_schemas(root: &Value) -> Vec<SchemaModel> {
     let mut models = Vec::new();
@@ -257,9 +253,9 @@ fn extract_schemas(root: &Value) -> Vec<SchemaModel> {
     models
 }
 
-// ── Endpoint extraction ──────────────────────────────────────────────
+// ── Endpoint extraction ──
 
-fn extract_endpoints(root: &Value) -> Vec<Endpoint> {
+fn extract_endpoints(root: &Value, response_model_names: &BTreeSet<String>) -> Vec<Endpoint> {
     let mut endpoints = Vec::new();
     let paths = match root.get("paths").and_then(|p| p.as_object()) {
         Some(p) => p,
@@ -421,7 +417,8 @@ fn extract_endpoints(root: &Value) -> Vec<Endpoint> {
                 }
             }
 
-            let response_type = extract_response_type(details, root);
+            let response_type =
+                extract_response_type(details, root, response_model_names);
 
             endpoints.push(Endpoint {
                 operation_id: op_id,
@@ -441,12 +438,13 @@ fn extract_endpoints(root: &Value) -> Vec<Endpoint> {
     endpoints
 }
 
-fn extract_response_type(details: &Value, root: &Value) -> String {
-    let responses = match details.get("responses").and_then(|r| r.as_object()) {
-        Some(r) => r,
-        None => return "serde_json::Value".to_string(),
-    };
+fn response_type_name_from_op_id(op_id: &str) -> String {
+    let base = op_id.replace('.', "_").to_upper_camel_case();
+    format!("{}Response", base)
+}
 
+fn get_response_schema<'a>(details: &'a Value) -> Option<&'a Value> {
+    let responses = details.get("responses")?.as_object()?;
     let resp = responses
         .get("200")
         .or_else(|| responses.get("201"))
@@ -455,27 +453,132 @@ fn extract_response_type(details: &Value, root: &Value) -> String {
                 .iter()
                 .find(|(k, _)| k.starts_with('2'))
                 .map(|(_, v)| v)
-        });
+        })?;
+    resp.get("content")
+        .and_then(|c| c.get("application/json"))
+        .and_then(|j| j.get("schema"))
+}
 
-    let resp = match resp {
-        Some(r) => r,
+/// Extract response models with inline schemas from all endpoints.
+fn extract_response_models(root: &Value) -> Vec<(String, SchemaModel)> {
+    let mut models = Vec::new();
+    let paths = match root.get("paths").and_then(|p| p.as_object()) {
+        Some(p) => p,
+        None => return models,
+    };
+
+    for (_, methods) in paths {
+        let methods_map = match methods.as_object() {
+            Some(m) => m,
+            None => continue,
+        };
+
+        for (method, details) in methods_map {
+            if !["get", "post", "put", "delete", "patch"]
+                .contains(&method.as_str())
+            {
+                continue;
+            }
+
+            let op_id = match details.get("operationId").and_then(|v| v.as_str()) {
+                Some(id) => id.to_string(),
+                None => continue,
+            };
+
+            let schema = match get_response_schema(details) {
+                Some(s) => s,
+                None => continue,
+            };
+
+            // skip $ref responses — handled by component schemas
+            if schema.get("$ref").is_some() {
+                continue;
+            }
+
+            // only inline objects with properties
+            let props = match schema.get("properties").and_then(|p| p.as_object()) {
+                Some(p) if !p.is_empty() => p,
+                _ => continue,
+            };
+
+            let struct_name = response_type_name_from_op_id(&op_id);
+
+            let required_set: BTreeSet<String> = schema
+                .get("required")
+                .and_then(|r| r.as_array())
+                .map(|arr| {
+                    arr.iter()
+                        .filter_map(|v| v.as_str().map(|s| s.to_string()))
+                        .collect()
+                })
+                .unwrap_or_default();
+
+            let mut fields = Vec::new();
+            for (field_name, field_schema) in props {
+                let required = required_set.contains(field_name.as_str());
+                let mut rust_type = json_type_to_rust(field_schema, root, !required);
+                if !required && !rust_type.starts_with("Option<") {
+                    rust_type = format!("Option<{}>", rust_type);
+                }
+
+                let description = field_schema
+                    .get("description")
+                    .and_then(|v| v.as_str())
+                    .map(|s| s.to_string());
+
+                fields.push(SchemaField {
+                    name: field_name.clone(),
+                    rust_type,
+                    description,
+                });
+            }
+
+            models.push((
+                op_id,
+                SchemaModel {
+                    name: struct_name,
+                    fields,
+                },
+            ));
+        }
+    }
+
+    models
+}
+
+fn extract_response_type(
+    details: &Value,
+    root: &Value,
+    response_model_names: &BTreeSet<String>,
+) -> String {
+    let op_id = match details.get("operationId").and_then(|v| v.as_str()) {
+        Some(id) => id.to_string(),
         None => return "serde_json::Value".to_string(),
     };
 
-    let schema = resp
-        .get("content")
-        .and_then(|c| c.get("application/json"))
-        .and_then(|j| j.get("schema"));
+    let schema = match get_response_schema(details) {
+        Some(s) => s,
+        None => return "serde_json::Value".to_string(),
+    };
 
-    match schema {
-        Some(s) => json_type_to_rust(s, root, false),
-        None => "serde_json::Value".to_string(),
+    // $ref → component type
+    if schema.get("$ref").is_some() {
+        return json_type_to_rust(schema, root, false);
     }
+
+    // generated response model
+    let candidate = response_type_name_from_op_id(&op_id);
+    if response_model_names.contains(&candidate) {
+        return candidate;
+    }
+
+    // fallback
+    json_type_to_rust(schema, root, false)
 }
 
-// ── Code generation ──────────────────────────────────────────────────
+// ── Code generation ──
 
-fn generate_models(models: &[SchemaModel]) -> String {
+fn generate_models(models: &[SchemaModel], response_models: &[SchemaModel]) -> String {
     let mut out = String::new();
 
     out.push_str(
@@ -486,42 +589,91 @@ fn generate_models(models: &[SchemaModel]) -> String {
          use serde::{Deserialize, Serialize};\n\n",
     );
 
+    // component schema models
     for model in models {
-        out.push_str(&format!(
-            "/// {} model from the LOLZTEAM API.\n",
-            model.name
-        ));
-        out.push_str(
-            "#[derive(Debug, Clone, Serialize, Deserialize, Default)]\n\
-             #[serde(default)]\n",
-        );
-        out.push_str(&format!("pub struct {} {{\n", model.name));
+        emit_model_struct(&mut out, model);
+    }
 
-        for field in &model.fields {
-            if let Some(desc) = &field.description {
-                for line in desc.lines() {
-                    out.push_str(&format!("    /// {}\n", line));
-                }
-            }
-            let rust_name = sanitize_field_name(&field.name);
-            // Always emit serde(rename) when the original name differs
-            let raw_rust_name = rust_name.strip_prefix("r#").unwrap_or(&rust_name);
-            if raw_rust_name != field.name {
-                out.push_str(&format!(
-                    "    #[serde(rename = \"{}\")]\n",
-                    field.name
-                ));
-            }
-            out.push_str(&format!(
-                "    pub {}: {},\n",
-                rust_name, field.rust_type
-            ));
+    // ItemList.items custom deserializer
+    out.push_str(
+        "// API sometimes returns items as array, sometimes as object {id: item}\n\
+         fn deserialize_items<'de, D>(deserializer: D) -> std::result::Result<Vec<ItemFromList>, D::Error>\n\
+         where\n\
+         \x20   D: serde::Deserializer<'de>,\n\
+         {\n\
+         \x20   use serde::de;\n\
+         \x20   use serde_json::Value;\n\n\
+         \x20   let v = Value::deserialize(deserializer)?;\n\
+         \x20   match v {\n\
+         \x20       Value::Array(arr) => {\n\
+         \x20           let mut out = Vec::with_capacity(arr.len());\n\
+         \x20           for item in arr {\n\
+         \x20               out.push(serde_json::from_value(item).unwrap_or_default());\n\
+         \x20           }\n\
+         \x20           Ok(out)\n\
+         \x20       }\n\
+         \x20       Value::Object(map) => {\n\
+         \x20           let mut out = Vec::with_capacity(map.len());\n\
+         \x20           for (_key, item) in map {\n\
+         \x20               out.push(serde_json::from_value(item).unwrap_or_default());\n\
+         \x20           }\n\
+         \x20           Ok(out)\n\
+         \x20       }\n\
+         \x20       Value::Null => Ok(Vec::new()),\n\
+         \x20       _ => Err(de::Error::custom(\"expected array or object for items\")),\n\
+         \x20   }\n\
+         }\n\n",
+    );
+
+    // Emit response wrapper models
+    if !response_models.is_empty() {
+        out.push_str("// ── Response wrappers ──\n\n");
+        for model in response_models {
+            emit_model_struct(&mut out, model);
         }
-
-        out.push_str("}\n\n");
     }
 
     out
+}
+
+fn emit_model_struct(out: &mut String, model: &SchemaModel) {
+    out.push_str(&format!(
+        "/// {} model from the LOLZTEAM API.\n",
+        model.name
+    ));
+    out.push_str(
+        "#[derive(Debug, Clone, Serialize, Deserialize, Default)]\n\
+         #[serde(default)]\n",
+    );
+    out.push_str(&format!("pub struct {} {{\n", model.name));
+
+    for field in &model.fields {
+        if let Some(desc) = &field.description {
+            for line in desc.lines() {
+                out.push_str(&format!("    /// {}\n", line));
+            }
+        }
+        let rust_name = sanitize_field_name(&field.name);
+        let raw_rust_name = rust_name.strip_prefix("r#").unwrap_or(&rust_name);
+        if raw_rust_name != field.name {
+            out.push_str(&format!(
+                "    #[serde(rename = \"{}\")]\n",
+                field.name
+            ));
+        }
+        // Special handling: ItemList.items needs custom deserializer
+        if model.name == "ItemList" && field.name == "items" {
+            out.push_str(
+                "    #[serde(deserialize_with = \"deserialize_items\", default)]\n",
+            );
+        }
+        out.push_str(&format!(
+            "    pub {}: {},\n",
+            rust_name, field.rust_type
+        ));
+    }
+
+    out.push_str("}\n\n");
 }
 
 fn generate_param_types(endpoints: &[Endpoint], prefix: &str) -> String {
@@ -648,7 +800,7 @@ fn generate_method(out: &mut String, ep: &Endpoint, prefix: &str) {
         fn_name.to_upper_camel_case()
     );
 
-    // Doc comment
+    // doc comment
     if let Some(summary) = &ep.summary {
         out.push_str(&format!("    /// {}\n", summary));
     }
@@ -688,8 +840,7 @@ fn generate_method(out: &mut String, ep: &Endpoint, prefix: &str) {
         ep.response_type
     ));
 
-    // Build URL
-    // For raw-ident path params like r#type, create a local alias first
+    // url
     for p in &ep.path_params {
         if p.rust_name.starts_with("r#") {
             let bare = p.rust_name.strip_prefix("r#").unwrap();
@@ -718,7 +869,7 @@ fn generate_method(out: &mut String, ep: &Endpoint, prefix: &str) {
         format!("\"{}\"", ep.path)
     };
 
-    // Build query params
+    // query
     if !ep.query_params.is_empty() {
         out.push_str("        let mut query: Vec<(&str, String)> = Vec::new();\n");
         for p in &ep.query_params {
@@ -764,7 +915,7 @@ fn generate_method(out: &mut String, ep: &Endpoint, prefix: &str) {
         }
     }
 
-    // Build body
+    // body
     let has_body =
         !ep.body_params.is_empty() && matches!(ep.method.as_str(), "POST" | "PUT" | "PATCH");
 
@@ -793,7 +944,7 @@ fn generate_method(out: &mut String, ep: &Endpoint, prefix: &str) {
         }
     }
 
-    // Make request
+    // request
     let method_lower = ep.method.to_lowercase();
     out.push_str(&format!(
         "        self.client.request(\n\
@@ -818,7 +969,7 @@ fn generate_method(out: &mut String, ep: &Endpoint, prefix: &str) {
     out.push_str("    }\n\n");
 }
 
-/// Path parameters should always be simple types (i64 or &str)
+/// Path params → simple types (i64 or &str).
 fn simplify_path_param_type(t: &str) -> &str {
     match t {
         "i64" | "String" | "bool" | "f64" => t,
@@ -827,7 +978,7 @@ fn simplify_path_param_type(t: &str) -> &str {
     }
 }
 
-// ── Main ─────────────────────────────────────────────────────────────
+// ── Main ──
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
@@ -849,7 +1000,7 @@ fn main() {
     let market_raw = fs::read_to_string(market_path).expect("Failed to read market.json");
     let market: Value = serde_json::from_str(&market_raw).expect("Failed to parse market.json");
 
-    // Extract models
+    // Extract component schema models
     let mut all_models = extract_schemas(&forum);
     let market_models = extract_schemas(&market);
 
@@ -861,17 +1012,36 @@ fn main() {
         }
     }
 
-    let forum_endpoints = extract_endpoints(&forum);
-    let market_endpoints = extract_endpoints(&market);
+    // Extract response wrapper models from inline response schemas
+    let mut all_response_models_raw = extract_response_models(&forum);
+    all_response_models_raw.extend(extract_response_models(&market));
+
+    // Deduplicate response models by name
+    let mut response_model_names: BTreeSet<String> = BTreeSet::new();
+    let mut all_response_models: Vec<SchemaModel> = Vec::new();
+    for (_op_id, model) in all_response_models_raw {
+        if !response_model_names.contains(&model.name) && !model_names.contains(&model.name) {
+            response_model_names.insert(model.name.clone());
+            all_response_models.push(model);
+        }
+    }
+
+    let forum_endpoints = extract_endpoints(&forum, &response_model_names);
+    let market_endpoints = extract_endpoints(&market, &response_model_names);
 
     let out = std::path::Path::new(output_dir);
     fs::create_dir_all(out.join("forum")).unwrap();
     fs::create_dir_all(out.join("market")).unwrap();
 
     // models.rs
-    let models_code = generate_models(&all_models);
+    let models_code = generate_models(&all_models, &all_response_models);
     fs::write(out.join("models.rs"), &models_code).unwrap();
-    eprintln!("  ✓ models.rs ({} types)", all_models.len());
+    eprintln!(
+        "  ✓ models.rs ({} component + {} response = {} types)",
+        all_models.len(),
+        all_response_models.len(),
+        all_models.len() + all_response_models.len()
+    );
 
     // forum
     let forum_types = generate_param_types(&forum_endpoints, "forum");

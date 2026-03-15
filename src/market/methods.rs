@@ -1,6 +1,6 @@
-// generated — do not edit
-
-
+//! Auto-generated API methods for LOLZTEAM Market API.
+//!
+//! DO NOT EDIT — regenerate with `cargo run -p lolzteam-codegen`.
 
 #![allow(unused, clippy::all)]
 
@@ -19,7 +19,7 @@ impl crate::market::MarketApi {
     pub async fn publishing_add(
         &self,
         params: MarketPublishingAddParams,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<PublishingAddResponse> {
         let mut body = serde_json::Map::new();
         if let Some(v) = &params.allow_ask_discount {
             body.insert("allow_ask_discount".into(), serde_json::to_value(v).unwrap_or_default());
@@ -146,7 +146,7 @@ impl crate::market::MarketApi {
     pub async fn publishing_fast_sell(
         &self,
         params: MarketPublishingFastSellParams,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<PublishingFastSellResponse> {
         let mut body = serde_json::Map::new();
         if let Some(v) = &params.allow_ask_discount {
             body.insert("allow_ask_discount".into(), serde_json::to_value(v).unwrap_or_default());
@@ -229,7 +229,7 @@ impl crate::market::MarketApi {
         item_id: i64,
         balance_id: Option<i64>,
         price: Option<i64>,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<PurchasingConfirmResponse> {
         let mut body = serde_json::Map::new();
         if let Some(v) = &balance_id {
             body.insert("balance_id".into(), serde_json::to_value(v).unwrap_or_default());
@@ -529,7 +529,7 @@ impl crate::market::MarketApi {
     pub async fn list_states(
         &self,
         user_id: Option<i64>,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ListStatesResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &user_id {
             query.push(("user_id", v.to_string()));
@@ -702,7 +702,7 @@ impl crate::market::MarketApi {
     pub async fn managing_ai_price(
         &self,
         item_id: i64,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ManagingAiPriceResponse> {
         self.client.request(
             "get",
             &format!("/{item_id}/ai-price"),
@@ -747,7 +747,7 @@ impl crate::market::MarketApi {
     pub async fn managing_auto_buy_price(
         &self,
         item_id: i64,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ManagingAutoBuyPriceResponse> {
         self.client.request(
             "get",
             &format!("/{item_id}/auto-buy-price"),
@@ -762,7 +762,7 @@ impl crate::market::MarketApi {
         &self,
         item_id: Option<Vec<serde_json::Value>>,
         parse_same_item_ids: Option<bool>,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ManagingBulkGetResponse> {
         let mut body = serde_json::Map::new();
         if let Some(v) = &item_id {
             body.insert("item_id".into(), serde_json::to_value(v).unwrap_or_default());
@@ -798,7 +798,7 @@ impl crate::market::MarketApi {
         &self,
         item_id: i64,
         cancel: Option<i64>,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ManagingChangePasswordResponse> {
         let mut body = serde_json::Map::new();
         if let Some(v) = &cancel {
             body.insert("_cancel".into(), serde_json::to_value(v).unwrap_or_default());
@@ -816,7 +816,7 @@ impl crate::market::MarketApi {
     pub async fn managing_check_guarantee(
         &self,
         item_id: i64,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ManagingCheckGuaranteeResponse> {
         self.client.request(
             "post",
             &format!("/{item_id}/check-guarantee"),
@@ -845,7 +845,7 @@ impl crate::market::MarketApi {
         &self,
         item_id: serde_json::Value,
         post_body: String,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ManagingCreateClaimResponse> {
         let mut body = serde_json::Map::new();
         body.insert("item_id".into(), serde_json::to_value(&item_id).unwrap_or_default());
         body.insert("post_body".into(), serde_json::to_value(&post_body).unwrap_or_default());
@@ -957,7 +957,7 @@ impl crate::market::MarketApi {
         &self,
         item_id: i64,
         parse_same_item_ids: Option<bool>,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ManagingGetResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &parse_same_item_ids {
             query.push(("parse_same_item_ids", v.to_string()));
@@ -975,7 +975,7 @@ impl crate::market::MarketApi {
     pub async fn managing_get_letters2(
         &self,
         params: MarketManagingGetLetters2Params,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ManagingGetLetters2Response> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &params.email_password {
             query.push(("email_password", v.to_string()));
@@ -1003,7 +1003,7 @@ impl crate::market::MarketApi {
         &self,
         item_id: i64,
         r#type: String,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ManagingImageResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         query.push(("type", r#type.to_string()));
         self.client.request(
@@ -1112,7 +1112,7 @@ impl crate::market::MarketApi {
     pub async fn managing_steam_get_mafile(
         &self,
         item_id: i64,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ManagingSteamGetMafileResponse> {
         self.client.request(
             "get",
             &format!("/{item_id}/mafile"),
@@ -1143,7 +1143,7 @@ impl crate::market::MarketApi {
         app_id: Option<i64>,
         currency: Option<serde_json::Value>,
         ignore_cache: Option<bool>,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ManagingSteamInventoryValueResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &app_id {
             query.push(("app_id", v.to_string()));
@@ -1226,7 +1226,7 @@ impl crate::market::MarketApi {
         all: Option<bool>,
         app_id: Option<i64>,
         authorize: Option<bool>,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ManagingSteamUpdateValueResponse> {
         let mut body = serde_json::Map::new();
         if let Some(v) = &all {
             body.insert("all".into(), serde_json::to_value(v).unwrap_or_default());
@@ -1250,7 +1250,7 @@ impl crate::market::MarketApi {
     pub async fn managing_steam_value(
         &self,
         params: MarketManagingSteamValueParams,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ManagingSteamValueResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         query.push(("link", params.link.to_string()));
         if let Some(v) = &params.app_id {
@@ -1306,7 +1306,7 @@ impl crate::market::MarketApi {
     pub async fn managing_telegram_code(
         &self,
         item_id: i64,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ManagingTelegramCodeResponse> {
         self.client.request(
             "get",
             &format!("/{item_id}/telegram-login-code"),
@@ -1334,7 +1334,7 @@ impl crate::market::MarketApi {
     pub async fn managing_temp_email_password(
         &self,
         item_id: i64,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ManagingTempEmailPasswordResponse> {
         self.client.request(
             "get",
             &format!("/{item_id}/temp-email-password"),
@@ -1426,7 +1426,7 @@ impl crate::market::MarketApi {
         &self,
         r#type: Option<String>,
         claim_state: Option<String>,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ProfileClaimsResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &r#type {
             query.push(("type", v.to_string()));
@@ -1449,7 +1449,7 @@ impl crate::market::MarketApi {
     /// `POST /batch`
     pub async fn batch(
         &self,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<BatchResponse> {
         self.client.request(
             "post",
             "/batch",
@@ -1466,7 +1466,7 @@ impl crate::market::MarketApi {
     pub async fn cart_add(
         &self,
         item_id: serde_json::Value,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<CartAddResponse> {
         let mut body = serde_json::Map::new();
         body.insert("item_id".into(), serde_json::to_value(&item_id).unwrap_or_default());
         self.client.request(
@@ -1482,7 +1482,7 @@ impl crate::market::MarketApi {
     pub async fn cart_delete(
         &self,
         item_id: Option<serde_json::Value>,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<CartDeleteResponse> {
         self.client.request(
             "delete",
             "/cart",
@@ -1594,7 +1594,7 @@ impl crate::market::MarketApi {
     pub async fn category_games(
         &self,
         category_name: String,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<CategoryGamesResponse> {
         self.client.request(
             "get",
             &format!("/{category_name}/games"),
@@ -1608,7 +1608,7 @@ impl crate::market::MarketApi {
     pub async fn category_list(
         &self,
         top_queries: Option<bool>,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<CategoryListResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &top_queries {
             query.push(("top_queries", v.to_string()));
@@ -1626,7 +1626,7 @@ impl crate::market::MarketApi {
     pub async fn category_params(
         &self,
         category_name: String,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<CategoryParamsResponse> {
         self.client.request(
             "get",
             &format!("/{category_name}/params"),
@@ -1735,7 +1735,7 @@ impl crate::market::MarketApi {
     pub async fn category_battle_net(
         &self,
         params: MarketCategoryBattleNetParams,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<CategoryBattleNetResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &params.page {
             query.push(("page", v.to_string()));
@@ -1880,7 +1880,7 @@ impl crate::market::MarketApi {
     pub async fn category_chat_gpt(
         &self,
         params: MarketCategoryChatGptParams,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<CategoryChatGptResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &params.page {
             query.push(("page", v.to_string()));
@@ -2017,7 +2017,7 @@ impl crate::market::MarketApi {
     pub async fn category_discord(
         &self,
         params: MarketCategoryDiscordParams,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<CategoryDiscordResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &params.page {
             query.push(("page", v.to_string()));
@@ -2245,7 +2245,7 @@ impl crate::market::MarketApi {
     pub async fn category_ea(
         &self,
         params: MarketCategoryEaParams,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<CategoryEaResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &params.page {
             query.push(("page", v.to_string()));
@@ -2408,7 +2408,7 @@ impl crate::market::MarketApi {
     pub async fn category_epic_games(
         &self,
         params: MarketCategoryEpicGamesParams,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<CategoryEpicGamesResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &params.page {
             query.push(("page", v.to_string()));
@@ -2559,7 +2559,7 @@ impl crate::market::MarketApi {
     pub async fn category_escape_from_tarkov(
         &self,
         params: MarketCategoryEscapeFromTarkovParams,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<CategoryEscapeFromTarkovResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &params.page {
             query.push(("page", v.to_string()));
@@ -2685,7 +2685,7 @@ impl crate::market::MarketApi {
     pub async fn category_fortnite(
         &self,
         params: MarketCategoryFortniteParams,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<CategoryFortniteResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &params.page {
             query.push(("page", v.to_string()));
@@ -2955,7 +2955,7 @@ impl crate::market::MarketApi {
     pub async fn category_gifts(
         &self,
         params: MarketCategoryGiftsParams,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<CategoryGiftsResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &params.page {
             query.push(("page", v.to_string()));
@@ -3056,7 +3056,7 @@ impl crate::market::MarketApi {
     pub async fn category_hytale(
         &self,
         params: MarketCategoryHytaleParams,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<CategoryHytaleResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &params.page {
             query.push(("page", v.to_string()));
@@ -3159,7 +3159,7 @@ impl crate::market::MarketApi {
     pub async fn category_instagram(
         &self,
         params: MarketCategoryInstagramParams,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<CategoryInstagramResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &params.page {
             query.push(("page", v.to_string()));
@@ -3296,7 +3296,7 @@ impl crate::market::MarketApi {
     pub async fn category_mihoyo(
         &self,
         params: MarketCategoryMihoyoParams,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<CategoryMihoyoResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &params.page {
             query.push(("page", v.to_string()));
@@ -3589,7 +3589,7 @@ impl crate::market::MarketApi {
     pub async fn category_minecraft(
         &self,
         params: MarketCategoryMinecraftParams,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<CategoryMinecraftResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &params.page {
             query.push(("page", v.to_string()));
@@ -3794,7 +3794,7 @@ impl crate::market::MarketApi {
     pub async fn category_riot(
         &self,
         params: MarketCategoryRiotParams,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<CategoryRiotResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &params.page {
             query.push(("page", v.to_string()));
@@ -4085,7 +4085,7 @@ impl crate::market::MarketApi {
     pub async fn category_roblox(
         &self,
         params: MarketCategoryRobloxParams,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<CategoryRobloxResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &params.page {
             query.push(("page", v.to_string()));
@@ -4296,7 +4296,7 @@ impl crate::market::MarketApi {
     pub async fn category_social_club(
         &self,
         params: MarketCategorySocialClubParams,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<CategorySocialClubResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &params.page {
             query.push(("page", v.to_string()));
@@ -4414,7 +4414,7 @@ impl crate::market::MarketApi {
     pub async fn category_steam(
         &self,
         params: MarketCategorySteamParams,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<CategorySteamResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &params.page {
             query.push(("page", v.to_string()));
@@ -4814,7 +4814,7 @@ impl crate::market::MarketApi {
     pub async fn category_supercell(
         &self,
         params: MarketCategorySupercellParams,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<CategorySupercellResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &params.page {
             query.push(("page", v.to_string()));
@@ -5063,7 +5063,7 @@ impl crate::market::MarketApi {
     pub async fn category_telegram(
         &self,
         params: MarketCategoryTelegramParams,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<CategoryTelegramResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &params.page {
             query.push(("page", v.to_string()));
@@ -5301,7 +5301,7 @@ impl crate::market::MarketApi {
     pub async fn category_tik_tok(
         &self,
         params: MarketCategoryTikTokParams,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<CategoryTikTokResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &params.page {
             query.push(("page", v.to_string()));
@@ -5443,7 +5443,7 @@ impl crate::market::MarketApi {
     pub async fn category_uplay(
         &self,
         params: MarketCategoryUplayParams,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<CategoryUplayResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &params.page {
             query.push(("page", v.to_string()));
@@ -5637,7 +5637,7 @@ impl crate::market::MarketApi {
     pub async fn category_vpn(
         &self,
         params: MarketCategoryVpnParams,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<CategoryVpnResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &params.page {
             query.push(("page", v.to_string()));
@@ -5743,7 +5743,7 @@ impl crate::market::MarketApi {
     pub async fn category_warface(
         &self,
         params: MarketCategoryWarfaceParams,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<CategoryWarfaceResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &params.page {
             query.push(("page", v.to_string()));
@@ -5865,7 +5865,7 @@ impl crate::market::MarketApi {
     pub async fn category_wot(
         &self,
         params: MarketCategoryWotParams,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<CategoryWotResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &params.page {
             query.push(("page", v.to_string()));
@@ -6078,7 +6078,7 @@ impl crate::market::MarketApi {
     pub async fn category_wot_blitz(
         &self,
         params: MarketCategoryWotBlitzParams,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<CategoryWotBlitzResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &params.page {
             query.push(("page", v.to_string()));
@@ -6294,7 +6294,7 @@ impl crate::market::MarketApi {
     pub async fn custom_discounts_create(
         &self,
         params: MarketCustomDiscountsCreateParams,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<CustomDiscountsCreateResponse> {
         let mut body = serde_json::Map::new();
         body.insert("category_id".into(), serde_json::to_value(&params.category_id).unwrap_or_default());
         if let Some(v) = &params.currency {
@@ -6333,7 +6333,7 @@ impl crate::market::MarketApi {
     pub async fn custom_discounts_edit(
         &self,
         params: MarketCustomDiscountsEditParams,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<CustomDiscountsEditResponse> {
         let mut body = serde_json::Map::new();
         body.insert("discount_id".into(), serde_json::to_value(&params.discount_id).unwrap_or_default());
         if let Some(v) = &params.discount_percent {
@@ -6357,7 +6357,7 @@ impl crate::market::MarketApi {
     /// `GET /custom-discounts`
     pub async fn custom_discounts_get(
         &self,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<CustomDiscountsGetResponse> {
         self.client.request(
             "get",
             "/custom-discounts",
@@ -6410,7 +6410,7 @@ impl crate::market::MarketApi {
     pub async fn payments_invoice_create(
         &self,
         params: MarketPaymentsInvoiceCreateParams,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<PaymentsInvoiceCreateResponse> {
         let mut body = serde_json::Map::new();
         if let Some(v) = &params.additional_data {
             body.insert("additional_data".into(), serde_json::to_value(v).unwrap_or_default());
@@ -6450,7 +6450,7 @@ impl crate::market::MarketApi {
         &self,
         invoice_id: Option<i64>,
         payment_id: Option<String>,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<PaymentsInvoiceGetResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &invoice_id {
             query.push(("invoice_id", v.to_string()));
@@ -6471,7 +6471,7 @@ impl crate::market::MarketApi {
     pub async fn payments_invoice_list(
         &self,
         params: MarketPaymentsInvoiceListParams,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<PaymentsInvoiceListResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &params.page {
             query.push(("page", v.to_string()));
@@ -6504,7 +6504,7 @@ impl crate::market::MarketApi {
     pub async fn auto_payments_create(
         &self,
         params: MarketAutoPaymentsCreateParams,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<AutoPaymentsCreateResponse> {
         let mut body = serde_json::Map::new();
         body.insert("amount".into(), serde_json::to_value(&params.amount).unwrap_or_default());
         if let Some(v) = &params.currency {
@@ -6544,7 +6544,7 @@ impl crate::market::MarketApi {
     /// `GET /auto-payments`
     pub async fn auto_payments_list(
         &self,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<AutoPaymentsListResponse> {
         self.client.request(
             "get",
             "/auto-payments",
@@ -6606,7 +6606,7 @@ impl crate::market::MarketApi {
     /// `GET /currency`
     pub async fn payments_currency(
         &self,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<PaymentsCurrencyResponse> {
         self.client.request(
             "get",
             "/currency",
@@ -6620,7 +6620,7 @@ impl crate::market::MarketApi {
     pub async fn payments_fee(
         &self,
         amount: Option<f64>,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<PaymentsFeeResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &amount {
             query.push(("amount", v.to_string()));
@@ -6638,7 +6638,7 @@ impl crate::market::MarketApi {
     pub async fn payments_history(
         &self,
         params: MarketPaymentsHistoryParams,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<PaymentsHistoryResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &params.r#type {
             query.push(("type", v.to_string()));
@@ -6722,7 +6722,7 @@ impl crate::market::MarketApi {
     /// `GET /balance/payout/services`
     pub async fn payments_payout_services(
         &self,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<PaymentsPayoutServicesResponse> {
         self.client.request(
             "get",
             "/balance/payout/services",
@@ -6831,7 +6831,7 @@ impl crate::market::MarketApi {
     pub async fn profile_get(
         &self,
         fields_include: Option<Vec<String>>,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ProfileGetResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &fields_include {
             for item in v {
@@ -6898,7 +6898,7 @@ impl crate::market::MarketApi {
     /// `GET /proxy`
     pub async fn proxy_get(
         &self,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ProxyGetResponse> {
         self.client.request(
             "get",
             "/proxy",

@@ -1,5 +1,5 @@
-// generated — do not edit
-
+//! Auto-generated types for Forum API.
+//! DO NOT EDIT — regenerate with `cargo run -p lolzteam-codegen`.
 
 #![allow(unused, clippy::all)]
 

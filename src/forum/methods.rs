@@ -1,6 +1,6 @@
-// generated — do not edit
-
-
+//! Auto-generated API methods for LOLZTEAM Forum API.
+//!
+//! DO NOT EDIT — regenerate with `cargo run -p lolzteam-codegen`.
 
 #![allow(unused, clippy::all)]
 
@@ -19,7 +19,7 @@ impl crate::forum::ForumApi {
     pub async fn assets_css(
         &self,
         css: Option<Vec<String>>,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<AssetsCssResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &css {
             for item in v {
@@ -41,7 +41,7 @@ impl crate::forum::ForumApi {
     /// `POST /oauth/token`
     pub async fn o_auth_token(
         &self,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<OAuthTokenResponse> {
         self.client.request(
             "post",
             "/oauth/token",
@@ -57,7 +57,7 @@ impl crate::forum::ForumApi {
     /// `POST /batch`
     pub async fn batch_execute(
         &self,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<BatchExecuteResponse> {
         self.client.request(
             "post",
             "/batch",
@@ -74,7 +74,7 @@ impl crate::forum::ForumApi {
     pub async fn categories_get(
         &self,
         category_id: i64,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<CategoriesGetResponse> {
         self.client.request(
             "get",
             &format!("/categories/{category_id}"),
@@ -90,7 +90,7 @@ impl crate::forum::ForumApi {
         parent_category_id: Option<i64>,
         parent_forum_id: Option<i64>,
         order: Option<String>,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<CategoriesListResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &parent_category_id {
             query.push(("parent_category_id", v.to_string()));
@@ -146,7 +146,7 @@ impl crate::forum::ForumApi {
         &self,
         message: String,
         message_id: i64,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ChatboxEditMessageResponse> {
         let mut body = serde_json::Map::new();
         body.insert("message".into(), serde_json::to_value(&message).unwrap_or_default());
         body.insert("message_id".into(), serde_json::to_value(&message_id).unwrap_or_default());
@@ -162,7 +162,7 @@ impl crate::forum::ForumApi {
     /// `GET /chatbox/ignore`
     pub async fn chatbox_get_ignore(
         &self,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ChatboxGetIgnoreResponse> {
         self.client.request(
             "get",
             "/chatbox/ignore",
@@ -176,7 +176,7 @@ impl crate::forum::ForumApi {
     pub async fn chatbox_get_leaderboard(
         &self,
         duration: Option<String>,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ChatboxGetLeaderboardResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &duration {
             query.push(("duration", v.to_string()));
@@ -195,7 +195,7 @@ impl crate::forum::ForumApi {
         &self,
         room_id: serde_json::Value,
         before_message_id: Option<i64>,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ChatboxGetMessagesResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         query.push(("room_id", room_id.to_string()));
         if let Some(v) = &before_message_id {
@@ -214,7 +214,7 @@ impl crate::forum::ForumApi {
     pub async fn chatbox_index(
         &self,
         room_id: Option<serde_json::Value>,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ChatboxIndexResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &room_id {
             query.push(("room_id", v.to_string()));
@@ -232,7 +232,7 @@ impl crate::forum::ForumApi {
     pub async fn chatbox_online(
         &self,
         room_id: serde_json::Value,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ChatboxOnlineResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         query.push(("room_id", room_id.to_string()));
         self.client.request(
@@ -266,7 +266,7 @@ impl crate::forum::ForumApi {
         message: String,
         room_id: serde_json::Value,
         reply_message_id: Option<i64>,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ChatboxPostMessageResponse> {
         let mut body = serde_json::Map::new();
         body.insert("message".into(), serde_json::to_value(&message).unwrap_or_default());
         if let Some(v) = &reply_message_id {
@@ -304,7 +304,7 @@ impl crate::forum::ForumApi {
     pub async fn chatbox_report_reasons(
         &self,
         message_id: i64,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ChatboxReportReasonsResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         query.push(("message_id", message_id.to_string()));
         self.client.request(
@@ -323,7 +323,7 @@ impl crate::forum::ForumApi {
     pub async fn tags_find(
         &self,
         tag: String,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<TagsFindResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         query.push(("tag", tag.to_string()));
         self.client.request(
@@ -341,7 +341,7 @@ impl crate::forum::ForumApi {
         tag_id: i64,
         page: Option<i64>,
         limit: Option<i64>,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<TagsGetResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &page {
             query.push(("page", v.to_string()));
@@ -363,7 +363,7 @@ impl crate::forum::ForumApi {
         &self,
         page: Option<i64>,
         limit: Option<i64>,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<TagsListResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &page {
             query.push(("page", v.to_string()));
@@ -383,7 +383,7 @@ impl crate::forum::ForumApi {
     /// `GET /tags`
     pub async fn tags_popular(
         &self,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<TagsPopularResponse> {
         self.client.request(
             "get",
             "/tags",
@@ -400,7 +400,7 @@ impl crate::forum::ForumApi {
     pub async fn conversations_alerts_disable(
         &self,
         conversation_id: i64,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ConversationsAlertsDisableResponse> {
         self.client.request(
             "delete",
             &format!("/conversations/{conversation_id}/alerts"),
@@ -414,7 +414,7 @@ impl crate::forum::ForumApi {
     pub async fn conversations_alerts_enable(
         &self,
         conversation_id: i64,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ConversationsAlertsEnableResponse> {
         self.client.request(
             "post",
             &format!("/conversations/{conversation_id}/alerts"),
@@ -428,7 +428,7 @@ impl crate::forum::ForumApi {
     pub async fn conversations_create(
         &self,
         params: ForumConversationsCreateParams,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ConversationsCreateResponse> {
         let mut body = serde_json::Map::new();
         if let Some(v) = &params.allow_delete_own_messages {
             body.insert("allow_delete_own_messages".into(), serde_json::to_value(v).unwrap_or_default());
@@ -485,7 +485,7 @@ impl crate::forum::ForumApi {
     pub async fn conversations_get(
         &self,
         conversation_id: i64,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ConversationsGetResponse> {
         self.client.request(
             "get",
             &format!("/conversations/{conversation_id}"),
@@ -535,7 +535,7 @@ impl crate::forum::ForumApi {
         folder: Option<String>,
         page: Option<i64>,
         limit: Option<i64>,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ConversationsListResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &folder {
             query.push(("folder", v.to_string()));
@@ -561,7 +561,7 @@ impl crate::forum::ForumApi {
         conversation_id: i64,
         message_body: String,
         reply_message_id: Option<i64>,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ConversationsMessagesCreateResponse> {
         let mut body = serde_json::Map::new();
         body.insert("message_body".into(), serde_json::to_value(&message_body).unwrap_or_default());
         if let Some(v) = &reply_message_id {
@@ -597,7 +597,7 @@ impl crate::forum::ForumApi {
         conversation_id: i64,
         message_id: i64,
         message_body: String,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ConversationsMessagesEditResponse> {
         let mut body = serde_json::Map::new();
         body.insert("message_body".into(), serde_json::to_value(&message_body).unwrap_or_default());
         self.client.request(
@@ -613,7 +613,7 @@ impl crate::forum::ForumApi {
     pub async fn conversations_messages_get(
         &self,
         message_id: i64,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ConversationsMessagesGetResponse> {
         self.client.request(
             "get",
             &format!("/conversations/messages/{message_id}"),
@@ -628,7 +628,7 @@ impl crate::forum::ForumApi {
         &self,
         conversation_id: i64,
         params: ForumConversationsMessagesListParams,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ConversationsMessagesListResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &params.page {
             query.push(("page", v.to_string()));
@@ -701,7 +701,7 @@ impl crate::forum::ForumApi {
     /// `POST /conversations/read-all`
     pub async fn conversations_read_all(
         &self,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ConversationsReadAllResponse> {
         self.client.request(
             "post",
             "/conversations/read-all",
@@ -733,7 +733,7 @@ impl crate::forum::ForumApi {
         conversation_id: Option<i64>,
         q: Option<String>,
         search_recipients: Option<bool>,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ConversationsSearchResponse> {
         let mut body = serde_json::Map::new();
         if let Some(v) = &conversation_id {
             body.insert("conversation_id".into(), serde_json::to_value(v).unwrap_or_default());
@@ -757,7 +757,7 @@ impl crate::forum::ForumApi {
     pub async fn conversations_star(
         &self,
         conversation_id: i64,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ConversationsStarResponse> {
         self.client.request(
             "post",
             &format!("/conversations/{conversation_id}/star"),
@@ -771,7 +771,7 @@ impl crate::forum::ForumApi {
     pub async fn conversations_start(
         &self,
         user_id: serde_json::Value,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ConversationsStartResponse> {
         let mut body = serde_json::Map::new();
         body.insert("user_id".into(), serde_json::to_value(&user_id).unwrap_or_default());
         self.client.request(
@@ -787,7 +787,7 @@ impl crate::forum::ForumApi {
     pub async fn conversations_unstar(
         &self,
         conversation_id: i64,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ConversationsUnstarResponse> {
         self.client.request(
             "delete",
             &format!("/conversations/{conversation_id}/star"),
@@ -801,7 +801,7 @@ impl crate::forum::ForumApi {
     pub async fn conversations_update(
         &self,
         params: ForumConversationsUpdateParams,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ConversationsUpdateResponse> {
         let mut body = serde_json::Map::new();
         if let Some(v) = &params.allow_delete_own_messages {
             body.insert("allow_delete_own_messages".into(), serde_json::to_value(v).unwrap_or_default());
@@ -837,7 +837,7 @@ impl crate::forum::ForumApi {
     /// `POST /forms/save`
     pub async fn forms_create(
         &self,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<FormsCreateResponse> {
         self.client.request(
             "post",
             "/forms/save",
@@ -851,7 +851,7 @@ impl crate::forum::ForumApi {
     pub async fn forms_list(
         &self,
         page: Option<i64>,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<FormsListResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &page {
             query.push(("page", v.to_string()));
@@ -925,7 +925,7 @@ impl crate::forum::ForumApi {
     pub async fn forums_followed(
         &self,
         total: Option<bool>,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ForumsFollowedResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &total {
             query.push(("total", v.to_string()));
@@ -943,7 +943,7 @@ impl crate::forum::ForumApi {
     pub async fn forums_followers(
         &self,
         forum_id: i64,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ForumsFollowersResponse> {
         self.client.request(
             "get",
             &format!("/forums/{forum_id}/followers"),
@@ -957,7 +957,7 @@ impl crate::forum::ForumApi {
     pub async fn forums_get(
         &self,
         forum_id: i64,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ForumsGetResponse> {
         self.client.request(
             "get",
             &format!("/forums/{forum_id}"),
@@ -970,7 +970,7 @@ impl crate::forum::ForumApi {
     /// `GET /forums/feed/options`
     pub async fn forums_get_feed_options(
         &self,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ForumsGetFeedOptionsResponse> {
         self.client.request(
             "get",
             "/forums/feed/options",
@@ -983,7 +983,7 @@ impl crate::forum::ForumApi {
     /// `GET /forums/grouped`
     pub async fn forums_grouped(
         &self,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ForumsGroupedResponse> {
         self.client.request(
             "get",
             "/forums/grouped",
@@ -999,7 +999,7 @@ impl crate::forum::ForumApi {
         parent_category_id: Option<i64>,
         parent_forum_id: Option<i64>,
         order: Option<String>,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ForumsListResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &parent_category_id {
             query.push(("parent_category_id", v.to_string()));
@@ -1040,7 +1040,7 @@ impl crate::forum::ForumApi {
     pub async fn links_get(
         &self,
         link_id: i64,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<LinksGetResponse> {
         self.client.request(
             "get",
             &format!("/link-forums/{link_id}"),
@@ -1053,7 +1053,7 @@ impl crate::forum::ForumApi {
     /// `GET /link-forums`
     pub async fn links_list(
         &self,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<LinksListResponse> {
         self.client.request(
             "get",
             "/link-forums",
@@ -1070,7 +1070,7 @@ impl crate::forum::ForumApi {
     pub async fn navigation_list(
         &self,
         parent: Option<i64>,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<NavigationListResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &parent {
             query.push(("parent", v.to_string()));
@@ -1091,7 +1091,7 @@ impl crate::forum::ForumApi {
     pub async fn notifications_get(
         &self,
         notification_id: i64,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<NotificationsGetResponse> {
         self.client.request(
             "get",
             &format!("/notifications/{notification_id}/content"),
@@ -1107,7 +1107,7 @@ impl crate::forum::ForumApi {
         r#type: Option<String>,
         page: Option<i64>,
         limit: Option<i64>,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<NotificationsListResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &r#type {
             query.push(("type", v.to_string()));
@@ -1152,7 +1152,7 @@ impl crate::forum::ForumApi {
     pub async fn pages_get(
         &self,
         page_id: i64,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<PagesGetResponse> {
         self.client.request(
             "get",
             &format!("/pages/{page_id}"),
@@ -1167,7 +1167,7 @@ impl crate::forum::ForumApi {
         &self,
         parent_page_id: Option<i64>,
         order: Option<String>,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<PagesListResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &parent_page_id {
             query.push(("parent_page_id", v.to_string()));
@@ -1192,7 +1192,7 @@ impl crate::forum::ForumApi {
         &self,
         comment_body: String,
         post_id: i64,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<PostsCommentsCreateResponse> {
         let mut body = serde_json::Map::new();
         body.insert("comment_body".into(), serde_json::to_value(&comment_body).unwrap_or_default());
         body.insert("post_id".into(), serde_json::to_value(&post_id).unwrap_or_default());
@@ -1225,7 +1225,7 @@ impl crate::forum::ForumApi {
         &self,
         comment_body: String,
         post_comment_id: i64,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<PostsCommentsEditResponse> {
         let mut body = serde_json::Map::new();
         body.insert("comment_body".into(), serde_json::to_value(&comment_body).unwrap_or_default());
         body.insert("post_comment_id".into(), serde_json::to_value(&post_comment_id).unwrap_or_default());
@@ -1244,7 +1244,7 @@ impl crate::forum::ForumApi {
         post_id: i64,
         before: Option<i64>,
         before_comment: Option<i64>,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<PostsCommentsGetResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         query.push(("post_id", post_id.to_string()));
         if let Some(v) = &before {
@@ -1289,7 +1289,7 @@ impl crate::forum::ForumApi {
         post_body: String,
         quote_post_id: Option<i64>,
         thread_id: Option<i64>,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<PostsCreateResponse> {
         let mut body = serde_json::Map::new();
         body.insert("post_body".into(), serde_json::to_value(&post_body).unwrap_or_default());
         if let Some(v) = &quote_post_id {
@@ -1327,7 +1327,7 @@ impl crate::forum::ForumApi {
         &self,
         post_id: i64,
         post_body: Option<String>,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<PostsEditResponse> {
         let mut body = serde_json::Map::new();
         if let Some(v) = &post_body {
             body.insert("post_body".into(), serde_json::to_value(v).unwrap_or_default());
@@ -1345,7 +1345,7 @@ impl crate::forum::ForumApi {
     pub async fn posts_get(
         &self,
         post_id: i64,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<PostsGetResponse> {
         self.client.request(
             "get",
             &format!("/posts/{post_id}"),
@@ -1375,7 +1375,7 @@ impl crate::forum::ForumApi {
         post_id: i64,
         page: Option<i64>,
         limit: Option<i64>,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<PostsLikesResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &page {
             query.push(("page", v.to_string()));
@@ -1396,7 +1396,7 @@ impl crate::forum::ForumApi {
     pub async fn posts_list(
         &self,
         params: ForumPostsListParams,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<PostsListResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &params.thread_id {
             query.push(("thread_id", v.to_string()));
@@ -1443,7 +1443,7 @@ impl crate::forum::ForumApi {
     pub async fn posts_report_reasons(
         &self,
         post_id: i64,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<PostsReportReasonsResponse> {
         self.client.request(
             "get",
             &format!("/posts/{post_id}/report"),
@@ -1475,7 +1475,7 @@ impl crate::forum::ForumApi {
         &self,
         comment_body: String,
         profile_post_id: i64,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ProfilePostsCommentsCreateResponse> {
         let mut body = serde_json::Map::new();
         body.insert("comment_body".into(), serde_json::to_value(&comment_body).unwrap_or_default());
         body.insert("profile_post_id".into(), serde_json::to_value(&profile_post_id).unwrap_or_default());
@@ -1507,7 +1507,7 @@ impl crate::forum::ForumApi {
         &self,
         comment_body: String,
         comment_id: i64,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ProfilePostsCommentsEditResponse> {
         let mut body = serde_json::Map::new();
         body.insert("comment_body".into(), serde_json::to_value(&comment_body).unwrap_or_default());
         body.insert("comment_id".into(), serde_json::to_value(&comment_id).unwrap_or_default());
@@ -1525,7 +1525,7 @@ impl crate::forum::ForumApi {
         &self,
         profile_post_id: i64,
         comment_id: i64,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ProfilePostsCommentsGetResponse> {
         self.client.request(
             "get",
             &format!("/profile-posts/{profile_post_id}/comments/{comment_id}"),
@@ -1541,7 +1541,7 @@ impl crate::forum::ForumApi {
         profile_post_id: i64,
         before: Option<i64>,
         limit: Option<i64>,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ProfilePostsCommentsListResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         query.push(("profile_post_id", profile_post_id.to_string()));
         if let Some(v) = &before {
@@ -1584,7 +1584,7 @@ impl crate::forum::ForumApi {
         &self,
         post_body: String,
         user_id: serde_json::Value,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ProfilePostsCreateResponse> {
         let mut body = serde_json::Map::new();
         body.insert("post_body".into(), serde_json::to_value(&post_body).unwrap_or_default());
         body.insert("user_id".into(), serde_json::to_value(&user_id).unwrap_or_default());
@@ -1622,7 +1622,7 @@ impl crate::forum::ForumApi {
         profile_post_id: i64,
         disable_comments: Option<bool>,
         post_body: Option<String>,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ProfilePostsEditResponse> {
         let mut body = serde_json::Map::new();
         if let Some(v) = &disable_comments {
             body.insert("disable_comments".into(), serde_json::to_value(v).unwrap_or_default());
@@ -1643,7 +1643,7 @@ impl crate::forum::ForumApi {
     pub async fn profile_posts_get(
         &self,
         profile_post_id: i64,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ProfilePostsGetResponse> {
         self.client.request(
             "get",
             &format!("/profile-posts/{profile_post_id}"),
@@ -1671,7 +1671,7 @@ impl crate::forum::ForumApi {
     pub async fn profile_posts_likes(
         &self,
         profile_post_id: i64,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ProfilePostsLikesResponse> {
         self.client.request(
             "get",
             &format!("/profile-posts/{profile_post_id}/likes"),
@@ -1686,7 +1686,7 @@ impl crate::forum::ForumApi {
         &self,
         user_id: i64,
         params: ForumProfilePostsListParams,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ProfilePostsListResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &params.posts_user_id {
             query.push(("posts_user_id", v.to_string()));
@@ -1732,7 +1732,7 @@ impl crate::forum::ForumApi {
     pub async fn profile_posts_report_reasons(
         &self,
         profile_post_id: i64,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ProfilePostsReportReasonsResponse> {
         self.client.request(
             "get",
             &format!("/profile-posts/{profile_post_id}/report"),
@@ -1791,7 +1791,7 @@ impl crate::forum::ForumApi {
     pub async fn search_all(
         &self,
         params: ForumSearchAllParams,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<SearchAllResponse> {
         let mut body = serde_json::Map::new();
         if let Some(v) = &params.forum_id {
             body.insert("forum_id".into(), serde_json::to_value(v).unwrap_or_default());
@@ -1824,7 +1824,7 @@ impl crate::forum::ForumApi {
     pub async fn search_posts(
         &self,
         params: ForumSearchPostsParams,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<SearchPostsResponse> {
         let mut body = serde_json::Map::new();
         if let Some(v) = &params.data_limit {
             body.insert("data_limit".into(), serde_json::to_value(v).unwrap_or_default());
@@ -1860,7 +1860,7 @@ impl crate::forum::ForumApi {
     pub async fn search_profile_posts(
         &self,
         params: ForumSearchProfilePostsParams,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<SearchProfilePostsResponse> {
         let mut body = serde_json::Map::new();
         if let Some(v) = &params.limit {
             body.insert("limit".into(), serde_json::to_value(v).unwrap_or_default());
@@ -1889,7 +1889,7 @@ impl crate::forum::ForumApi {
         search_id: String,
         limit: Option<i64>,
         page: Option<i64>,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<SearchResultsResponse> {
         self.client.request(
             "get",
             &format!("/search/{search_id}/results"),
@@ -1903,7 +1903,7 @@ impl crate::forum::ForumApi {
     pub async fn search_tagged(
         &self,
         params: ForumSearchTaggedParams,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<SearchTaggedResponse> {
         let mut body = serde_json::Map::new();
         if let Some(v) = &params.limit {
             body.insert("limit".into(), serde_json::to_value(v).unwrap_or_default());
@@ -1930,7 +1930,7 @@ impl crate::forum::ForumApi {
     pub async fn search_threads(
         &self,
         params: ForumSearchThreadsParams,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<SearchThreadsResponse> {
         let mut body = serde_json::Map::new();
         if let Some(v) = &params.data_limit {
             body.insert("data_limit".into(), serde_json::to_value(v).unwrap_or_default());
@@ -1966,7 +1966,7 @@ impl crate::forum::ForumApi {
     pub async fn search_users(
         &self,
         q: Option<String>,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<SearchUsersResponse> {
         let mut body = serde_json::Map::new();
         if let Some(v) = &q {
             body.insert("q".into(), serde_json::to_value(v).unwrap_or_default());
@@ -1987,7 +1987,7 @@ impl crate::forum::ForumApi {
     pub async fn threads_bump(
         &self,
         thread_id: i64,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ThreadsBumpResponse> {
         self.client.request(
             "post",
             &format!("/threads/{thread_id}/bump"),
@@ -2001,7 +2001,7 @@ impl crate::forum::ForumApi {
     pub async fn threads_claim(
         &self,
         params: ForumThreadsClaimParams,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ThreadsClaimResponse> {
         let mut body = serde_json::Map::new();
         if let Some(v) = &params.allow_ask_hidden_content {
             body.insert("allow_ask_hidden_content".into(), serde_json::to_value(v).unwrap_or_default());
@@ -2072,7 +2072,7 @@ impl crate::forum::ForumApi {
     pub async fn threads_create(
         &self,
         params: ForumThreadsCreateParams,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ThreadsCreateResponse> {
         let mut body = serde_json::Map::new();
         if let Some(v) = &params.allow_ask_hidden_content {
             body.insert("allow_ask_hidden_content".into(), serde_json::to_value(v).unwrap_or_default());
@@ -2131,7 +2131,7 @@ impl crate::forum::ForumApi {
     pub async fn threads_create_contest(
         &self,
         params: ForumThreadsCreateContestParams,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ThreadsCreateContestResponse> {
         let mut body = serde_json::Map::new();
         if let Some(v) = &params.allow_ask_hidden_content {
             body.insert("allow_ask_hidden_content".into(), serde_json::to_value(v).unwrap_or_default());
@@ -2230,7 +2230,7 @@ impl crate::forum::ForumApi {
         &self,
         thread_id: i64,
         params: ForumThreadsEditParams,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ThreadsEditResponse> {
         let mut body = serde_json::Map::new();
         if let Some(v) = &params.allow_ask_hidden_content {
             body.insert("allow_ask_hidden_content".into(), serde_json::to_value(v).unwrap_or_default());
@@ -2306,7 +2306,7 @@ impl crate::forum::ForumApi {
         &self,
         total: Option<bool>,
         fields_include: Option<Vec<String>>,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ThreadsFollowedResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &total {
             query.push(("total", v.to_string()));
@@ -2329,7 +2329,7 @@ impl crate::forum::ForumApi {
     pub async fn threads_followers(
         &self,
         thread_id: i64,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ThreadsFollowersResponse> {
         self.client.request(
             "get",
             &format!("/threads/{thread_id}/followers"),
@@ -2344,7 +2344,7 @@ impl crate::forum::ForumApi {
         &self,
         thread_id: i64,
         fields_include: Option<Vec<String>>,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ThreadsGetResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &fields_include {
             for item in v {
@@ -2364,7 +2364,7 @@ impl crate::forum::ForumApi {
     pub async fn threads_hide(
         &self,
         thread_id: i64,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ThreadsHideResponse> {
         self.client.request(
             "post",
             &format!("/threads/{thread_id}/hide"),
@@ -2378,7 +2378,7 @@ impl crate::forum::ForumApi {
     pub async fn threads_list(
         &self,
         params: ForumThreadsListParams,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ThreadsListResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &params.forum_id {
             query.push(("forum_id", v.to_string()));
@@ -2485,7 +2485,7 @@ impl crate::forum::ForumApi {
     pub async fn threads_navigation(
         &self,
         thread_id: i64,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ThreadsNavigationResponse> {
         self.client.request(
             "get",
             &format!("/threads/{thread_id}/navigation"),
@@ -2499,7 +2499,7 @@ impl crate::forum::ForumApi {
     pub async fn threads_poll_get(
         &self,
         thread_id: i64,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ThreadsPollGetResponse> {
         self.client.request(
             "get",
             &format!("/threads/{thread_id}/poll"),
@@ -2536,7 +2536,7 @@ impl crate::forum::ForumApi {
     pub async fn threads_recent(
         &self,
         params: ForumThreadsRecentParams,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ThreadsRecentResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &params.days {
             query.push(("days", v.to_string()));
@@ -2593,7 +2593,7 @@ impl crate::forum::ForumApi {
         limit: Option<i64>,
         forum_id: Option<i64>,
         data_limit: Option<i64>,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<ThreadsUnreadResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &limit {
             query.push(("limit", v.to_string()));
@@ -2637,7 +2637,7 @@ impl crate::forum::ForumApi {
         crop: Option<i64>,
         x: Option<i64>,
         y: Option<i64>,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<UsersAvatarCropResponse> {
         let mut body = serde_json::Map::new();
         if let Some(v) = &crop {
             body.insert("crop".into(), serde_json::to_value(v).unwrap_or_default());
@@ -2676,7 +2676,7 @@ impl crate::forum::ForumApi {
         &self,
         user_id: i64,
         params: ForumUsersAvatarUploadParams,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<UsersAvatarUploadResponse> {
         let mut body = serde_json::Map::new();
         body.insert("avatar".into(), serde_json::to_value(&params.avatar).unwrap_or_default());
         if let Some(v) = &params.crop {
@@ -2704,7 +2704,7 @@ impl crate::forum::ForumApi {
         crop: Option<i64>,
         x: Option<i64>,
         y: Option<i64>,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<UsersBackgroundCropResponse> {
         let mut body = serde_json::Map::new();
         if let Some(v) = &crop {
             body.insert("crop".into(), serde_json::to_value(v).unwrap_or_default());
@@ -2743,7 +2743,7 @@ impl crate::forum::ForumApi {
         &self,
         user_id: i64,
         params: ForumUsersBackgroundUploadParams,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<UsersBackgroundUploadResponse> {
         let mut body = serde_json::Map::new();
         body.insert("background".into(), serde_json::to_value(&params.background).unwrap_or_default());
         if let Some(v) = &params.crop {
@@ -2770,7 +2770,7 @@ impl crate::forum::ForumApi {
         user_id: i64,
         r#type: Option<String>,
         claim_state: Option<String>,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<UsersClaimsResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &r#type {
             query.push(("type", v.to_string()));
@@ -2793,7 +2793,7 @@ impl crate::forum::ForumApi {
         user_id: i64,
         page: Option<i64>,
         limit: Option<i64>,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<UsersContentsResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &page {
             query.push(("page", v.to_string()));
@@ -2910,7 +2910,7 @@ impl crate::forum::ForumApi {
     /// `GET /users/fields`
     pub async fn users_fields(
         &self,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<UsersFieldsResponse> {
         self.client.request(
             "get",
             "/users/fields",
@@ -2926,7 +2926,7 @@ impl crate::forum::ForumApi {
         username: Option<String>,
         custom_fields: Option<serde_json::Value>,
         fields_include: Option<Vec<String>>,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<UsersFindResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &username {
             query.push(("username", v.to_string()));
@@ -2969,7 +2969,7 @@ impl crate::forum::ForumApi {
         order: Option<String>,
         page: Option<i64>,
         limit: Option<i64>,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<UsersFollowersResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &order {
             query.push(("order", v.to_string()));
@@ -2996,7 +2996,7 @@ impl crate::forum::ForumApi {
         order: Option<String>,
         page: Option<i64>,
         limit: Option<i64>,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<UsersFollowingsResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &order {
             query.push(("order", v.to_string()));
@@ -3021,7 +3021,7 @@ impl crate::forum::ForumApi {
         &self,
         user_id: i64,
         fields_include: Option<Vec<String>>,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<UsersGetResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &fields_include {
             for item in v {
@@ -3082,7 +3082,7 @@ impl crate::forum::ForumApi {
     pub async fn users_ignored(
         &self,
         total: Option<bool>,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<UsersIgnoredResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &total {
             query.push(("total", v.to_string()));
@@ -3101,7 +3101,7 @@ impl crate::forum::ForumApi {
         &self,
         user_id: i64,
         params: ForumUsersLikesParams,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<UsersLikesResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &params.node_id {
             query.push(("node_id", v.to_string()));
@@ -3139,7 +3139,7 @@ impl crate::forum::ForumApi {
         page: Option<i64>,
         limit: Option<i64>,
         fields_include: Option<Vec<String>>,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<UsersListResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &page {
             query.push(("page", v.to_string()));
@@ -3177,7 +3177,7 @@ impl crate::forum::ForumApi {
     /// `POST /account/secret-answer/reset`
     pub async fn users_sa_reset(
         &self,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<UsersSaResetResponse> {
         self.client.request(
             "post",
             "/account/secret-answer/reset",
@@ -3190,7 +3190,7 @@ impl crate::forum::ForumApi {
     /// `GET /users/secret-answer/types`
     pub async fn users_secret_answer_types(
         &self,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<UsersSecretAnswerTypesResponse> {
         self.client.request(
             "get",
             "/users/secret-answer/types",
@@ -3204,7 +3204,7 @@ impl crate::forum::ForumApi {
     pub async fn users_trophies(
         &self,
         user_id: i64,
-    ) -> Result<serde_json::Value> {
+    ) -> Result<UsersTrophiesResponse> {
         self.client.request(
             "get",
             &format!("/users/{user_id}/trophies"),

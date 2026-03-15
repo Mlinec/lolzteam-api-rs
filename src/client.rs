@@ -9,6 +9,20 @@ const DEFAULT_MAX_RETRIES: u32 = 5;
 const INITIAL_BACKOFF: Duration = Duration::from_secs(2);
 const MAX_BACKOFF: Duration = Duration::from_secs(60);
 
+fn extract_error_message(body: &str) -> String {
+    serde_json::from_str::<serde_json::Value>(body)
+        .ok()
+        .and_then(|v| {
+            v.get("error")
+                .and_then(|e| e.get("message"))
+                .or_else(|| v.get("error"))
+                .or_else(|| v.get("message"))
+                .and_then(|m| m.as_str())
+                .map(|s| s.to_string())
+        })
+        .unwrap_or_else(|| body.to_string())
+}
+
 #[derive(Debug, Clone)]
 pub struct ApiClientBuilder {
     base_url: String,
@@ -29,12 +43,6 @@ impl ApiClientBuilder {
         }
     }
 
-    /// HTTP/HTTPS/SOCKS5 прокси.
-    ///
-    /// ```ignore
-    /// builder.proxy("socks5://127.0.0.1:1080")
-    /// builder.proxy("http://user:pass@proxy.example.com:8080")
-    /// ```
     pub fn proxy(mut self, proxy_url: impl Into<String>) -> Self {
         self.proxy = Some(proxy_url.into());
         self
@@ -188,9 +196,15 @@ impl ApiClient {
             let response_text = resp.text().await.map_err(Error::Http)?;
 
             if !status.is_success() {
-                return Err(Error::Api {
-                    status: status_code,
-                    body: response_text,
+                let message = extract_error_message(&response_text);
+                return Err(match status_code {
+                    401 => Error::Auth { message },
+                    403 => Error::Forbidden { message },
+                    404 => Error::NotFound { message },
+                    _ => Error::Api {
+                        status: status_code,
+                        body: response_text,
+                    },
                 });
             }
 

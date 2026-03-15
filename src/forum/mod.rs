@@ -3,6 +3,7 @@ pub mod types;
 
 use crate::client::ApiClient;
 
+/// Forum API wrapper.
 pub struct ForumApi {
     pub(crate) client: ApiClient,
 }
