@@ -50,6 +50,11 @@ pub const FORUM_BASE_URL: &str = "https://prod-api.lolz.live";
 pub const MARKET_BASE_URL: &str = "https://prod-api.lzt.market";
 
 pub struct LolzteamClient {
+    forum_client: ApiClient,
+    market_client: ApiClient,
+}
+
+pub struct LolzteamClientBuilder {
     token: String,
     forum_base: String,
     market_base: String,
@@ -59,18 +64,14 @@ pub struct LolzteamClient {
     timeout: Duration,
 }
 
-pub struct LolzteamClientBuilder {
-    inner: LolzteamClient,
-}
-
 impl LolzteamClientBuilder {
     pub fn forum_proxy(mut self, proxy: impl Into<String>) -> Self {
-        self.inner.forum_proxy = Some(proxy.into());
+        self.forum_proxy = Some(proxy.into());
         self
     }
 
     pub fn market_proxy(mut self, proxy: impl Into<String>) -> Self {
-        self.inner.market_proxy = Some(proxy.into());
+        self.market_proxy = Some(proxy.into());
         self
     }
 
@@ -80,35 +81,80 @@ impl LolzteamClientBuilder {
     }
 
     pub fn max_retries(mut self, n: u32) -> Self {
-        self.inner.max_retries = n;
+        self.max_retries = n;
         self
     }
 
     pub fn timeout(mut self, timeout: Duration) -> Self {
-        self.inner.timeout = timeout;
+        self.timeout = timeout;
         self
     }
 
     pub fn forum_base_url(mut self, url: impl Into<String>) -> Self {
-        self.inner.forum_base = url.into();
+        self.forum_base = url.into();
         self
     }
 
     pub fn market_base_url(mut self, url: impl Into<String>) -> Self {
-        self.inner.market_base = url.into();
+        self.market_base = url.into();
         self
     }
 
     pub fn build(self) -> error::Result<LolzteamClient> {
-        let _ = self.inner.make_forum_client()?;
-        let _ = self.inner.make_market_client()?;
-        Ok(self.inner)
+        let forum_client = Self::make_client(
+            &self.forum_base,
+            &self.token,
+            &self.forum_proxy,
+            self.max_retries,
+            self.timeout,
+        )?;
+        let market_client = Self::make_client(
+            &self.market_base,
+            &self.token,
+            &self.market_proxy,
+            self.max_retries,
+            self.timeout,
+        )?;
+        Ok(LolzteamClient {
+            forum_client,
+            market_client,
+        })
+    }
+
+    fn make_client(
+        base_url: &str,
+        token: &str,
+        proxy: &Option<String>,
+        max_retries: u32,
+        timeout: Duration,
+    ) -> error::Result<ApiClient> {
+        let mut b = ApiClient::builder(base_url, token)
+            .max_retries(max_retries)
+            .timeout(timeout);
+        if let Some(ref p) = proxy {
+            b = b.proxy(p);
+        }
+        b.build()
     }
 }
 
 impl LolzteamClient {
     pub fn new(token: impl Into<String>) -> Self {
+        let token = token.into();
+        let forum_client = ApiClient::builder(FORUM_BASE_URL, &token)
+            .build()
+            .expect("failed to build default forum client");
+        let market_client = ApiClient::builder(MARKET_BASE_URL, &token)
+            .build()
+            .expect("failed to build default market client");
         Self {
+            forum_client,
+            market_client,
+        }
+    }
+
+    pub fn builder(token: impl Into<String>) -> LolzteamClientBuilder {
+        LolzteamClientBuilder {
             token: token.into(),
             forum_base: FORUM_BASE_URL.to_string(),
             market_base: MARKET_BASE_URL.to_string(),
@@ -119,43 +165,11 @@ impl LolzteamClient {
         }
     }
 
-    pub fn builder(token: impl Into<String>) -> LolzteamClientBuilder {
-        LolzteamClientBuilder {
-            inner: Self::new(token),
-        }
-    }
-
-    fn make_forum_client(&self) -> error::Result<ApiClient> {
-        let mut b = ApiClient::builder(&self.forum_base, &self.token)
-            .max_retries(self.max_retries)
-            .timeout(self.timeout);
-        if let Some(ref p) = self.forum_proxy {
-            b = b.proxy(p);
-        }
-        b.build()
-    }
-
-    fn make_market_client(&self) -> error::Result<ApiClient> {
-        let mut b = ApiClient::builder(&self.market_base, &self.token)
-            .max_retries(self.max_retries)
-            .timeout(self.timeout);
-        if let Some(ref p) = self.market_proxy {
-            b = b.proxy(p);
-        }
-        b.build()
-    }
-
     pub fn forum(&self) -> forum::ForumApi {
-        forum::ForumApi::new(
-            self.make_forum_client()
-                .expect("forum client already validated"),
-        )
+        forum::ForumApi::new(self.forum_client.clone())
     }
 
     pub fn market(&self) -> market::MarketApi {
-        market::MarketApi::new(
-            self.make_market_client()
-                .expect("market client already validated"),
-        )
+        market::MarketApi::new(self.market_client.clone())
     }
 }

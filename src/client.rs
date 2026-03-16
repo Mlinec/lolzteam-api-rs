@@ -65,7 +65,11 @@ impl ApiClientBuilder {
                 reqwest::header::AUTHORIZATION,
                 format!("Bearer {}", self.token)
                     .parse()
-                    .expect("invalid token"),
+                    .map_err(|_| Error::Api {
+                        status: 0,
+                        body: "invalid token: contains characters not allowed in HTTP headers"
+                            .into(),
+                    })?,
             );
             h.insert(reqwest::header::ACCEPT, "application/json".parse().unwrap());
             h
@@ -131,7 +135,12 @@ impl ApiClient {
                 "put" => self.http.put(&url),
                 "delete" => self.http.delete(&url),
                 "patch" => self.http.patch(&url),
-                other => panic!("unsupported HTTP method: {}", other),
+                other => {
+                    return Err(Error::Api {
+                        status: 0,
+                        body: format!("unsupported HTTP method: {}", other),
+                    })
+                }
             };
 
             if let Some(q) = query {

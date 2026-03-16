@@ -14,10 +14,25 @@ fn client() -> LolzteamClient {
     LolzteamClient::new(token())
 }
 
+fn has_token() -> bool {
+    std::env::var("LOLZTEAM_TOKEN").is_ok()
+}
+
+/// Skip test when LOLZTEAM_TOKEN is not set.
+macro_rules! require_token {
+    () => {
+        if !has_token() {
+            eprintln!("skipped: LOLZTEAM_TOKEN not set");
+            return;
+        }
+    };
+}
+
 // --- forum ---
 
 #[tokio::test]
 async fn forum_users_get() {
+    require_token!();
     let resp = client().forum().users_get(1, None).await.unwrap();
     assert!(resp.user.user_id > 0);
     assert!(!resp.user.username.is_empty());
@@ -25,6 +40,7 @@ async fn forum_users_get() {
 
 #[tokio::test]
 async fn forum_users_find() {
+    require_token!();
     let _resp = client()
         .forum()
         .users_find(Some("AS7RIDENIED".into()), None, None)
@@ -34,6 +50,7 @@ async fn forum_users_find() {
 
 #[tokio::test]
 async fn forum_users_list() {
+    require_token!();
     match client().forum().users_list(Some(1), Some(3), None).await {
         Ok(_data) => {}
         Err(lolzteam::Error::Api { status: 403, .. }) => {}
@@ -43,6 +60,7 @@ async fn forum_users_list() {
 
 #[tokio::test]
 async fn forum_users_followers() {
+    require_token!();
     let _resp = client()
         .forum()
         .users_followers(1, None, None, None)
@@ -52,12 +70,14 @@ async fn forum_users_followers() {
 
 #[tokio::test]
 async fn forum_users_trophies() {
+    require_token!();
     let resp = client().forum().users_trophies(1).await.unwrap();
     let _ = &resp.system_info;
 }
 
 #[tokio::test]
 async fn forum_categories_list() {
+    require_token!();
     let resp = client()
         .forum()
         .categories_list(None, None, None)
@@ -68,6 +88,7 @@ async fn forum_categories_list() {
 
 #[tokio::test]
 async fn forum_forums_list() {
+    require_token!();
     let resp = client()
         .forum()
         .forums_list(None, None, None)
@@ -78,12 +99,14 @@ async fn forum_forums_list() {
 
 #[tokio::test]
 async fn forum_forums_grouped() {
+    require_token!();
     let resp = client().forum().forums_grouped().await.unwrap();
     let _ = &resp.system_info;
 }
 
 #[tokio::test]
 async fn forum_threads_list() {
+    require_token!();
     let resp = client()
         .forum()
         .threads_list(ForumThreadsListParams {
@@ -97,6 +120,7 @@ async fn forum_threads_list() {
 
 #[tokio::test]
 async fn forum_threads_get() {
+    require_token!();
     let c = client();
     let list = c
         .forum()
@@ -114,6 +138,7 @@ async fn forum_threads_get() {
 
 #[tokio::test]
 async fn forum_threads_recent() {
+    require_token!();
     let _resp = client()
         .forum()
         .threads_recent(ForumThreadsRecentParams {
@@ -127,6 +152,7 @@ async fn forum_threads_recent() {
 
 #[tokio::test]
 async fn forum_posts_list() {
+    require_token!();
     let c = client();
     let list = c
         .forum()
@@ -151,6 +177,7 @@ async fn forum_posts_list() {
 
 #[tokio::test]
 async fn forum_notifications_list() {
+    require_token!();
     let resp = client()
         .forum()
         .notifications_list(None, None, Some(3))
@@ -161,6 +188,7 @@ async fn forum_notifications_list() {
 
 #[tokio::test]
 async fn forum_conversations_list() {
+    require_token!();
     match client()
         .forum()
         .conversations_list(None, None, Some(3))
@@ -174,6 +202,7 @@ async fn forum_conversations_list() {
 
 #[tokio::test]
 async fn forum_navigation_list() {
+    require_token!();
     match client().forum().navigation_list(None).await {
         Ok(_data) => {}
         Err(lolzteam::Error::Api { status, .. }) if status == 403 || status == 500 => {}
@@ -183,21 +212,25 @@ async fn forum_navigation_list() {
 
 #[tokio::test]
 async fn forum_tags_popular() {
+    require_token!();
     let _resp = client().forum().tags_popular().await.unwrap();
 }
 
 #[tokio::test]
 async fn forum_chatbox_index() {
+    require_token!();
     let _resp = client().forum().chatbox_index(None).await.unwrap();
 }
 
 #[tokio::test]
 async fn forum_feed_options() {
+    require_token!();
     let _resp = client().forum().forums_get_feed_options().await.unwrap();
 }
 
 #[tokio::test]
 async fn forum_user_fields() {
+    require_token!();
     let _resp = client().forum().users_fields().await.unwrap();
 }
 
@@ -205,11 +238,13 @@ async fn forum_user_fields() {
 
 #[tokio::test]
 async fn market_category_list() {
+    require_token!();
     let _resp = client().market().category_list(None).await.unwrap();
 }
 
 #[tokio::test]
 async fn market_category_all() {
+    require_token!();
     let _resp = client()
         .market()
         .category_all(MarketCategoryAllParams {
@@ -222,6 +257,7 @@ async fn market_category_all() {
 
 #[tokio::test]
 async fn market_category_steam() {
+    require_token!();
     let _resp = client()
         .market()
         .category_steam(MarketCategorySteamParams {
@@ -234,6 +270,7 @@ async fn market_category_steam() {
 
 #[tokio::test]
 async fn market_category_telegram() {
+    require_token!();
     let _resp = client()
         .market()
         .category_telegram(MarketCategoryTelegramParams {
@@ -246,6 +283,7 @@ async fn market_category_telegram() {
 
 #[tokio::test]
 async fn market_category_discord() {
+    require_token!();
     let _resp = client()
         .market()
         .category_discord(MarketCategoryDiscordParams {
@@ -258,6 +296,7 @@ async fn market_category_discord() {
 
 #[tokio::test]
 async fn market_category_fortnite() {
+    require_token!();
     let _resp = client()
         .market()
         .category_fortnite(MarketCategoryFortniteParams {
@@ -270,6 +309,7 @@ async fn market_category_fortnite() {
 
 #[tokio::test]
 async fn market_profile_get() {
+    require_token!();
     let resp = client().market().profile_get(None).await.unwrap();
     assert!(resp.user.user_id > 0);
     assert!(!resp.user.username.is_empty());
@@ -277,11 +317,13 @@ async fn market_profile_get() {
 
 #[tokio::test]
 async fn market_payments_currency() {
+    require_token!();
     let _resp = client().market().payments_currency().await.unwrap();
 }
 
 #[tokio::test]
 async fn market_payments_history() {
+    require_token!();
     let _resp = client()
         .market()
         .payments_history(MarketPaymentsHistoryParams::default())
@@ -291,6 +333,7 @@ async fn market_payments_history() {
 
 #[tokio::test]
 async fn market_list_favorites() {
+    require_token!();
     let resp = client()
         .market()
         .list_favorites(MarketListFavoritesParams::default())
@@ -301,6 +344,7 @@ async fn market_list_favorites() {
 
 #[tokio::test]
 async fn market_list_orders() {
+    require_token!();
     let resp = client()
         .market()
         .list_orders(MarketListOrdersParams::default())
@@ -311,6 +355,7 @@ async fn market_list_orders() {
 
 #[tokio::test]
 async fn market_list_user_items() {
+    require_token!();
     let resp = client()
         .market()
         .list_user(MarketListUserParams::default())
@@ -321,6 +366,7 @@ async fn market_list_user_items() {
 
 #[tokio::test]
 async fn market_list_viewed() {
+    require_token!();
     let resp = client()
         .market()
         .list_viewed(MarketListViewedParams::default())
@@ -331,6 +377,7 @@ async fn market_list_viewed() {
 
 #[tokio::test]
 async fn market_cart_get() {
+    require_token!();
     let _resp = client()
         .market()
         .cart_get(MarketCartGetParams::default())
@@ -340,6 +387,7 @@ async fn market_cart_get() {
 
 #[tokio::test]
 async fn market_category_params() {
+    require_token!();
     let _resp = client()
         .market()
         .category_params("steam".into())
@@ -349,6 +397,7 @@ async fn market_category_params() {
 
 #[tokio::test]
 async fn market_category_games() {
+    require_token!();
     let _resp = client()
         .market()
         .category_games("steam".into())
@@ -358,26 +407,31 @@ async fn market_category_games() {
 
 #[tokio::test]
 async fn market_proxy_get() {
+    require_token!();
     let _resp = client().market().proxy_get().await.unwrap();
 }
 
 #[tokio::test]
 async fn market_list_states() {
+    require_token!();
     let _resp = client().market().list_states(None).await.unwrap();
 }
 
 #[tokio::test]
 async fn market_balance_list() {
+    require_token!();
     let _resp = client().market().payments_balance_list().await.unwrap();
 }
 
 #[tokio::test]
 async fn market_custom_discounts() {
+    require_token!();
     let _resp = client().market().custom_discounts_get().await.unwrap();
 }
 
 #[tokio::test]
 async fn market_auto_payments() {
+    require_token!();
     let _resp = client().market().auto_payments_list().await.unwrap();
 }
 
