@@ -3,8 +3,8 @@
 
 #![allow(unused, clippy::all)]
 
-use serde::{Deserialize, Serialize};
 use crate::models::*;
+use serde::{Deserialize, Serialize};
 
 /// Parameters for `AutoPayments.Create` (POST /auto-payment).
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -4860,7 +4860,7 @@ pub struct MarketPaymentsTransferParams {
     /// Hold length value.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub hold_length_value: Option<i64>,
-    /// Is the deal happening on Telegram? 
+    /// Is the deal happening on Telegram?
     #[serde(skip_serializing_if = "Option::is_none")]
     pub telegram_deal: Option<bool>,
     /// Telegram username of the user you are dialoguing with.
@@ -5097,4 +5097,3 @@ pub struct MarketPublishingFastSellParams {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub title_en: Option<String>,
 }
-

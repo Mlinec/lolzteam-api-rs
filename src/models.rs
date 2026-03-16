@@ -3851,4 +3851,3 @@ pub struct ManagingSteamUpdateValueResponse {
     #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
-
