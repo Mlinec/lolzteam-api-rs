@@ -1,3 +1,7 @@
+<p align="center">
+  <a href="docs/README_EN.md">English</a> · <a href="docs/DOCS_RU.md">Документация</a>
+</p>
+
 # lolzteam
 
 Rust клиент для [LOLZTEAM API](https://github.com/AS7RIDENIED/LOLZTEAM) (форум + маркет).
