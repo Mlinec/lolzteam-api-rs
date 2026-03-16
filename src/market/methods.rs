@@ -6,11 +6,12 @@
 
 use crate::client::ApiClient;
 use crate::error::Result;
-use crate::market::types::*;
 use crate::models::*;
+use crate::market::types::*;
 
 /// Market API methods.
 impl crate::market::MarketApi {
+
     // ── Account publishing ──
 
     /// Add Account
@@ -21,104 +22,54 @@ impl crate::market::MarketApi {
     ) -> Result<PublishingAddResponse> {
         let mut body = serde_json::Map::new();
         if let Some(v) = &params.allow_ask_discount {
-            body.insert(
-                "allow_ask_discount".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("allow_ask_discount".into(), serde_json::to_value(v).unwrap_or_default());
         }
-        body.insert(
-            "category_id".into(),
-            serde_json::to_value(&params.category_id).unwrap_or_default(),
-        );
-        body.insert(
-            "currency".into(),
-            serde_json::to_value(&params.currency).unwrap_or_default(),
-        );
+        body.insert("category_id".into(), serde_json::to_value(&params.category_id).unwrap_or_default());
+        body.insert("currency".into(), serde_json::to_value(&params.currency).unwrap_or_default());
         if let Some(v) = &params.description {
-            body.insert(
-                "description".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("description".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.email_login_data {
-            body.insert(
-                "email_login_data".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("email_login_data".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.email_type {
-            body.insert(
-                "email_type".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("email_type".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.extended_guarantee {
-            body.insert(
-                "extended_guarantee".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("extended_guarantee".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.force_temp_email {
-            body.insert(
-                "forceTempEmail".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("forceTempEmail".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.has_email_login_data {
-            body.insert(
-                "has_email_login_data".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("has_email_login_data".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.information {
-            body.insert(
-                "information".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("information".into(), serde_json::to_value(v).unwrap_or_default());
         }
-        body.insert(
-            "item_origin".into(),
-            serde_json::to_value(&params.item_origin).unwrap_or_default(),
-        );
-        body.insert(
-            "price".into(),
-            serde_json::to_value(&params.price).unwrap_or_default(),
-        );
+        body.insert("item_origin".into(), serde_json::to_value(&params.item_origin).unwrap_or_default());
+        body.insert("price".into(), serde_json::to_value(&params.price).unwrap_or_default());
         if let Some(v) = &params.proxy_id {
-            body.insert(
-                "proxy_id".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("proxy_id".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.random_proxy {
-            body.insert(
-                "random_proxy".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("random_proxy".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.resell_item_id {
-            body.insert(
-                "resell_item_id".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("resell_item_id".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.title {
             body.insert("title".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.title_en {
-            body.insert(
-                "title_en".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("title_en".into(), serde_json::to_value(v).unwrap_or_default());
         }
-        self.client
-            .request(
-                "post",
-                "/item/add",
-                None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
-            )
-            .await
+        self.client.request(
+            "post",
+            "/item/add",
+            None::<&[(&str, String)]>,
+            Some(serde_json::Value::Object(body)),
+        ).await
     }
 
     /// Check Account Details
@@ -130,61 +81,38 @@ impl crate::market::MarketApi {
     ) -> Result<serde_json::Value> {
         let mut body = serde_json::Map::new();
         if let Some(v) = &params.email_login_data {
-            body.insert(
-                "email_login_data".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("email_login_data".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.email_type {
-            body.insert(
-                "email_type".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("email_type".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.extra {
             body.insert("extra".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.has_email_login_data {
-            body.insert(
-                "has_email_login_data".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("has_email_login_data".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.login {
             body.insert("login".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.login_password {
-            body.insert(
-                "login_password".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("login_password".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.password {
-            body.insert(
-                "password".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("password".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.random_proxy {
-            body.insert(
-                "random_proxy".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("random_proxy".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.resell_item_id {
-            body.insert(
-                "resell_item_id".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("resell_item_id".into(), serde_json::to_value(v).unwrap_or_default());
         }
-        self.client
-            .request(
-                "post",
-                &format!("/{item_id}/goods/check"),
-                None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
-            )
-            .await
+        self.client.request(
+            "post",
+            &format!("/{item_id}/goods/check"),
+            None::<&[(&str, String)]>,
+            Some(serde_json::Value::Object(body)),
+        ).await
     }
 
     /// Add an External Account
@@ -196,32 +124,21 @@ impl crate::market::MarketApi {
     ) -> Result<serde_json::Value> {
         let mut body = serde_json::Map::new();
         if let Some(v) = &params.cookies {
-            body.insert(
-                "cookies".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("cookies".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.email_login_data {
-            body.insert(
-                "email_login_data".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("email_login_data".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.login {
             body.insert("login".into(), serde_json::to_value(v).unwrap_or_default());
         }
-        body.insert(
-            "type".into(),
-            serde_json::to_value(&params.r#type).unwrap_or_default(),
-        );
-        self.client
-            .request(
-                "post",
-                &format!("/{item_id}/external-account"),
-                None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
-            )
-            .await
+        body.insert("type".into(), serde_json::to_value(&params.r#type).unwrap_or_default());
+        self.client.request(
+            "post",
+            &format!("/{item_id}/external-account"),
+            None::<&[(&str, String)]>,
+            Some(serde_json::Value::Object(body)),
+        ).await
     }
 
     /// Fast Account Upload
@@ -232,125 +149,77 @@ impl crate::market::MarketApi {
     ) -> Result<PublishingFastSellResponse> {
         let mut body = serde_json::Map::new();
         if let Some(v) = &params.allow_ask_discount {
-            body.insert(
-                "allow_ask_discount".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("allow_ask_discount".into(), serde_json::to_value(v).unwrap_or_default());
         }
-        body.insert(
-            "category_id".into(),
-            serde_json::to_value(&params.category_id).unwrap_or_default(),
-        );
-        body.insert(
-            "currency".into(),
-            serde_json::to_value(&params.currency).unwrap_or_default(),
-        );
+        body.insert("category_id".into(), serde_json::to_value(&params.category_id).unwrap_or_default());
+        body.insert("currency".into(), serde_json::to_value(&params.currency).unwrap_or_default());
         if let Some(v) = &params.description {
-            body.insert(
-                "description".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("description".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.email_login_data {
-            body.insert(
-                "email_login_data".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("email_login_data".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.email_type {
-            body.insert(
-                "email_type".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("email_type".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.extended_guarantee {
-            body.insert(
-                "extended_guarantee".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("extended_guarantee".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.extra {
             body.insert("extra".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.has_email_login_data {
-            body.insert(
-                "has_email_login_data".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("has_email_login_data".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.information {
-            body.insert(
-                "information".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("information".into(), serde_json::to_value(v).unwrap_or_default());
         }
-        body.insert(
-            "item_origin".into(),
-            serde_json::to_value(&params.item_origin).unwrap_or_default(),
-        );
+        body.insert("item_origin".into(), serde_json::to_value(&params.item_origin).unwrap_or_default());
         if let Some(v) = &params.login {
             body.insert("login".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.login_password {
-            body.insert(
-                "login_password".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("login_password".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.password {
-            body.insert(
-                "password".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("password".into(), serde_json::to_value(v).unwrap_or_default());
         }
-        body.insert(
-            "price".into(),
-            serde_json::to_value(&params.price).unwrap_or_default(),
-        );
+        body.insert("price".into(), serde_json::to_value(&params.price).unwrap_or_default());
         if let Some(v) = &params.proxy_id {
-            body.insert(
-                "proxy_id".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("proxy_id".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.random_proxy {
-            body.insert(
-                "random_proxy".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("random_proxy".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.title {
             body.insert("title".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.title_en {
-            body.insert(
-                "title_en".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("title_en".into(), serde_json::to_value(v).unwrap_or_default());
         }
-        self.client
-            .request(
-                "post",
-                "/item/fast-sell",
-                None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
-            )
-            .await
+        self.client.request(
+            "post",
+            "/item/fast-sell",
+            None::<&[(&str, String)]>,
+            Some(serde_json::Value::Object(body)),
+        ).await
     }
+
 
     // ── Account purchasing ──
 
     /// Check Account
     /// `POST /{item_id}/check-account`
-    pub async fn purchasing_check(&self, item_id: i64) -> Result<serde_json::Value> {
-        self.client
-            .request(
-                "post",
-                &format!("/{item_id}/check-account"),
-                None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
-            )
-            .await
+    pub async fn purchasing_check(
+        &self,
+        item_id: i64,
+    ) -> Result<serde_json::Value> {
+        self.client.request(
+            "post",
+            &format!("/{item_id}/check-account"),
+            None::<&[(&str, String)]>,
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Confirm Buy
@@ -363,35 +232,31 @@ impl crate::market::MarketApi {
     ) -> Result<PurchasingConfirmResponse> {
         let mut body = serde_json::Map::new();
         if let Some(v) = &balance_id {
-            body.insert(
-                "balance_id".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("balance_id".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &price {
             body.insert("price".into(), serde_json::to_value(v).unwrap_or_default());
         }
-        self.client
-            .request(
-                "post",
-                &format!("/{item_id}/confirm-buy"),
-                None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
-            )
-            .await
+        self.client.request(
+            "post",
+            &format!("/{item_id}/confirm-buy"),
+            None::<&[(&str, String)]>,
+            Some(serde_json::Value::Object(body)),
+        ).await
     }
 
     /// Cancel Discount Request
     /// `DELETE /{item_id}/discount`
-    pub async fn purchasing_discount_cancel(&self, item_id: i64) -> Result<serde_json::Value> {
-        self.client
-            .request(
-                "delete",
-                &format!("/{item_id}/discount"),
-                None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
-            )
-            .await
+    pub async fn purchasing_discount_cancel(
+        &self,
+        item_id: i64,
+    ) -> Result<serde_json::Value> {
+        self.client.request(
+            "delete",
+            &format!("/{item_id}/discount"),
+            None::<&[(&str, String)]>,
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Discount Request
@@ -403,24 +268,16 @@ impl crate::market::MarketApi {
         message: Option<String>,
     ) -> Result<serde_json::Value> {
         let mut body = serde_json::Map::new();
-        body.insert(
-            "discount_price".into(),
-            serde_json::to_value(&discount_price).unwrap_or_default(),
-        );
+        body.insert("discount_price".into(), serde_json::to_value(&discount_price).unwrap_or_default());
         if let Some(v) = &message {
-            body.insert(
-                "message".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("message".into(), serde_json::to_value(v).unwrap_or_default());
         }
-        self.client
-            .request(
-                "post",
-                &format!("/{item_id}/discount"),
-                None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
-            )
-            .await
+        self.client.request(
+            "post",
+            &format!("/{item_id}/discount"),
+            None::<&[(&str, String)]>,
+            Some(serde_json::Value::Object(body)),
+        ).await
     }
 
     /// Fast Buy Account
@@ -433,23 +290,19 @@ impl crate::market::MarketApi {
     ) -> Result<serde_json::Value> {
         let mut body = serde_json::Map::new();
         if let Some(v) = &balance_id {
-            body.insert(
-                "balance_id".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("balance_id".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &price {
             body.insert("price".into(), serde_json::to_value(v).unwrap_or_default());
         }
-        self.client
-            .request(
-                "post",
-                &format!("/{item_id}/fast-buy"),
-                None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
-            )
-            .await
+        self.client.request(
+            "post",
+            &format!("/{item_id}/fast-buy"),
+            None::<&[(&str, String)]>,
+            Some(serde_json::Value::Object(body)),
+        ).await
     }
+
 
     // ── Accounts list ──
 
@@ -544,19 +397,20 @@ impl crate::market::MarketApi {
         if let Some(v) = &params.filter_by_delete_date {
             query.push(("filter_by_delete_date", v.to_string()));
         }
-        self.client
-            .request(
-                "get",
-                &format!("/user/{_path_type}/download"),
-                Some(&query),
-                None::<serde_json::Value>,
-            )
-            .await
+        self.client.request(
+            "get",
+            &format!("/user/{_path_type}/download"),
+            Some(&query),
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Get All Favourites Accounts
     /// `GET /fave`
-    pub async fn list_favorites(&self, params: MarketListFavoritesParams) -> Result<ItemList> {
+    pub async fn list_favorites(
+        &self,
+        params: MarketListFavoritesParams,
+    ) -> Result<ItemList> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &params.page {
             query.push(("page", v.to_string()));
@@ -598,14 +452,20 @@ impl crate::market::MarketApi {
         if let Some(v) = &params.nsb_by_me {
             query.push(("nsb_by_me", v.to_string()));
         }
-        self.client
-            .request("get", "/fave", Some(&query), None::<serde_json::Value>)
-            .await
+        self.client.request(
+            "get",
+            "/fave",
+            Some(&query),
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Get All Purchased Accounts
     /// `GET /user/orders`
-    pub async fn list_orders(&self, params: MarketListOrdersParams) -> Result<ItemList> {
+    pub async fn list_orders(
+        &self,
+        params: MarketListOrdersParams,
+    ) -> Result<ItemList> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &params.user_id {
             query.push(("user_id", v.to_string()));
@@ -656,36 +516,38 @@ impl crate::market::MarketApi {
         if let Some(v) = &params.nsb_by_me {
             query.push(("nsb_by_me", v.to_string()));
         }
-        self.client
-            .request(
-                "get",
-                "/user/orders",
-                Some(&query),
-                None::<serde_json::Value>,
-            )
-            .await
+        self.client.request(
+            "get",
+            "/user/orders",
+            Some(&query),
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Get User Items States
     /// `GET /user/item-states`
-    pub async fn list_states(&self, user_id: Option<i64>) -> Result<ListStatesResponse> {
+    pub async fn list_states(
+        &self,
+        user_id: Option<i64>,
+    ) -> Result<ListStatesResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &user_id {
             query.push(("user_id", v.to_string()));
         }
-        self.client
-            .request(
-                "get",
-                "/user/item-states",
-                Some(&query),
-                None::<serde_json::Value>,
-            )
-            .await
+        self.client.request(
+            "get",
+            "/user/item-states",
+            Some(&query),
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Get All User Accounts
     /// `GET /user/items`
-    pub async fn list_user(&self, params: MarketListUserParams) -> Result<ItemList> {
+    pub async fn list_user(
+        &self,
+        params: MarketListUserParams,
+    ) -> Result<ItemList> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &params.user_id {
             query.push(("user_id", v.to_string()));
@@ -769,19 +631,20 @@ impl crate::market::MarketApi {
         if let Some(v) = &params.filter_by_delete_date {
             query.push(("filter_by_delete_date", v.to_string()));
         }
-        self.client
-            .request(
-                "get",
-                "/user/items",
-                Some(&query),
-                None::<serde_json::Value>,
-            )
-            .await
+        self.client.request(
+            "get",
+            "/user/items",
+            Some(&query),
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Get All Viewed Accounts
     /// `GET /viewed`
-    pub async fn list_viewed(&self, params: MarketListViewedParams) -> Result<ItemList> {
+    pub async fn list_viewed(
+        &self,
+        params: MarketListViewedParams,
+    ) -> Result<ItemList> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &params.page {
             query.push(("page", v.to_string()));
@@ -823,55 +686,60 @@ impl crate::market::MarketApi {
         if let Some(v) = &params.nsb_by_me {
             query.push(("nsb_by_me", v.to_string()));
         }
-        self.client
-            .request("get", "/viewed", Some(&query), None::<serde_json::Value>)
-            .await
+        self.client.request(
+            "get",
+            "/viewed",
+            Some(&query),
+            None::<serde_json::Value>,
+        ).await
     }
+
 
     // ── Accounts managing ──
 
     /// Get AI Price
     /// `GET /{item_id}/ai-price`
-    pub async fn managing_ai_price(&self, item_id: i64) -> Result<ManagingAiPriceResponse> {
-        self.client
-            .request(
-                "get",
-                &format!("/{item_id}/ai-price"),
-                None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
-            )
-            .await
+    pub async fn managing_ai_price(
+        &self,
+        item_id: i64,
+    ) -> Result<ManagingAiPriceResponse> {
+        self.client.request(
+            "get",
+            &format!("/{item_id}/ai-price"),
+            None::<&[(&str, String)]>,
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Auto Bump
     /// `POST /{item_id}/auto-bump`
-    pub async fn managing_auto_bump(&self, item_id: i64, hour: i64) -> Result<serde_json::Value> {
+    pub async fn managing_auto_bump(
+        &self,
+        item_id: i64,
+        hour: i64,
+    ) -> Result<serde_json::Value> {
         let mut body = serde_json::Map::new();
-        body.insert(
-            "hour".into(),
-            serde_json::to_value(&hour).unwrap_or_default(),
-        );
-        self.client
-            .request(
-                "post",
-                &format!("/{item_id}/auto-bump"),
-                None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
-            )
-            .await
+        body.insert("hour".into(), serde_json::to_value(&hour).unwrap_or_default());
+        self.client.request(
+            "post",
+            &format!("/{item_id}/auto-bump"),
+            None::<&[(&str, String)]>,
+            Some(serde_json::Value::Object(body)),
+        ).await
     }
 
     /// Disable Auto Bump
     /// `DELETE /{item_id}/auto-bump`
-    pub async fn managing_auto_bump_disable(&self, item_id: i64) -> Result<serde_json::Value> {
-        self.client
-            .request(
-                "delete",
-                &format!("/{item_id}/auto-bump"),
-                None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
-            )
-            .await
+    pub async fn managing_auto_bump_disable(
+        &self,
+        item_id: i64,
+    ) -> Result<serde_json::Value> {
+        self.client.request(
+            "delete",
+            &format!("/{item_id}/auto-bump"),
+            None::<&[(&str, String)]>,
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Get Auto Buy Price
@@ -880,14 +748,12 @@ impl crate::market::MarketApi {
         &self,
         item_id: i64,
     ) -> Result<ManagingAutoBuyPriceResponse> {
-        self.client
-            .request(
-                "get",
-                &format!("/{item_id}/auto-buy-price"),
-                None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
-            )
-            .await
+        self.client.request(
+            "get",
+            &format!("/{item_id}/auto-buy-price"),
+            None::<&[(&str, String)]>,
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Bulk Get Accounts
@@ -899,38 +765,31 @@ impl crate::market::MarketApi {
     ) -> Result<ManagingBulkGetResponse> {
         let mut body = serde_json::Map::new();
         if let Some(v) = &item_id {
-            body.insert(
-                "item_id".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("item_id".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &parse_same_item_ids {
-            body.insert(
-                "parse_same_item_ids".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("parse_same_item_ids".into(), serde_json::to_value(v).unwrap_or_default());
         }
-        self.client
-            .request(
-                "post",
-                "/bulk/items",
-                None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
-            )
-            .await
+        self.client.request(
+            "post",
+            "/bulk/items",
+            None::<&[(&str, String)]>,
+            Some(serde_json::Value::Object(body)),
+        ).await
     }
 
     /// Bump Account
     /// `POST /{item_id}/bump`
-    pub async fn managing_bump(&self, item_id: i64) -> Result<serde_json::Value> {
-        self.client
-            .request(
-                "post",
-                &format!("/{item_id}/bump"),
-                None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
-            )
-            .await
+    pub async fn managing_bump(
+        &self,
+        item_id: i64,
+    ) -> Result<serde_json::Value> {
+        self.client.request(
+            "post",
+            &format!("/{item_id}/bump"),
+            None::<&[(&str, String)]>,
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Change Password
@@ -942,19 +801,14 @@ impl crate::market::MarketApi {
     ) -> Result<ManagingChangePasswordResponse> {
         let mut body = serde_json::Map::new();
         if let Some(v) = &cancel {
-            body.insert(
-                "_cancel".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("_cancel".into(), serde_json::to_value(v).unwrap_or_default());
         }
-        self.client
-            .request(
-                "post",
-                &format!("/{item_id}/change-password"),
-                None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
-            )
-            .await
+        self.client.request(
+            "post",
+            &format!("/{item_id}/change-password"),
+            None::<&[(&str, String)]>,
+            Some(serde_json::Value::Object(body)),
+        ).await
     }
 
     /// Check Guarantee
@@ -963,27 +817,26 @@ impl crate::market::MarketApi {
         &self,
         item_id: i64,
     ) -> Result<ManagingCheckGuaranteeResponse> {
-        self.client
-            .request(
-                "post",
-                &format!("/{item_id}/check-guarantee"),
-                None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
-            )
-            .await
+        self.client.request(
+            "post",
+            &format!("/{item_id}/check-guarantee"),
+            None::<&[(&str, String)]>,
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Close Account
     /// `POST /{item_id}/close`
-    pub async fn managing_close(&self, item_id: i64) -> Result<serde_json::Value> {
-        self.client
-            .request(
-                "post",
-                &format!("/{item_id}/close"),
-                None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
-            )
-            .await
+    pub async fn managing_close(
+        &self,
+        item_id: i64,
+    ) -> Result<serde_json::Value> {
+        self.client.request(
+            "post",
+            &format!("/{item_id}/close"),
+            None::<&[(&str, String)]>,
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Create Claim
@@ -994,22 +847,14 @@ impl crate::market::MarketApi {
         post_body: String,
     ) -> Result<ManagingCreateClaimResponse> {
         let mut body = serde_json::Map::new();
-        body.insert(
-            "item_id".into(),
-            serde_json::to_value(&item_id).unwrap_or_default(),
-        );
-        body.insert(
-            "post_body".into(),
-            serde_json::to_value(&post_body).unwrap_or_default(),
-        );
-        self.client
-            .request(
-                "post",
-                "/claims",
-                None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
-            )
-            .await
+        body.insert("item_id".into(), serde_json::to_value(&item_id).unwrap_or_default());
+        body.insert("post_body".into(), serde_json::to_value(&post_body).unwrap_or_default());
+        self.client.request(
+            "post",
+            "/claims",
+            None::<&[(&str, String)]>,
+            Some(serde_json::Value::Object(body)),
+        ).await
     }
 
     /// Decline Video Recording Request
@@ -1021,14 +866,12 @@ impl crate::market::MarketApi {
     ) -> Result<serde_json::Value> {
         let mut body = serde_json::Map::new();
         body.insert("i_voluntarily_and_with_full_awareness_of_my_actions_waive_any_claims_regarding_this_item".into(), serde_json::to_value(&i_voluntarily_and_with_full_awareness_of_my_actions_waive_any_claims_regarding_this_item).unwrap_or_default());
-        self.client
-            .request(
-                "post",
-                &format!("/{item_id}/decline-video-recording"),
-                None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
-            )
-            .await
+        self.client.request(
+            "post",
+            &format!("/{item_id}/decline-video-recording"),
+            None::<&[(&str, String)]>,
+            Some(serde_json::Value::Object(body)),
+        ).await
     }
 
     /// Edit Account
@@ -1040,99 +883,72 @@ impl crate::market::MarketApi {
     ) -> Result<serde_json::Value> {
         let mut body = serde_json::Map::new();
         if let Some(v) = &params.allow_ask_discount {
-            body.insert(
-                "allow_ask_discount".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("allow_ask_discount".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.currency {
-            body.insert(
-                "currency".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("currency".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.description {
-            body.insert(
-                "description".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("description".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.email_login_data {
-            body.insert(
-                "email_login_data".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("email_login_data".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.email_type {
-            body.insert(
-                "email_type".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("email_type".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.information {
-            body.insert(
-                "information".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("information".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.item_origin {
-            body.insert(
-                "item_origin".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("item_origin".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.price {
             body.insert("price".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.proxy_id {
-            body.insert(
-                "proxy_id".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("proxy_id".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.title {
             body.insert("title".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.title_en {
-            body.insert(
-                "title_en".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("title_en".into(), serde_json::to_value(v).unwrap_or_default());
         }
-        self.client
-            .request(
-                "put",
-                &format!("/{item_id}/edit"),
-                None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
-            )
-            .await
+        self.client.request(
+            "put",
+            &format!("/{item_id}/edit"),
+            None::<&[(&str, String)]>,
+            Some(serde_json::Value::Object(body)),
+        ).await
     }
 
     /// Get Email Confirmation Code
     /// `GET /{item_id}/email-code`
-    pub async fn managing_email_code(&self, item_id: i64) -> Result<ConfirmationCode> {
-        self.client
-            .request(
-                "get",
-                &format!("/{item_id}/email-code"),
-                None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
-            )
-            .await
+    pub async fn managing_email_code(
+        &self,
+        item_id: i64,
+    ) -> Result<ConfirmationCode> {
+        self.client.request(
+            "get",
+            &format!("/{item_id}/email-code"),
+            None::<&[(&str, String)]>,
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Favorite
     /// `POST /{item_id}/star`
-    pub async fn managing_favorite(&self, item_id: i64) -> Result<serde_json::Value> {
-        self.client
-            .request(
-                "post",
-                &format!("/{item_id}/star"),
-                None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
-            )
-            .await
+    pub async fn managing_favorite(
+        &self,
+        item_id: i64,
+    ) -> Result<serde_json::Value> {
+        self.client.request(
+            "post",
+            &format!("/{item_id}/star"),
+            None::<&[(&str, String)]>,
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Get Account
@@ -1146,14 +962,12 @@ impl crate::market::MarketApi {
         if let Some(v) = &parse_same_item_ids {
             query.push(("parse_same_item_ids", v.to_string()));
         }
-        self.client
-            .request(
-                "get",
-                &format!("/{item_id}"),
-                Some(&query),
-                None::<serde_json::Value>,
-            )
-            .await
+        self.client.request(
+            "get",
+            &format!("/{item_id}"),
+            Some(&query),
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Get Email Letters
@@ -1175,9 +989,12 @@ impl crate::market::MarketApi {
         if let Some(v) = &params.limit {
             query.push(("limit", v.to_string()));
         }
-        self.client
-            .request("get", "/letters2", Some(&query), None::<serde_json::Value>)
-            .await
+        self.client.request(
+            "get",
+            "/letters2",
+            Some(&query),
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Get Account Image
@@ -1189,14 +1006,12 @@ impl crate::market::MarketApi {
     ) -> Result<ManagingImageResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         query.push(("type", r#type.to_string()));
-        self.client
-            .request(
-                "get",
-                &format!("/{item_id}/image"),
-                Some(&query),
-                None::<serde_json::Value>,
-            )
-            .await
+        self.client.request(
+            "get",
+            &format!("/{item_id}/image"),
+            Some(&query),
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Edit Note
@@ -1210,27 +1025,26 @@ impl crate::market::MarketApi {
         if let Some(v) = &text {
             body.insert("text".into(), serde_json::to_value(v).unwrap_or_default());
         }
-        self.client
-            .request(
-                "post",
-                &format!("/{item_id}/note-save"),
-                None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
-            )
-            .await
+        self.client.request(
+            "post",
+            &format!("/{item_id}/note-save"),
+            None::<&[(&str, String)]>,
+            Some(serde_json::Value::Object(body)),
+        ).await
     }
 
     /// Open Account
     /// `POST /{item_id}/open`
-    pub async fn managing_open(&self, item_id: i64) -> Result<serde_json::Value> {
-        self.client
-            .request(
-                "post",
-                &format!("/{item_id}/open"),
-                None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
-            )
-            .await
+    pub async fn managing_open(
+        &self,
+        item_id: i64,
+    ) -> Result<serde_json::Value> {
+        self.client.request(
+            "post",
+            &format!("/{item_id}/open"),
+            None::<&[(&str, String)]>,
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Add a Public Tag
@@ -1241,18 +1055,13 @@ impl crate::market::MarketApi {
         tag_id: i64,
     ) -> Result<serde_json::Value> {
         let mut body = serde_json::Map::new();
-        body.insert(
-            "tag_id".into(),
-            serde_json::to_value(&tag_id).unwrap_or_default(),
-        );
-        self.client
-            .request(
-                "post",
-                &format!("/{item_id}/public-tag"),
-                None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
-            )
-            .await
+        body.insert("tag_id".into(), serde_json::to_value(&tag_id).unwrap_or_default());
+        self.client.request(
+            "post",
+            &format!("/{item_id}/public-tag"),
+            None::<&[(&str, String)]>,
+            Some(serde_json::Value::Object(body)),
+        ).await
     }
 
     /// Remove a Public Tag
@@ -1262,40 +1071,40 @@ impl crate::market::MarketApi {
         item_id: i64,
         tag_id: i64,
     ) -> Result<serde_json::Value> {
-        self.client
-            .request(
-                "delete",
-                &format!("/{item_id}/public-tag"),
-                None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
-            )
-            .await
+        self.client.request(
+            "delete",
+            &format!("/{item_id}/public-tag"),
+            None::<&[(&str, String)]>,
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Cancel Guarantee
     /// `POST /{item_id}/refuse-guarantee`
-    pub async fn managing_refuse_guarantee(&self, item_id: i64) -> Result<serde_json::Value> {
-        self.client
-            .request(
-                "post",
-                &format!("/{item_id}/refuse-guarantee"),
-                None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
-            )
-            .await
+    pub async fn managing_refuse_guarantee(
+        &self,
+        item_id: i64,
+    ) -> Result<serde_json::Value> {
+        self.client.request(
+            "post",
+            &format!("/{item_id}/refuse-guarantee"),
+            None::<&[(&str, String)]>,
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Add Mafile
     /// `POST /{item_id}/mafile`
-    pub async fn managing_steam_add_mafile(&self, item_id: i64) -> Result<serde_json::Value> {
-        self.client
-            .request(
-                "post",
-                &format!("/{item_id}/mafile"),
-                None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
-            )
-            .await
+    pub async fn managing_steam_add_mafile(
+        &self,
+        item_id: i64,
+    ) -> Result<serde_json::Value> {
+        self.client.request(
+            "post",
+            &format!("/{item_id}/mafile"),
+            None::<&[(&str, String)]>,
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Get Mafile
@@ -1304,27 +1113,26 @@ impl crate::market::MarketApi {
         &self,
         item_id: i64,
     ) -> Result<ManagingSteamGetMafileResponse> {
-        self.client
-            .request(
-                "get",
-                &format!("/{item_id}/mafile"),
-                None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
-            )
-            .await
+        self.client.request(
+            "get",
+            &format!("/{item_id}/mafile"),
+            None::<&[(&str, String)]>,
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Remove Mafile
     /// `DELETE /{item_id}/mafile`
-    pub async fn managing_steam_remove_mafile(&self, item_id: i64) -> Result<serde_json::Value> {
-        self.client
-            .request(
-                "delete",
-                &format!("/{item_id}/mafile"),
-                None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
-            )
-            .await
+    pub async fn managing_steam_remove_mafile(
+        &self,
+        item_id: i64,
+    ) -> Result<serde_json::Value> {
+        self.client.request(
+            "delete",
+            &format!("/{item_id}/mafile"),
+            None::<&[(&str, String)]>,
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Get Account Steam Inventory Value
@@ -1346,27 +1154,26 @@ impl crate::market::MarketApi {
         if let Some(v) = &ignore_cache {
             query.push(("ignore_cache", v.to_string()));
         }
-        self.client
-            .request(
-                "get",
-                &format!("/{item_id}/inventory-value"),
-                Some(&query),
-                None::<serde_json::Value>,
-            )
-            .await
+        self.client.request(
+            "get",
+            &format!("/{item_id}/inventory-value"),
+            Some(&query),
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Get Mafile Confirmation Code
     /// `GET /{item_id}/guard-code`
-    pub async fn managing_steam_mafile_code(&self, item_id: i64) -> Result<ConfirmationCode> {
-        self.client
-            .request(
-                "get",
-                &format!("/{item_id}/guard-code"),
-                None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
-            )
-            .await
+    pub async fn managing_steam_mafile_code(
+        &self,
+        item_id: i64,
+    ) -> Result<ConfirmationCode> {
+        self.client.request(
+            "get",
+            &format!("/{item_id}/guard-code"),
+            None::<&[(&str, String)]>,
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Get Steam HTML
@@ -1380,14 +1187,12 @@ impl crate::market::MarketApi {
         if let Some(v) = &r#type {
             query.push(("type", v.to_string()));
         }
-        self.client
-            .request(
-                "get",
-                &format!("/{item_id}/steam-preview"),
-                Some(&query),
-                None::<serde_json::Value>,
-            )
-            .await
+        self.client.request(
+            "get",
+            &format!("/{item_id}/steam-preview"),
+            Some(&query),
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Confirm SDA
@@ -1405,14 +1210,12 @@ impl crate::market::MarketApi {
         if let Some(v) = &nonce {
             body.insert("nonce".into(), serde_json::to_value(v).unwrap_or_default());
         }
-        self.client
-            .request(
-                "post",
-                &format!("/{item_id}/confirm-sda"),
-                None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
-            )
-            .await
+        self.client.request(
+            "post",
+            &format!("/{item_id}/confirm-sda"),
+            None::<&[(&str, String)]>,
+            Some(serde_json::Value::Object(body)),
+        ).await
     }
 
     /// Update Inventory Value
@@ -1432,19 +1235,14 @@ impl crate::market::MarketApi {
             body.insert("app_id".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &authorize {
-            body.insert(
-                "authorize".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("authorize".into(), serde_json::to_value(v).unwrap_or_default());
         }
-        self.client
-            .request(
-                "post",
-                &format!("/{item_id}/update-inventory"),
-                None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
-            )
-            .await
+        self.client.request(
+            "post",
+            &format!("/{item_id}/update-inventory"),
+            None::<&[(&str, String)]>,
+            Some(serde_json::Value::Object(body)),
+        ).await
     }
 
     /// Get Steam Inventory Value
@@ -1464,45 +1262,43 @@ impl crate::market::MarketApi {
         if let Some(v) = &params.ignore_cache {
             query.push(("ignore_cache", v.to_string()));
         }
-        self.client
-            .request(
-                "get",
-                "/steam-value",
-                Some(&query),
-                None::<serde_json::Value>,
-            )
-            .await
+        self.client.request(
+            "get",
+            "/steam-value",
+            Some(&query),
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Stick Account
     /// `POST /{item_id}/stick`
-    pub async fn managing_stick(&self, item_id: i64) -> Result<serde_json::Value> {
-        self.client
-            .request(
-                "post",
-                &format!("/{item_id}/stick"),
-                None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
-            )
-            .await
+    pub async fn managing_stick(
+        &self,
+        item_id: i64,
+    ) -> Result<serde_json::Value> {
+        self.client.request(
+            "post",
+            &format!("/{item_id}/stick"),
+            None::<&[(&str, String)]>,
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Add a Tag
     /// `POST /{item_id}/tag`
-    pub async fn managing_tag(&self, item_id: i64, tag_id: i64) -> Result<serde_json::Value> {
+    pub async fn managing_tag(
+        &self,
+        item_id: i64,
+        tag_id: i64,
+    ) -> Result<serde_json::Value> {
         let mut body = serde_json::Map::new();
-        body.insert(
-            "tag_id".into(),
-            serde_json::to_value(&tag_id).unwrap_or_default(),
-        );
-        self.client
-            .request(
-                "post",
-                &format!("/{item_id}/tag"),
-                None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
-            )
-            .await
+        body.insert("tag_id".into(), serde_json::to_value(&tag_id).unwrap_or_default());
+        self.client.request(
+            "post",
+            &format!("/{item_id}/tag"),
+            None::<&[(&str, String)]>,
+            Some(serde_json::Value::Object(body)),
+        ).await
     }
 
     /// Get Telegram Confirmation Code
@@ -1511,27 +1307,26 @@ impl crate::market::MarketApi {
         &self,
         item_id: i64,
     ) -> Result<ManagingTelegramCodeResponse> {
-        self.client
-            .request(
-                "get",
-                &format!("/{item_id}/telegram-login-code"),
-                None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
-            )
-            .await
+        self.client.request(
+            "get",
+            &format!("/{item_id}/telegram-login-code"),
+            None::<&[(&str, String)]>,
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Telegram Reset Auth
     /// `POST /{item_id}/telegram-reset-authorizations`
-    pub async fn managing_telegram_reset_auth(&self, item_id: i64) -> Result<serde_json::Value> {
-        self.client
-            .request(
-                "post",
-                &format!("/{item_id}/telegram-reset-authorizations"),
-                None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
-            )
-            .await
+    pub async fn managing_telegram_reset_auth(
+        &self,
+        item_id: i64,
+    ) -> Result<serde_json::Value> {
+        self.client.request(
+            "post",
+            &format!("/{item_id}/telegram-reset-authorizations"),
+            None::<&[(&str, String)]>,
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Get Temp Email Password
@@ -1540,14 +1335,12 @@ impl crate::market::MarketApi {
         &self,
         item_id: i64,
     ) -> Result<ManagingTempEmailPasswordResponse> {
-        self.client
-            .request(
-                "get",
-                &format!("/{item_id}/temp-email-password"),
-                None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
-            )
-            .await
+        self.client.request(
+            "get",
+            &format!("/{item_id}/temp-email-password"),
+            None::<&[(&str, String)]>,
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Change Account Owner
@@ -1559,74 +1352,72 @@ impl crate::market::MarketApi {
         username: String,
     ) -> Result<serde_json::Value> {
         let mut body = serde_json::Map::new();
-        body.insert(
-            "secret_answer".into(),
-            serde_json::to_value(&secret_answer).unwrap_or_default(),
-        );
-        body.insert(
-            "username".into(),
-            serde_json::to_value(&username).unwrap_or_default(),
-        );
-        self.client
-            .request(
-                "post",
-                &format!("/{item_id}/change-owner"),
-                None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
-            )
-            .await
+        body.insert("secret_answer".into(), serde_json::to_value(&secret_answer).unwrap_or_default());
+        body.insert("username".into(), serde_json::to_value(&username).unwrap_or_default());
+        self.client.request(
+            "post",
+            &format!("/{item_id}/change-owner"),
+            None::<&[(&str, String)]>,
+            Some(serde_json::Value::Object(body)),
+        ).await
     }
 
     /// Unfavorite
     /// `DELETE /{item_id}/star`
-    pub async fn managing_unfavorite(&self, item_id: i64) -> Result<serde_json::Value> {
-        self.client
-            .request(
-                "delete",
-                &format!("/{item_id}/star"),
-                None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
-            )
-            .await
+    pub async fn managing_unfavorite(
+        &self,
+        item_id: i64,
+    ) -> Result<serde_json::Value> {
+        self.client.request(
+            "delete",
+            &format!("/{item_id}/star"),
+            None::<&[(&str, String)]>,
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Unstick Account
     /// `DELETE /{item_id}/stick`
-    pub async fn managing_unstick(&self, item_id: i64) -> Result<serde_json::Value> {
-        self.client
-            .request(
-                "delete",
-                &format!("/{item_id}/stick"),
-                None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
-            )
-            .await
+    pub async fn managing_unstick(
+        &self,
+        item_id: i64,
+    ) -> Result<serde_json::Value> {
+        self.client.request(
+            "delete",
+            &format!("/{item_id}/stick"),
+            None::<&[(&str, String)]>,
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Remove a Tag
     /// `DELETE /{item_id}/tag`
-    pub async fn managing_untag(&self, item_id: i64, tag_id: i64) -> Result<serde_json::Value> {
-        self.client
-            .request(
-                "delete",
-                &format!("/{item_id}/tag"),
-                None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
-            )
-            .await
+    pub async fn managing_untag(
+        &self,
+        item_id: i64,
+        tag_id: i64,
+    ) -> Result<serde_json::Value> {
+        self.client.request(
+            "delete",
+            &format!("/{item_id}/tag"),
+            None::<&[(&str, String)]>,
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Delete Account
     /// `DELETE /{item_id}`
-    pub async fn manging_delete(&self, item_id: i64, reason: String) -> Result<serde_json::Value> {
-        self.client
-            .request(
-                "delete",
-                &format!("/{item_id}"),
-                None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
-            )
-            .await
+    pub async fn manging_delete(
+        &self,
+        item_id: i64,
+        reason: String,
+    ) -> Result<serde_json::Value> {
+        self.client.request(
+            "delete",
+            &format!("/{item_id}"),
+            None::<&[(&str, String)]>,
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Get Claims
@@ -1643,44 +1434,47 @@ impl crate::market::MarketApi {
         if let Some(v) = &claim_state {
             query.push(("claim_state", v.to_string()));
         }
-        self.client
-            .request("get", "/claims", Some(&query), None::<serde_json::Value>)
-            .await
+        self.client.request(
+            "get",
+            "/claims",
+            Some(&query),
+            None::<serde_json::Value>,
+        ).await
     }
+
 
     // ── Batch requests ──
 
     /// Batch
     /// `POST /batch`
-    pub async fn batch(&self) -> Result<BatchResponse> {
-        self.client
-            .request(
-                "post",
-                "/batch",
-                None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
-            )
-            .await
+    pub async fn batch(
+        &self,
+    ) -> Result<BatchResponse> {
+        self.client.request(
+            "post",
+            "/batch",
+            None::<&[(&str, String)]>,
+            None::<serde_json::Value>,
+        ).await
     }
+
 
     // ── Cart ──
 
     /// Add Item to Cart
     /// `POST /cart`
-    pub async fn cart_add(&self, item_id: serde_json::Value) -> Result<CartAddResponse> {
+    pub async fn cart_add(
+        &self,
+        item_id: serde_json::Value,
+    ) -> Result<CartAddResponse> {
         let mut body = serde_json::Map::new();
-        body.insert(
-            "item_id".into(),
-            serde_json::to_value(&item_id).unwrap_or_default(),
-        );
-        self.client
-            .request(
-                "post",
-                "/cart",
-                None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
-            )
-            .await
+        body.insert("item_id".into(), serde_json::to_value(&item_id).unwrap_or_default());
+        self.client.request(
+            "post",
+            "/cart",
+            None::<&[(&str, String)]>,
+            Some(serde_json::Value::Object(body)),
+        ).await
     }
 
     /// Delete Item From Cart
@@ -1689,19 +1483,20 @@ impl crate::market::MarketApi {
         &self,
         item_id: Option<serde_json::Value>,
     ) -> Result<CartDeleteResponse> {
-        self.client
-            .request(
-                "delete",
-                "/cart",
-                None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
-            )
-            .await
+        self.client.request(
+            "delete",
+            "/cart",
+            None::<&[(&str, String)]>,
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Get Cart Items
     /// `GET /cart`
-    pub async fn cart_get(&self, params: MarketCartGetParams) -> Result<serde_json::Value> {
+    pub async fn cart_get(
+        &self,
+        params: MarketCartGetParams,
+    ) -> Result<serde_json::Value> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &params.category_id {
             query.push(("category_id", v.to_string()));
@@ -1783,56 +1578,72 @@ impl crate::market::MarketApi {
         if let Some(v) = &params.parse_same_item_ids {
             query.push(("parse_same_item_ids", v.to_string()));
         }
-        self.client
-            .request("get", "/cart", Some(&query), None::<serde_json::Value>)
-            .await
+        self.client.request(
+            "get",
+            "/cart",
+            Some(&query),
+            None::<serde_json::Value>,
+        ).await
     }
+
 
     // ── Categories ──
 
     /// Get Category Games
     /// `GET /{categoryName}/games`
-    pub async fn category_games(&self, category_name: String) -> Result<CategoryGamesResponse> {
-        self.client
-            .request(
-                "get",
-                &format!("/{category_name}/games"),
-                None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
-            )
-            .await
+    pub async fn category_games(
+        &self,
+        category_name: String,
+    ) -> Result<CategoryGamesResponse> {
+        self.client.request(
+            "get",
+            &format!("/{category_name}/games"),
+            None::<&[(&str, String)]>,
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Get Categories
     /// `GET /category`
-    pub async fn category_list(&self, top_queries: Option<bool>) -> Result<CategoryListResponse> {
+    pub async fn category_list(
+        &self,
+        top_queries: Option<bool>,
+    ) -> Result<CategoryListResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &top_queries {
             query.push(("top_queries", v.to_string()));
         }
-        self.client
-            .request("get", "/category", Some(&query), None::<serde_json::Value>)
-            .await
+        self.client.request(
+            "get",
+            "/category",
+            Some(&query),
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Get Category Search Params
     /// `GET /{categoryName}/params`
-    pub async fn category_params(&self, category_name: String) -> Result<CategoryParamsResponse> {
-        self.client
-            .request(
-                "get",
-                &format!("/{category_name}/params"),
-                None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
-            )
-            .await
+    pub async fn category_params(
+        &self,
+        category_name: String,
+    ) -> Result<CategoryParamsResponse> {
+        self.client.request(
+            "get",
+            &format!("/{category_name}/params"),
+            None::<&[(&str, String)]>,
+            None::<serde_json::Value>,
+        ).await
     }
+
 
     // ── Category Search ──
 
     /// Get Last Accounts
     /// `GET /`
-    pub async fn category_all(&self, params: MarketCategoryAllParams) -> Result<serde_json::Value> {
+    pub async fn category_all(
+        &self,
+        params: MarketCategoryAllParams,
+    ) -> Result<serde_json::Value> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &params.page {
             query.push(("page", v.to_string()));
@@ -1911,9 +1722,12 @@ impl crate::market::MarketApi {
         if let Some(v) = &params.parse_same_item_ids {
             query.push(("parse_same_item_ids", v.to_string()));
         }
-        self.client
-            .request("get", "/", Some(&query), None::<serde_json::Value>)
-            .await
+        self.client.request(
+            "get",
+            "/",
+            Some(&query),
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// BattleNet
@@ -2053,9 +1867,12 @@ impl crate::market::MarketApi {
         if let Some(v) = &params.balance_max {
             query.push(("balance_max", v.to_string()));
         }
-        self.client
-            .request("get", "/battlenet", Some(&query), None::<serde_json::Value>)
-            .await
+        self.client.request(
+            "get",
+            "/battlenet",
+            Some(&query),
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// ChatGPT
@@ -2187,9 +2004,12 @@ impl crate::market::MarketApi {
         if let Some(v) = &params.openai_balance_max {
             query.push(("openai_balance_max", v.to_string()));
         }
-        self.client
-            .request("get", "/chatgpt", Some(&query), None::<serde_json::Value>)
-            .await
+        self.client.request(
+            "get",
+            "/chatgpt",
+            Some(&query),
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Discord
@@ -2412,14 +2232,20 @@ impl crate::market::MarketApi {
         if let Some(v) = &params.max_orbs {
             query.push(("max_orbs", v.to_string()));
         }
-        self.client
-            .request("get", "/discord", Some(&query), None::<serde_json::Value>)
-            .await
+        self.client.request(
+            "get",
+            "/discord",
+            Some(&query),
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// EA (Origin)
     /// `GET /ea`
-    pub async fn category_ea(&self, params: MarketCategoryEaParams) -> Result<CategoryEaResponse> {
+    pub async fn category_ea(
+        &self,
+        params: MarketCategoryEaParams,
+    ) -> Result<CategoryEaResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &params.page {
             query.push(("page", v.to_string()));
@@ -2569,9 +2395,12 @@ impl crate::market::MarketApi {
         if let Some(v) = &params.transactions {
             query.push(("transactions", v.to_string()));
         }
-        self.client
-            .request("get", "/ea", Some(&query), None::<serde_json::Value>)
-            .await
+        self.client.request(
+            "get",
+            "/ea",
+            Some(&query),
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Epic Games
@@ -2717,9 +2546,12 @@ impl crate::market::MarketApi {
         if let Some(v) = &params.hours_played_max {
             query.push(("hours_played_max", v.to_string()));
         }
-        self.client
-            .request("get", "/epicgames", Some(&query), None::<serde_json::Value>)
-            .await
+        self.client.request(
+            "get",
+            "/epicgames",
+            Some(&query),
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Escape from Tarkov
@@ -2840,14 +2672,12 @@ impl crate::market::MarketApi {
         if let Some(v) = &params.side {
             query.push(("side", v.to_string()));
         }
-        self.client
-            .request(
-                "get",
-                "/escape-from-tarkov",
-                Some(&query),
-                None::<serde_json::Value>,
-            )
-            .await
+        self.client.request(
+            "get",
+            "/escape-from-tarkov",
+            Some(&query),
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Fortnite
@@ -3112,9 +2942,12 @@ impl crate::market::MarketApi {
                 query.push(("not_country[]", item.to_string()));
             }
         }
-        self.client
-            .request("get", "/fortnite", Some(&query), None::<serde_json::Value>)
-            .await
+        self.client.request(
+            "get",
+            "/fortnite",
+            Some(&query),
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Gifts
@@ -3210,9 +3043,12 @@ impl crate::market::MarketApi {
         if let Some(v) = &params.subscription_period {
             query.push(("subscription_period", v.to_string()));
         }
-        self.client
-            .request("get", "/gifts", Some(&query), None::<serde_json::Value>)
-            .await
+        self.client.request(
+            "get",
+            "/gifts",
+            Some(&query),
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Hytale
@@ -3310,9 +3146,12 @@ impl crate::market::MarketApi {
         if let Some(v) = &params.profiles_max {
             query.push(("profiles_max", v.to_string()));
         }
-        self.client
-            .request("get", "/hytale", Some(&query), None::<serde_json::Value>)
-            .await
+        self.client.request(
+            "get",
+            "/hytale",
+            Some(&query),
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Instagram
@@ -3444,9 +3283,12 @@ impl crate::market::MarketApi {
         if let Some(v) = &params.reg_period {
             query.push(("reg_period", v.to_string()));
         }
-        self.client
-            .request("get", "/instagram", Some(&query), None::<serde_json::Value>)
-            .await
+        self.client.request(
+            "get",
+            "/instagram",
+            Some(&query),
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// miHoYo
@@ -3734,9 +3576,12 @@ impl crate::market::MarketApi {
         if let Some(v) = &params.daybreak {
             query.push(("daybreak", v.to_string()));
         }
-        self.client
-            .request("get", "/mihoyo", Some(&query), None::<serde_json::Value>)
-            .await
+        self.client.request(
+            "get",
+            "/mihoyo",
+            Some(&query),
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Minecraft
@@ -3936,9 +3781,12 @@ impl crate::market::MarketApi {
         if let Some(v) = &params.minecoins_max {
             query.push(("minecoins_max", v.to_string()));
         }
-        self.client
-            .request("get", "/minecraft", Some(&query), None::<serde_json::Value>)
-            .await
+        self.client.request(
+            "get",
+            "/minecraft",
+            Some(&query),
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Riot
@@ -4224,9 +4072,12 @@ impl crate::market::MarketApi {
                 query.push(("lol_rank[]", item.to_string()));
             }
         }
-        self.client
-            .request("get", "/riot", Some(&query), None::<serde_json::Value>)
-            .await
+        self.client.request(
+            "get",
+            "/riot",
+            Some(&query),
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Roblox
@@ -4432,9 +4283,12 @@ impl crate::market::MarketApi {
                 query.push(("not_age_group[]", item.to_string()));
             }
         }
-        self.client
-            .request("get", "/roblox", Some(&query), None::<serde_json::Value>)
-            .await
+        self.client.request(
+            "get",
+            "/roblox",
+            Some(&query),
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Social Club
@@ -4547,14 +4401,12 @@ impl crate::market::MarketApi {
                 query.push(("game[]", item.to_string()));
             }
         }
-        self.client
-            .request(
-                "get",
-                "/socialclub",
-                Some(&query),
-                None::<serde_json::Value>,
-            )
-            .await
+        self.client.request(
+            "get",
+            "/socialclub",
+            Some(&query),
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Steam
@@ -4949,9 +4801,12 @@ impl crate::market::MarketApi {
         if let Some(v) = &params.skip_vac_inv {
             query.push(("skip_vac_inv", v.to_string()));
         }
-        self.client
-            .request("get", "/steam", Some(&query), None::<serde_json::Value>)
-            .await
+        self.client.request(
+            "get",
+            "/steam",
+            Some(&query),
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Supercell
@@ -5195,9 +5050,12 @@ impl crate::market::MarketApi {
         if let Some(v) = &params.creation_year_max {
             query.push(("creation_year_max", v.to_string()));
         }
-        self.client
-            .request("get", "/supercell", Some(&query), None::<serde_json::Value>)
-            .await
+        self.client.request(
+            "get",
+            "/supercell",
+            Some(&query),
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Telegram
@@ -5430,9 +5288,12 @@ impl crate::market::MarketApi {
         if let Some(v) = &params.max_bot_active_users {
             query.push(("max_bot_active_users", v.to_string()));
         }
-        self.client
-            .request("get", "/telegram", Some(&query), None::<serde_json::Value>)
-            .await
+        self.client.request(
+            "get",
+            "/telegram",
+            Some(&query),
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// TikTok
@@ -5569,9 +5430,12 @@ impl crate::market::MarketApi {
         if let Some(v) = &params.email {
             query.push(("email", v.to_string()));
         }
-        self.client
-            .request("get", "/tiktok", Some(&query), None::<serde_json::Value>)
-            .await
+        self.client.request(
+            "get",
+            "/tiktok",
+            Some(&query),
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Uplay
@@ -5760,9 +5624,12 @@ impl crate::market::MarketApi {
         if let Some(v) = &params.reg_period {
             query.push(("reg_period", v.to_string()));
         }
-        self.client
-            .request("get", "/uplay", Some(&query), None::<serde_json::Value>)
-            .await
+        self.client.request(
+            "get",
+            "/uplay",
+            Some(&query),
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// VPN
@@ -5863,9 +5730,12 @@ impl crate::market::MarketApi {
         if let Some(v) = &params.autorenewal {
             query.push(("autorenewal", v.to_string()));
         }
-        self.client
-            .request("get", "/vpn", Some(&query), None::<serde_json::Value>)
-            .await
+        self.client.request(
+            "get",
+            "/vpn",
+            Some(&query),
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Warface
@@ -5982,9 +5852,12 @@ impl crate::market::MarketApi {
         if let Some(v) = &params.total_kredits_max {
             query.push(("total_kredits_max", v.to_string()));
         }
-        self.client
-            .request("get", "/warface", Some(&query), None::<serde_json::Value>)
-            .await
+        self.client.request(
+            "get",
+            "/warface",
+            Some(&query),
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// World of Tanks
@@ -6192,14 +6065,12 @@ impl crate::market::MarketApi {
                 query.push(("not_country[]", item.to_string()));
             }
         }
-        self.client
-            .request(
-                "get",
-                "/world-of-tanks",
-                Some(&query),
-                None::<serde_json::Value>,
-            )
-            .await
+        self.client.request(
+            "get",
+            "/world-of-tanks",
+            Some(&query),
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// WoT Blitz
@@ -6407,10 +6278,14 @@ impl crate::market::MarketApi {
                 query.push(("not_country[]", item.to_string()));
             }
         }
-        self.client
-            .request("get", "/wot-blitz", Some(&query), None::<serde_json::Value>)
-            .await
+        self.client.request(
+            "get",
+            "/wot-blitz",
+            Some(&query),
+            None::<serde_json::Value>,
+        ).await
     }
+
 
     // ── Custom Discounts ──
 
@@ -6421,55 +6296,36 @@ impl crate::market::MarketApi {
         params: MarketCustomDiscountsCreateParams,
     ) -> Result<CustomDiscountsCreateResponse> {
         let mut body = serde_json::Map::new();
-        body.insert(
-            "category_id".into(),
-            serde_json::to_value(&params.category_id).unwrap_or_default(),
-        );
+        body.insert("category_id".into(), serde_json::to_value(&params.category_id).unwrap_or_default());
         if let Some(v) = &params.currency {
-            body.insert(
-                "currency".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("currency".into(), serde_json::to_value(v).unwrap_or_default());
         }
-        body.insert(
-            "discount_percent".into(),
-            serde_json::to_value(&params.discount_percent).unwrap_or_default(),
-        );
+        body.insert("discount_percent".into(), serde_json::to_value(&params.discount_percent).unwrap_or_default());
         if let Some(v) = &params.max_price {
-            body.insert(
-                "max_price".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("max_price".into(), serde_json::to_value(v).unwrap_or_default());
         }
-        body.insert(
-            "min_price".into(),
-            serde_json::to_value(&params.min_price).unwrap_or_default(),
-        );
-        body.insert(
-            "user_id".into(),
-            serde_json::to_value(&params.user_id).unwrap_or_default(),
-        );
-        self.client
-            .request(
-                "post",
-                "/custom-discounts",
-                None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
-            )
-            .await
+        body.insert("min_price".into(), serde_json::to_value(&params.min_price).unwrap_or_default());
+        body.insert("user_id".into(), serde_json::to_value(&params.user_id).unwrap_or_default());
+        self.client.request(
+            "post",
+            "/custom-discounts",
+            None::<&[(&str, String)]>,
+            Some(serde_json::Value::Object(body)),
+        ).await
     }
 
     /// Delete Custom Discount
     /// `DELETE /custom-discounts`
-    pub async fn custom_discounts_delete(&self, discount_id: i64) -> Result<serde_json::Value> {
-        self.client
-            .request(
-                "delete",
-                "/custom-discounts",
-                None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
-            )
-            .await
+    pub async fn custom_discounts_delete(
+        &self,
+        discount_id: i64,
+    ) -> Result<serde_json::Value> {
+        self.client.request(
+            "delete",
+            "/custom-discounts",
+            None::<&[(&str, String)]>,
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Edit Custom Discount
@@ -6479,95 +6335,73 @@ impl crate::market::MarketApi {
         params: MarketCustomDiscountsEditParams,
     ) -> Result<CustomDiscountsEditResponse> {
         let mut body = serde_json::Map::new();
-        body.insert(
-            "discount_id".into(),
-            serde_json::to_value(&params.discount_id).unwrap_or_default(),
-        );
+        body.insert("discount_id".into(), serde_json::to_value(&params.discount_id).unwrap_or_default());
         if let Some(v) = &params.discount_percent {
-            body.insert(
-                "discount_percent".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("discount_percent".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.max_price {
-            body.insert(
-                "max_price".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("max_price".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.min_price {
-            body.insert(
-                "min_price".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("min_price".into(), serde_json::to_value(v).unwrap_or_default());
         }
-        self.client
-            .request(
-                "put",
-                "/custom-discounts",
-                None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
-            )
-            .await
+        self.client.request(
+            "put",
+            "/custom-discounts",
+            None::<&[(&str, String)]>,
+            Some(serde_json::Value::Object(body)),
+        ).await
     }
 
     /// Get Custom Discounts
     /// `GET /custom-discounts`
-    pub async fn custom_discounts_get(&self) -> Result<CustomDiscountsGetResponse> {
-        self.client
-            .request(
-                "get",
-                "/custom-discounts",
-                None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
-            )
-            .await
+    pub async fn custom_discounts_get(
+        &self,
+    ) -> Result<CustomDiscountsGetResponse> {
+        self.client.request(
+            "get",
+            "/custom-discounts",
+            None::<&[(&str, String)]>,
+            None::<serde_json::Value>,
+        ).await
     }
+
 
     // ── IMAP ──
 
     /// Create IMAP Configuration
     /// `POST /imap`
-    pub async fn imap_create(&self, params: MarketImapCreateParams) -> Result<serde_json::Value> {
+    pub async fn imap_create(
+        &self,
+        params: MarketImapCreateParams,
+    ) -> Result<serde_json::Value> {
         let mut body = serde_json::Map::new();
-        body.insert(
-            "domain".into(),
-            serde_json::to_value(&params.domain).unwrap_or_default(),
-        );
-        body.insert(
-            "imap_server".into(),
-            serde_json::to_value(&params.imap_server).unwrap_or_default(),
-        );
-        body.insert(
-            "port".into(),
-            serde_json::to_value(&params.port).unwrap_or_default(),
-        );
-        body.insert(
-            "secure".into(),
-            serde_json::to_value(&params.secure).unwrap_or_default(),
-        );
-        self.client
-            .request(
-                "post",
-                "/imap",
-                None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
-            )
-            .await
+        body.insert("domain".into(), serde_json::to_value(&params.domain).unwrap_or_default());
+        body.insert("imap_server".into(), serde_json::to_value(&params.imap_server).unwrap_or_default());
+        body.insert("port".into(), serde_json::to_value(&params.port).unwrap_or_default());
+        body.insert("secure".into(), serde_json::to_value(&params.secure).unwrap_or_default());
+        self.client.request(
+            "post",
+            "/imap",
+            None::<&[(&str, String)]>,
+            Some(serde_json::Value::Object(body)),
+        ).await
     }
 
     /// Delete IMAP Configuration
     /// `DELETE /imap`
-    pub async fn imap_delete(&self, domain: String) -> Result<serde_json::Value> {
-        self.client
-            .request(
-                "delete",
-                "/imap",
-                None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
-            )
-            .await
+    pub async fn imap_delete(
+        &self,
+        domain: String,
+    ) -> Result<serde_json::Value> {
+        self.client.request(
+            "delete",
+            "/imap",
+            None::<&[(&str, String)]>,
+            None::<serde_json::Value>,
+        ).await
     }
+
 
     // ── Invoices ──
 
@@ -6579,73 +6413,35 @@ impl crate::market::MarketApi {
     ) -> Result<PaymentsInvoiceCreateResponse> {
         let mut body = serde_json::Map::new();
         if let Some(v) = &params.additional_data {
-            body.insert(
-                "additional_data".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("additional_data".into(), serde_json::to_value(v).unwrap_or_default());
         }
-        body.insert(
-            "amount".into(),
-            serde_json::to_value(&params.amount).unwrap_or_default(),
-        );
-        body.insert(
-            "comment".into(),
-            serde_json::to_value(&params.comment).unwrap_or_default(),
-        );
-        body.insert(
-            "currency".into(),
-            serde_json::to_value(&params.currency).unwrap_or_default(),
-        );
+        body.insert("amount".into(), serde_json::to_value(&params.amount).unwrap_or_default());
+        body.insert("comment".into(), serde_json::to_value(&params.comment).unwrap_or_default());
+        body.insert("currency".into(), serde_json::to_value(&params.currency).unwrap_or_default());
         if let Some(v) = &params.is_test {
-            body.insert(
-                "is_test".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("is_test".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.lifetime {
-            body.insert(
-                "lifetime".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("lifetime".into(), serde_json::to_value(v).unwrap_or_default());
         }
-        body.insert(
-            "merchant_id".into(),
-            serde_json::to_value(&params.merchant_id).unwrap_or_default(),
-        );
-        body.insert(
-            "payment_id".into(),
-            serde_json::to_value(&params.payment_id).unwrap_or_default(),
-        );
+        body.insert("merchant_id".into(), serde_json::to_value(&params.merchant_id).unwrap_or_default());
+        body.insert("payment_id".into(), serde_json::to_value(&params.payment_id).unwrap_or_default());
         if let Some(v) = &params.required_telegram_id {
-            body.insert(
-                "required_telegram_id".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("required_telegram_id".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.required_telegram_username {
-            body.insert(
-                "required_telegram_username".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("required_telegram_username".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.url_callback {
-            body.insert(
-                "url_callback".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("url_callback".into(), serde_json::to_value(v).unwrap_or_default());
         }
-        body.insert(
-            "url_success".into(),
-            serde_json::to_value(&params.url_success).unwrap_or_default(),
-        );
-        self.client
-            .request(
-                "post",
-                "/invoice",
-                None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
-            )
-            .await
+        body.insert("url_success".into(), serde_json::to_value(&params.url_success).unwrap_or_default());
+        self.client.request(
+            "post",
+            "/invoice",
+            None::<&[(&str, String)]>,
+            Some(serde_json::Value::Object(body)),
+        ).await
     }
 
     /// Get Invoice
@@ -6662,9 +6458,12 @@ impl crate::market::MarketApi {
         if let Some(v) = &payment_id {
             query.push(("payment_id", v.to_string()));
         }
-        self.client
-            .request("get", "/invoice", Some(&query), None::<serde_json::Value>)
-            .await
+        self.client.request(
+            "get",
+            "/invoice",
+            Some(&query),
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Get Invoice List
@@ -6689,15 +6488,14 @@ impl crate::market::MarketApi {
         if let Some(v) = &params.merchant_id {
             query.push(("merchant_id", v.to_string()));
         }
-        self.client
-            .request(
-                "get",
-                "/invoice/list",
-                Some(&query),
-                None::<serde_json::Value>,
-            )
-            .await
+        self.client.request(
+            "get",
+            "/invoice/list",
+            Some(&query),
+            None::<serde_json::Value>,
+        ).await
     }
+
 
     // ── Payments ──
 
@@ -6708,83 +6506,64 @@ impl crate::market::MarketApi {
         params: MarketAutoPaymentsCreateParams,
     ) -> Result<AutoPaymentsCreateResponse> {
         let mut body = serde_json::Map::new();
-        body.insert(
-            "amount".into(),
-            serde_json::to_value(&params.amount).unwrap_or_default(),
-        );
+        body.insert("amount".into(), serde_json::to_value(&params.amount).unwrap_or_default());
         if let Some(v) = &params.currency {
-            body.insert(
-                "currency".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("currency".into(), serde_json::to_value(v).unwrap_or_default());
         }
-        body.insert(
-            "day".into(),
-            serde_json::to_value(&params.day).unwrap_or_default(),
-        );
+        body.insert("day".into(), serde_json::to_value(&params.day).unwrap_or_default());
         if let Some(v) = &params.description {
-            body.insert(
-                "description".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("description".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.secret_answer {
-            body.insert(
-                "secret_answer".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("secret_answer".into(), serde_json::to_value(v).unwrap_or_default());
         }
-        body.insert(
-            "username_receiver".into(),
-            serde_json::to_value(&params.username_receiver).unwrap_or_default(),
-        );
-        self.client
-            .request(
-                "post",
-                "/auto-payment",
-                None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
-            )
-            .await
+        body.insert("username_receiver".into(), serde_json::to_value(&params.username_receiver).unwrap_or_default());
+        self.client.request(
+            "post",
+            "/auto-payment",
+            None::<&[(&str, String)]>,
+            Some(serde_json::Value::Object(body)),
+        ).await
     }
 
     /// Delete Auto Payment
     /// `DELETE /auto-payment`
-    pub async fn auto_payments_delete(&self, auto_payment_id: i64) -> Result<serde_json::Value> {
-        self.client
-            .request(
-                "delete",
-                "/auto-payment",
-                None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
-            )
-            .await
+    pub async fn auto_payments_delete(
+        &self,
+        auto_payment_id: i64,
+    ) -> Result<serde_json::Value> {
+        self.client.request(
+            "delete",
+            "/auto-payment",
+            None::<&[(&str, String)]>,
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Get Auto Payments
     /// `GET /auto-payments`
-    pub async fn auto_payments_list(&self) -> Result<AutoPaymentsListResponse> {
-        self.client
-            .request(
-                "get",
-                "/auto-payments",
-                None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
-            )
-            .await
+    pub async fn auto_payments_list(
+        &self,
+    ) -> Result<AutoPaymentsListResponse> {
+        self.client.request(
+            "get",
+            "/auto-payments",
+            None::<&[(&str, String)]>,
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Get List Of Balances
     /// `GET /balance/exchange`
-    pub async fn payments_balance_list(&self) -> Result<serde_json::Value> {
-        self.client
-            .request(
-                "get",
-                "/balance/exchange",
-                None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
-            )
-            .await
+    pub async fn payments_balance_list(
+        &self,
+    ) -> Result<serde_json::Value> {
+        self.client.request(
+            "get",
+            "/balance/exchange",
+            None::<&[(&str, String)]>,
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Exchange Balance
@@ -6796,74 +6575,62 @@ impl crate::market::MarketApi {
         to_balance: String,
     ) -> Result<serde_json::Value> {
         let mut body = serde_json::Map::new();
-        body.insert(
-            "amount".into(),
-            serde_json::to_value(&amount).unwrap_or_default(),
-        );
-        body.insert(
-            "from_balance".into(),
-            serde_json::to_value(&from_balance).unwrap_or_default(),
-        );
-        body.insert(
-            "to_balance".into(),
-            serde_json::to_value(&to_balance).unwrap_or_default(),
-        );
-        self.client
-            .request(
-                "post",
-                "/balance/exchange",
-                None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
-            )
-            .await
+        body.insert("amount".into(), serde_json::to_value(&amount).unwrap_or_default());
+        body.insert("from_balance".into(), serde_json::to_value(&from_balance).unwrap_or_default());
+        body.insert("to_balance".into(), serde_json::to_value(&to_balance).unwrap_or_default());
+        self.client.request(
+            "post",
+            "/balance/exchange",
+            None::<&[(&str, String)]>,
+            Some(serde_json::Value::Object(body)),
+        ).await
     }
 
     /// Cancel Transfer
     /// `POST /balance/transfer/cancel`
-    pub async fn payments_cancel(&self, payment_id: i64) -> Result<serde_json::Value> {
+    pub async fn payments_cancel(
+        &self,
+        payment_id: i64,
+    ) -> Result<serde_json::Value> {
         let mut body = serde_json::Map::new();
-        body.insert(
-            "payment_id".into(),
-            serde_json::to_value(&payment_id).unwrap_or_default(),
-        );
-        self.client
-            .request(
-                "post",
-                "/balance/transfer/cancel",
-                None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
-            )
-            .await
+        body.insert("payment_id".into(), serde_json::to_value(&payment_id).unwrap_or_default());
+        self.client.request(
+            "post",
+            "/balance/transfer/cancel",
+            None::<&[(&str, String)]>,
+            Some(serde_json::Value::Object(body)),
+        ).await
     }
 
     /// Get Currency
     /// `GET /currency`
-    pub async fn payments_currency(&self) -> Result<PaymentsCurrencyResponse> {
-        self.client
-            .request(
-                "get",
-                "/currency",
-                None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
-            )
-            .await
+    pub async fn payments_currency(
+        &self,
+    ) -> Result<PaymentsCurrencyResponse> {
+        self.client.request(
+            "get",
+            "/currency",
+            None::<&[(&str, String)]>,
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Check Transfer Fee
     /// `GET /balance/transfer/fee`
-    pub async fn payments_fee(&self, amount: Option<f64>) -> Result<PaymentsFeeResponse> {
+    pub async fn payments_fee(
+        &self,
+        amount: Option<f64>,
+    ) -> Result<PaymentsFeeResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &amount {
             query.push(("amount", v.to_string()));
         }
-        self.client
-            .request(
-                "get",
-                "/balance/transfer/fee",
-                Some(&query),
-                None::<serde_json::Value>,
-            )
-            .await
+        self.client.request(
+            "get",
+            "/balance/transfer/fee",
+            Some(&query),
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Payments History
@@ -6918,14 +6685,12 @@ impl crate::market::MarketApi {
         if let Some(v) = &params.show_payment_stats {
             query.push(("show_payment_stats", v.to_string()));
         }
-        self.client
-            .request(
-                "get",
-                "/user/payments",
-                Some(&query),
-                None::<serde_json::Value>,
-            )
-            .await
+        self.client.request(
+            "get",
+            "/user/payments",
+            Some(&query),
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Create Payout
@@ -6935,52 +6700,35 @@ impl crate::market::MarketApi {
         params: MarketPaymentsPayoutParams,
     ) -> Result<serde_json::Value> {
         let mut body = serde_json::Map::new();
-        body.insert(
-            "amount".into(),
-            serde_json::to_value(&params.amount).unwrap_or_default(),
-        );
-        body.insert(
-            "currency".into(),
-            serde_json::to_value(&params.currency).unwrap_or_default(),
-        );
+        body.insert("amount".into(), serde_json::to_value(&params.amount).unwrap_or_default());
+        body.insert("currency".into(), serde_json::to_value(&params.currency).unwrap_or_default());
         if let Some(v) = &params.extra {
             body.insert("extra".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.include_fee {
-            body.insert(
-                "include_fee".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("include_fee".into(), serde_json::to_value(v).unwrap_or_default());
         }
-        body.insert(
-            "payment_system".into(),
-            serde_json::to_value(&params.payment_system).unwrap_or_default(),
-        );
-        body.insert(
-            "wallet".into(),
-            serde_json::to_value(&params.wallet).unwrap_or_default(),
-        );
-        self.client
-            .request(
-                "post",
-                "/balance/payout",
-                None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
-            )
-            .await
+        body.insert("payment_system".into(), serde_json::to_value(&params.payment_system).unwrap_or_default());
+        body.insert("wallet".into(), serde_json::to_value(&params.wallet).unwrap_or_default());
+        self.client.request(
+            "post",
+            "/balance/payout",
+            None::<&[(&str, String)]>,
+            Some(serde_json::Value::Object(body)),
+        ).await
     }
 
     /// Get Payout Services
     /// `GET /balance/payout/services`
-    pub async fn payments_payout_services(&self) -> Result<PaymentsPayoutServicesResponse> {
-        self.client
-            .request(
-                "get",
-                "/balance/payout/services",
-                None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
-            )
-            .await
+    pub async fn payments_payout_services(
+        &self,
+    ) -> Result<PaymentsPayoutServicesResponse> {
+        self.client.request(
+            "get",
+            "/balance/payout/services",
+            None::<&[(&str, String)]>,
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Transfer Money
@@ -6990,152 +6738,92 @@ impl crate::market::MarketApi {
         params: MarketPaymentsTransferParams,
     ) -> Result<serde_json::Value> {
         let mut body = serde_json::Map::new();
-        body.insert(
-            "amount".into(),
-            serde_json::to_value(&params.amount).unwrap_or_default(),
-        );
+        body.insert("amount".into(), serde_json::to_value(&params.amount).unwrap_or_default());
         if let Some(v) = &params.comment {
-            body.insert(
-                "comment".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("comment".into(), serde_json::to_value(v).unwrap_or_default());
         }
-        body.insert(
-            "currency".into(),
-            serde_json::to_value(&params.currency).unwrap_or_default(),
-        );
+        body.insert("currency".into(), serde_json::to_value(&params.currency).unwrap_or_default());
         if let Some(v) = &params.hold_length_option {
-            body.insert(
-                "hold_length_option".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("hold_length_option".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.hold_length_value {
-            body.insert(
-                "hold_length_value".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("hold_length_value".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.telegram_deal {
-            body.insert(
-                "telegram_deal".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("telegram_deal".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.telegram_username {
-            body.insert(
-                "telegram_username".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("telegram_username".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.transfer_hold {
-            body.insert(
-                "transfer_hold".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("transfer_hold".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.user_id {
-            body.insert(
-                "user_id".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("user_id".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.username {
-            body.insert(
-                "username".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("username".into(), serde_json::to_value(v).unwrap_or_default());
         }
-        self.client
-            .request(
-                "post",
-                "/balance/transfer",
-                None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
-            )
-            .await
+        self.client.request(
+            "post",
+            "/balance/transfer",
+            None::<&[(&str, String)]>,
+            Some(serde_json::Value::Object(body)),
+        ).await
     }
+
 
     // ── Profile ──
 
     /// Edit Market Settings
     /// `PUT /me`
-    pub async fn profile_edit(&self, params: MarketProfileEditParams) -> Result<serde_json::Value> {
+    pub async fn profile_edit(
+        &self,
+        params: MarketProfileEditParams,
+    ) -> Result<serde_json::Value> {
         let mut body = serde_json::Map::new();
         if let Some(v) = &params.allow_accept_accounts {
-            body.insert(
-                "allow_accept_accounts".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("allow_accept_accounts".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.clear_telegram_client {
-            body.insert(
-                "clear_telegram_client".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("clear_telegram_client".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.option {
             body.insert("option".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.telegram_api_hash {
-            body.insert(
-                "telegram_api_hash".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("telegram_api_hash".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.telegram_api_id {
-            body.insert(
-                "telegram_api_id".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("telegram_api_id".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.telegram_app_version {
-            body.insert(
-                "telegram_app_version".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("telegram_app_version".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.telegram_device_model {
-            body.insert(
-                "telegram_device_model".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("telegram_device_model".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.telegram_lang_code {
-            body.insert(
-                "telegram_lang_code".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("telegram_lang_code".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.telegram_lang_pack {
-            body.insert(
-                "telegram_lang_pack".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("telegram_lang_pack".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.telegram_system_lang_code {
-            body.insert(
-                "telegram_system_lang_code".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("telegram_system_lang_code".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.telegram_system_version {
-            body.insert(
-                "telegram_system_version".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("telegram_system_version".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.user {
             body.insert("user".into(), serde_json::to_value(v).unwrap_or_default());
         }
-        self.client
-            .request(
-                "put",
-                "/me",
-                None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
-            )
-            .await
+        self.client.request(
+            "put",
+            "/me",
+            None::<&[(&str, String)]>,
+            Some(serde_json::Value::Object(body)),
+        ).await
     }
 
     /// Get Profile
@@ -7150,55 +6838,45 @@ impl crate::market::MarketApi {
                 query.push(("fields_include", item.to_string()));
             }
         }
-        self.client
-            .request("get", "/me", Some(&query), None::<serde_json::Value>)
-            .await
+        self.client.request(
+            "get",
+            "/me",
+            Some(&query),
+            None::<serde_json::Value>,
+        ).await
     }
+
 
     // ── Proxy ──
 
     /// Add Proxy
     /// `POST /proxy`
-    pub async fn proxy_add(&self, params: MarketProxyAddParams) -> Result<serde_json::Value> {
+    pub async fn proxy_add(
+        &self,
+        params: MarketProxyAddParams,
+    ) -> Result<serde_json::Value> {
         let mut body = serde_json::Map::new();
         if let Some(v) = &params.proxy_ip {
-            body.insert(
-                "proxy_ip".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("proxy_ip".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.proxy_pass {
-            body.insert(
-                "proxy_pass".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("proxy_pass".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.proxy_port {
-            body.insert(
-                "proxy_port".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("proxy_port".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.proxy_row {
-            body.insert(
-                "proxy_row".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("proxy_row".into(), serde_json::to_value(v).unwrap_or_default());
         }
         if let Some(v) = &params.proxy_user {
-            body.insert(
-                "proxy_user".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
+            body.insert("proxy_user".into(), serde_json::to_value(v).unwrap_or_default());
         }
-        self.client
-            .request(
-                "post",
-                "/proxy",
-                None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
-            )
-            .await
+        self.client.request(
+            "post",
+            "/proxy",
+            None::<&[(&str, String)]>,
+            Some(serde_json::Value::Object(body)),
+        ).await
     }
 
     /// Delete Proxy
@@ -7208,26 +6886,25 @@ impl crate::market::MarketApi {
         delete_all: Option<bool>,
         proxy_id: Option<i64>,
     ) -> Result<serde_json::Value> {
-        self.client
-            .request(
-                "delete",
-                "/proxy",
-                None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
-            )
-            .await
+        self.client.request(
+            "delete",
+            "/proxy",
+            None::<&[(&str, String)]>,
+            None::<serde_json::Value>,
+        ).await
     }
 
     /// Get Proxy
     /// `GET /proxy`
-    pub async fn proxy_get(&self) -> Result<ProxyGetResponse> {
-        self.client
-            .request(
-                "get",
-                "/proxy",
-                None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
-            )
-            .await
+    pub async fn proxy_get(
+        &self,
+    ) -> Result<ProxyGetResponse> {
+        self.client.request(
+            "get",
+            "/proxy",
+            None::<&[(&str, String)]>,
+            None::<serde_json::Value>,
+        ).await
     }
+
 }

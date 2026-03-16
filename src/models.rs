@@ -4,22 +4,71 @@
 
 #![allow(unused, clippy::all)]
 
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Deserializer, Serialize};
+
+/// Deserialize a field that may be `null` or have a mismatched type.
+/// Falls back to `T::default()` on any type mismatch (e.g. `false` for i64, `null` for String).
+fn null_default<'de, D, T>(deserializer: D) -> std::result::Result<T, D::Error>
+where
+    D: Deserializer<'de>,
+    T: Default + serde::de::DeserializeOwned,
+{
+    let v = serde_json::Value::deserialize(deserializer)?;
+    Ok(serde_json::from_value(v).unwrap_or_default())
+}
+
+/// Deserialize a Vec field that may be null, an array, or an object (takes values).
+/// The LOLZTEAM API sometimes returns `{}` or `{"key": val}` instead of `[]`.
+fn null_or_vec<'de, D, T>(deserializer: D) -> std::result::Result<Vec<T>, D::Error>
+where
+    D: Deserializer<'de>,
+    T: serde::de::DeserializeOwned + Default,
+{
+    use serde_json::Value;
+    let v = Value::deserialize(deserializer)?;
+    match v {
+        Value::Array(arr) => {
+            let mut out = Vec::with_capacity(arr.len());
+            for item in arr {
+                out.push(serde_json::from_value(item).unwrap_or_default());
+            }
+            Ok(out)
+        }
+        Value::Object(map) => {
+            let mut out = Vec::with_capacity(map.len());
+            for (_key, item) in map {
+                out.push(serde_json::from_value(item).unwrap_or_default());
+            }
+            Ok(out)
+        }
+        Value::Null => Ok(Vec::new()),
+        _ => Ok(Vec::new()),
+    }
+}
 
 /// ChatboxMessage model from the LOLZTEAM API.
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ChatboxMessage {
+    #[serde(deserialize_with = "null_default", default)]
     pub can_report: bool,
+    #[serde(deserialize_with = "null_default", default)]
     pub date: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub is_deleted: bool,
+    #[serde(deserialize_with = "null_default", default)]
     pub message: String,
     #[serde(rename = "messageJson")]
+    #[serde(deserialize_with = "null_default", default)]
     pub message_json: String,
     #[serde(rename = "messageRaw")]
+    #[serde(deserialize_with = "null_default", default)]
     pub message_raw: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub message_id: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub room: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub user: serde_json::Value,
 }
 
@@ -27,21 +76,37 @@ pub struct ChatboxMessage {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ConversationMessage {
+    #[serde(deserialize_with = "null_default", default)]
     pub conversation_id: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub creator_user_id: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub creator_username: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub creator_username_html: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub links: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub message_body: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub message_body_html: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub message_body_plain_text: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub message_create_date: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub message_edit_date: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub message_id: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub message_is_system: bool,
+    #[serde(deserialize_with = "null_default", default)]
     pub message_is_unread: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub message_need_translate: bool,
+    #[serde(deserialize_with = "null_default", default)]
     pub permissions: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub user_is_ignored: bool,
 }
 
@@ -49,27 +114,49 @@ pub struct ConversationMessage {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct Conversation {
+    #[serde(deserialize_with = "null_default", default)]
     pub alerts: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub conversation_create_date: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub conversation_id: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub conversation_is_deleted: bool,
+    #[serde(deserialize_with = "null_default", default)]
     pub conversation_is_new: bool,
+    #[serde(deserialize_with = "null_default", default)]
     pub conversation_is_open: bool,
+    #[serde(deserialize_with = "null_default", default)]
     pub conversation_last_read_date: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub conversation_message_count: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub conversation_online_count: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub conversation_title: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub conversation_update_date: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub creator_is_ignored: bool,
+    #[serde(deserialize_with = "null_default", default)]
     pub creator_user_id: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub creator_username: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub creator_username_html: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub is_group: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub is_starred: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub is_unread: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub links: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub permissions: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub recipient: serde_json::Value,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub recipients: Vec<serde_json::Value>,
 }
 
@@ -77,10 +164,15 @@ pub struct Conversation {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct Link {
+    #[serde(deserialize_with = "null_default", default)]
     pub link_description: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub link_id: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub link_title: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub links: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub permissions: serde_json::Value,
 }
 
@@ -88,17 +180,29 @@ pub struct Link {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct Notification {
+    #[serde(deserialize_with = "null_default", default)]
     pub content_action: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub content_id: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub content_type: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub creator_user_id: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub creator_username: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub creator_username_html: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub links: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub notification_create_date: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub notification_html: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub notification_id: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub notification_is_unread: bool,
+    #[serde(deserialize_with = "null_default", default)]
     pub notification_type: String,
 }
 
@@ -106,22 +210,39 @@ pub struct Notification {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct PostComment {
+    #[serde(deserialize_with = "null_default", default)]
     pub links: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub permissions: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub post_comment_body: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub post_comment_body_html: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub post_comment_body_plain_text: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub post_comment_create_date: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub post_comment_id: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub post_comment_is_deleted: bool,
+    #[serde(deserialize_with = "null_default", default)]
     pub post_comment_is_published: bool,
+    #[serde(deserialize_with = "null_default", default)]
     pub post_comment_like_count: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub post_comment_update_date: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub post_id: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub poster_user_id: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub poster_username: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub poster_username_html: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub thread_id: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub user_is_ignored: bool,
 }
 
@@ -129,26 +250,47 @@ pub struct PostComment {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct Post {
+    #[serde(deserialize_with = "null_default", default)]
     pub links: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub permissions: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub post_body: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub post_body_html: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub post_body_plain_text: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub post_create_date: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub post_id: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub post_is_deleted: bool,
+    #[serde(deserialize_with = "null_default", default)]
     pub post_is_first_post: bool,
+    #[serde(deserialize_with = "null_default", default)]
     pub post_is_published: bool,
+    #[serde(deserialize_with = "null_default", default)]
     pub post_like_count: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub post_update_date: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub poster_user_id: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub poster_username: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub poster_username_html: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub signature: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub signature_html: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub signature_plain_text: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub thread_id: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub thread_is_deleted: bool,
+    #[serde(deserialize_with = "null_default", default)]
     pub user_is_ignored: bool,
 }
 
@@ -156,18 +298,31 @@ pub struct Post {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ProfilePostComment {
+    #[serde(deserialize_with = "null_default", default)]
     pub comment_body: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub comment_body_html: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub comment_body_plain_text: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub comment_create_date: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub comment_id: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub comment_user_id: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub comment_username: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub comment_username_html: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub links: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub permissions: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub profile_post_id: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub timeline_user_id: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub user_is_ignored: bool,
 }
 
@@ -175,26 +330,47 @@ pub struct ProfilePostComment {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ProfilePost {
+    #[serde(deserialize_with = "null_default", default)]
     pub links: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub permissions: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub post_body: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub post_body_html: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub post_body_plain_text: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub post_comment_count: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub post_comments_is_disabled: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub post_create_date: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub post_is_deleted: bool,
+    #[serde(deserialize_with = "null_default", default)]
     pub post_is_liked: bool,
+    #[serde(deserialize_with = "null_default", default)]
     pub post_is_published: bool,
+    #[serde(deserialize_with = "null_default", default)]
     pub post_is_sticked: bool,
+    #[serde(deserialize_with = "null_default", default)]
     pub post_like_count: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub poster_user_id: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub poster_username: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub poster_username_html: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub profile_post_id: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub timeline_user: User,
+    #[serde(deserialize_with = "null_default", default)]
     pub timeline_user_id: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub timeline_username: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub user_is_ignored: bool,
 }
 
@@ -202,7 +378,9 @@ pub struct ProfilePost {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct SystemInfo {
+    #[serde(deserialize_with = "null_default", default)]
     pub time: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub visitor_id: i64,
 }
 
@@ -210,31 +388,57 @@ pub struct SystemInfo {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct Thread {
+    #[serde(deserialize_with = "null_default", default)]
     pub contest: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub creator_user_id: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub creator_username: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub creator_username_html: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub first_post: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub forum_id: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub last_post: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub links: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub node_title: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub permissions: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub restrictions: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub thread_create_date: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub thread_id: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub thread_is_closed: bool,
+    #[serde(deserialize_with = "null_default", default)]
     pub thread_is_deleted: bool,
+    #[serde(deserialize_with = "null_default", default)]
     pub thread_is_followed: bool,
+    #[serde(deserialize_with = "null_default", default)]
     pub thread_is_published: bool,
+    #[serde(deserialize_with = "null_default", default)]
     pub thread_is_starred: bool,
+    #[serde(deserialize_with = "null_default", default)]
     pub thread_is_sticky: bool,
+    #[serde(deserialize_with = "null_default", default)]
     pub thread_post_count: i64,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub thread_prefixes: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub thread_tags: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub thread_title: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub thread_update_date: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub thread_view_count: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub user_is_ignored: bool,
 }
 
@@ -242,50 +446,95 @@ pub struct Thread {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct User {
+    #[serde(deserialize_with = "null_default", default)]
     pub balance: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub banner: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub birthday: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub contest_count: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub conv_welcome_message: String,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub curator_titles: Vec<String>,
+    #[serde(deserialize_with = "null_default", default)]
     pub currency: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub custom_title: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub display_banner_id: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub display_icon_group_id: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub edit_permissions: serde_json::Value,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub fields: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub hold: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub is_banned: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub links: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub permissions: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub secret_answer_first_letter: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub secret_answer_rendered: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub self_permissions: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub short_link: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub trophy_count: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub user_deposit: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub user_email: String,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub user_external_authentications: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub user_followers: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub user_following: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub user_group_id: i64,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub user_groups: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub user_id: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub user_is_followed: bool,
+    #[serde(deserialize_with = "null_default", default)]
     pub user_is_ignored: bool,
+    #[serde(deserialize_with = "null_default", default)]
     pub user_is_valid: bool,
+    #[serde(deserialize_with = "null_default", default)]
     pub user_is_verified: bool,
+    #[serde(deserialize_with = "null_default", default)]
     pub user_is_visitor: bool,
+    #[serde(deserialize_with = "null_default", default)]
     pub user_last_seen_date: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub user_like2_count: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub user_like_count: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub user_message_count: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub user_register_date: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub user_timezone_offset: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub user_title: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub user_unread_conversation_count: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub user_unread_notification_count: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub username: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub username_html: String,
 }
 
@@ -293,14 +542,22 @@ pub struct User {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct Balance {
+    #[serde(deserialize_with = "null_default", default)]
     pub balance: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub balance_id: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub custom_title: serde_json::Value,
     #[serde(rename = "fullTitle")]
+    #[serde(deserialize_with = "null_default", default)]
     pub full_title: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub merchant_id: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub title: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub r#type: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub user_id: i64,
 }
 
@@ -309,7 +566,9 @@ pub struct Balance {
 #[serde(default)]
 pub struct ConfirmationCode {
     #[serde(rename = "codeData")]
+    #[serde(deserialize_with = "null_default", default)]
     pub code_data: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub item: Item,
 }
 
@@ -317,12 +576,19 @@ pub struct ConfirmationCode {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct Discount {
+    #[serde(deserialize_with = "null_default", default)]
     pub category_id: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub discount_id: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub discount_percent: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub discount_user_id: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub max_price: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub min_price: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub user_id: i64,
 }
 
@@ -394,22 +660,39 @@ pub struct Extra {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct Invoice {
+    #[serde(deserialize_with = "null_default", default)]
     pub additional_data: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub amount: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub comment: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub expires_at: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub invoice_date: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub invoice_id: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub is_test: bool,
+    #[serde(deserialize_with = "null_default", default)]
     pub merchant_id: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub paid_date: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub payer_user_id: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub payment_id: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub resend_attempts: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub status: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub url: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub url_callback: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub url_success: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub user_id: i64,
 }
 
@@ -487,20 +770,28 @@ pub struct ItemFromList {
 #[serde(default)]
 pub struct ItemList {
     #[serde(rename = "hasNextPage")]
+    #[serde(deserialize_with = "null_default", default)]
     pub has_next_page: bool,
     #[serde(deserialize_with = "deserialize_items", default)]
     pub items: Vec<ItemFromList>,
+    #[serde(deserialize_with = "null_default", default)]
     pub page: i64,
     #[serde(rename = "perPage")]
+    #[serde(deserialize_with = "null_default", default)]
     pub per_page: i64,
     #[serde(rename = "searchUrl")]
+    #[serde(deserialize_with = "null_default", default)]
     pub search_url: String,
     #[serde(rename = "stickyItems")]
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub sticky_items: Vec<ItemFromList>,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
     #[serde(rename = "totalItems")]
+    #[serde(deserialize_with = "null_default", default)]
     pub total_items: i64,
     #[serde(rename = "totalItemsPrice")]
+    #[serde(deserialize_with = "null_default", default)]
     pub total_items_price: serde_json::Value,
 }
 
@@ -509,151 +800,251 @@ pub struct ItemList {
 #[serde(default)]
 pub struct Item {
     #[serde(rename = "accountLink")]
+    #[serde(deserialize_with = "null_default", default)]
     pub account_link: String,
     #[serde(rename = "accountLinks")]
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub account_links: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub account_last_activity: i64,
     #[serde(rename = "aiPrice")]
+    #[serde(deserialize_with = "null_default", default)]
     pub ai_price: i64,
     #[serde(rename = "aiPriceCheckDate")]
+    #[serde(deserialize_with = "null_default", default)]
     pub ai_price_check_date: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub allow_ask_discount: i64,
     #[serde(rename = "autoBuyPrice")]
+    #[serde(deserialize_with = "null_default", default)]
     pub auto_buy_price: i64,
     #[serde(rename = "autoBuyPriceCheckDate")]
+    #[serde(deserialize_with = "null_default", default)]
     pub auto_buy_price_check_date: i64,
     #[serde(rename = "bumpSettings")]
+    #[serde(deserialize_with = "null_default", default)]
     pub bump_settings: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub buyer: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub buyer_avatar_date: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub buyer_display_icon_group_id: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub buyer_uniq_banner: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub buyer_user_group_id: i64,
     #[serde(rename = "canAskDiscount")]
+    #[serde(deserialize_with = "null_default", default)]
     pub can_ask_discount: bool,
     #[serde(rename = "canChangeEmailPassword")]
+    #[serde(deserialize_with = "null_default", default)]
     pub can_change_email_password: bool,
     #[serde(rename = "canChangePassword")]
+    #[serde(deserialize_with = "null_default", default)]
     pub can_change_password: bool,
     #[serde(rename = "canCheckAiPrice")]
+    #[serde(deserialize_with = "null_default", default)]
     pub can_check_ai_price: bool,
     #[serde(rename = "canCheckAutoBuyPrice")]
+    #[serde(deserialize_with = "null_default", default)]
     pub can_check_auto_buy_price: bool,
     #[serde(rename = "canCheckGuarantee")]
+    #[serde(deserialize_with = "null_default", default)]
     pub can_check_guarantee: bool,
     #[serde(rename = "canReportItem")]
+    #[serde(deserialize_with = "null_default", default)]
     pub can_report_item: bool,
     #[serde(rename = "canResellItem")]
+    #[serde(deserialize_with = "null_default", default)]
     pub can_resell_item: bool,
     #[serde(rename = "canResellItemAfterPurchase")]
+    #[serde(deserialize_with = "null_default", default)]
     pub can_resell_item_after_purchase: bool,
     #[serde(rename = "canShareItem")]
+    #[serde(deserialize_with = "null_default", default)]
     pub can_share_item: bool,
     #[serde(rename = "canUpdateItemStats")]
+    #[serde(deserialize_with = "null_default", default)]
     pub can_update_item_stats: bool,
     #[serde(rename = "canValidateAccount")]
+    #[serde(deserialize_with = "null_default", default)]
     pub can_validate_account: bool,
     #[serde(rename = "canViewAccountLink")]
+    #[serde(deserialize_with = "null_default", default)]
     pub can_view_account_link: bool,
     #[serde(rename = "canViewAccountLoginAndTempEmail")]
+    #[serde(deserialize_with = "null_default", default)]
     pub can_view_account_login_and_temp_email: bool,
     #[serde(rename = "canViewEmailLoginData")]
+    #[serde(deserialize_with = "null_default", default)]
     pub can_view_email_login_data: bool,
     #[serde(rename = "canViewItemViews")]
+    #[serde(deserialize_with = "null_default", default)]
     pub can_view_item_views: bool,
     #[serde(rename = "canViewLoginData")]
+    #[serde(deserialize_with = "null_default", default)]
     pub can_view_login_data: bool,
+    #[serde(deserialize_with = "null_default", default)]
     pub cart_price: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub category_id: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub content_id: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub content_type: serde_json::Value,
     #[serde(rename = "copyFormatData")]
+    #[serde(deserialize_with = "null_default", default)]
     pub copy_format_data: serde_json::Value,
     #[serde(rename = "customFields")]
+    #[serde(deserialize_with = "null_default", default)]
     pub custom_fields: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub delete_date: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub delete_reason: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub delete_user_id: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub delete_username: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub deposit: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub description: String,
     #[serde(rename = "descriptionEnHtml")]
+    #[serde(deserialize_with = "null_default", default)]
     pub description_en_html: String,
     #[serde(rename = "descriptionEnPlain")]
+    #[serde(deserialize_with = "null_default", default)]
     pub description_en_plain: String,
     #[serde(rename = "descriptionHtml")]
+    #[serde(deserialize_with = "null_default", default)]
     pub description_html: String,
     #[serde(rename = "descriptionPlain")]
+    #[serde(deserialize_with = "null_default", default)]
     pub description_plain: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub description_en: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub edit_date: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub email_provider: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub email_type: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub extended_guarantee: i64,
     #[serde(rename = "externalAuth")]
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub external_auth: Vec<serde_json::Value>,
     #[serde(rename = "extraPrices")]
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub extra_prices: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub feedback_data: String,
     #[serde(rename = "getEmailCodeDisplayLogin")]
+    #[serde(deserialize_with = "null_default", default)]
     pub get_email_code_display_login: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub guarantee: serde_json::Value,
     #[serde(rename = "imagePreviewLinks")]
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub image_preview_links: Vec<String>,
+    #[serde(deserialize_with = "null_default", default)]
     pub in_cart: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub information: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub information_en: String,
     #[serde(rename = "isBirthdayToday")]
+    #[serde(deserialize_with = "null_default", default)]
     pub is_birthday_today: bool,
     #[serde(rename = "isIgnored")]
+    #[serde(deserialize_with = "null_default", default)]
     pub is_ignored: bool,
     #[serde(rename = "isPersonalAccount")]
+    #[serde(deserialize_with = "null_default", default)]
     pub is_personal_account: bool,
     #[serde(rename = "isSmallExf")]
+    #[serde(deserialize_with = "null_default", default)]
     pub is_small_exf: bool,
     #[serde(rename = "isTrusted")]
+    #[serde(deserialize_with = "null_default", default)]
     pub is_trusted: bool,
+    #[serde(deserialize_with = "null_default", default)]
     pub is_fave: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub is_sticky: i64,
     #[serde(rename = "itemOriginPhrase")]
+    #[serde(deserialize_with = "null_default", default)]
     pub item_origin_phrase: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub item_domain: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub item_id: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub item_origin: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub item_state: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub login: String,
     #[serde(rename = "loginData")]
+    #[serde(deserialize_with = "null_default", default)]
     pub login_data: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub market_custom_title: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub max_discount_percent: i64,
     #[serde(rename = "needToRequireVideoToViewLoginData")]
+    #[serde(deserialize_with = "null_default", default)]
     pub need_to_require_video_to_view_login_data: bool,
+    #[serde(deserialize_with = "null_default", default)]
     pub note_text: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub nsb: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub pending_deletion_date: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub price: i64,
     #[serde(rename = "priceWithSellerFee")]
+    #[serde(deserialize_with = "null_default", default)]
     pub price_with_seller_fee: f64,
     #[serde(rename = "priceWithSellerFeeLabel")]
+    #[serde(deserialize_with = "null_default", default)]
     pub price_with_seller_fee_label: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub price_currency: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub published_date: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub refreshed_date: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub resale_item_origin: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub rub_price: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub seller: serde_json::Value,
     #[serde(rename = "showGetEmailCodeButton")]
+    #[serde(deserialize_with = "null_default", default)]
     pub show_get_email_code_button: bool,
+    #[serde(deserialize_with = "null_default", default)]
     pub tags: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub temp_email: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub title: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub title_en: String,
     #[serde(rename = "uniqueKeyExists")]
+    #[serde(deserialize_with = "null_default", default)]
     pub unique_key_exists: bool,
+    #[serde(deserialize_with = "null_default", default)]
     pub update_stat_date: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub user_allow_ask_discount: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub view_count: i64,
     #[serde(rename = "visitorIsAuthor")]
+    #[serde(deserialize_with = "null_default", default)]
     pub visitor_is_author: bool,
 }
 
@@ -692,8 +1083,11 @@ where
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct UsersSaResetResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub success: bool,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
+    #[serde(deserialize_with = "null_default", default)]
     pub waiting_time: String,
 }
 
@@ -701,6 +1095,7 @@ pub struct UsersSaResetResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct BatchExecuteResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub jobs: serde_json::Value,
 }
 
@@ -708,8 +1103,11 @@ pub struct BatchExecuteResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct CategoriesListResponse {
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub categories: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub categories_total: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -717,7 +1115,9 @@ pub struct CategoriesListResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct CategoriesGetResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub category: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -725,13 +1125,20 @@ pub struct CategoriesGetResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ChatboxIndexResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub ban: serde_json::Value,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub commands: Vec<String>,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub ignore: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub permissions: serde_json::Value,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub rooms: Vec<serde_json::Value>,
     #[serde(rename = "roomsOnline")]
+    #[serde(deserialize_with = "null_default", default)]
     pub rooms_online: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -739,7 +1146,9 @@ pub struct ChatboxIndexResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ChatboxGetIgnoreResponse {
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub ignored: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -747,7 +1156,9 @@ pub struct ChatboxGetIgnoreResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ChatboxGetMessagesResponse {
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub messages: Vec<ChatboxMessage>,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -755,7 +1166,9 @@ pub struct ChatboxGetMessagesResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ChatboxPostMessageResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub message: ChatboxMessage,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -763,7 +1176,9 @@ pub struct ChatboxPostMessageResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ChatboxEditMessageResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub message: ChatboxMessage,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -771,7 +1186,9 @@ pub struct ChatboxEditMessageResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ChatboxGetLeaderboardResponse {
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub leaderboard: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -779,7 +1196,9 @@ pub struct ChatboxGetLeaderboardResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ChatboxOnlineResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub users: Vec<serde_json::Value>,
 }
 
@@ -787,7 +1206,9 @@ pub struct ChatboxOnlineResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ChatboxReportReasonsResponse {
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub reasons: Vec<String>,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -795,7 +1216,9 @@ pub struct ChatboxReportReasonsResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ThreadsClaimResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
+    #[serde(deserialize_with = "null_default", default)]
     pub thread: Thread,
 }
 
@@ -803,7 +1226,9 @@ pub struct ThreadsClaimResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ThreadsCreateContestResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
+    #[serde(deserialize_with = "null_default", default)]
     pub thread: Thread,
 }
 
@@ -811,10 +1236,15 @@ pub struct ThreadsCreateContestResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ConversationsListResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub can_start: bool,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub conversations: Vec<Conversation>,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub folders: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub links: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -822,7 +1252,9 @@ pub struct ConversationsListResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ConversationsCreateResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub conversation: Conversation,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -830,7 +1262,9 @@ pub struct ConversationsCreateResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ConversationsUpdateResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub conversation: Conversation,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -838,7 +1272,9 @@ pub struct ConversationsUpdateResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ConversationsMessagesGetResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub message: Conversation,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -846,8 +1282,11 @@ pub struct ConversationsMessagesGetResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ConversationsReadAllResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub message: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub status: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -855,8 +1294,11 @@ pub struct ConversationsReadAllResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ConversationsSearchResponse {
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub conversations: Vec<Conversation>,
+    #[serde(deserialize_with = "null_default", default)]
     pub recipients: bool,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -864,7 +1306,9 @@ pub struct ConversationsSearchResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ConversationsStartResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub conversation: Conversation,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -872,7 +1316,9 @@ pub struct ConversationsStartResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ConversationsGetResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub conversation: Conversation,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -880,8 +1326,11 @@ pub struct ConversationsGetResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ConversationsAlertsDisableResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub message: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub status: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -889,8 +1338,11 @@ pub struct ConversationsAlertsDisableResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ConversationsAlertsEnableResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub message: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub status: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -898,9 +1350,13 @@ pub struct ConversationsAlertsEnableResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ConversationsMessagesListResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub links: serde_json::Value,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub messages: Vec<ConversationMessage>,
+    #[serde(deserialize_with = "null_default", default)]
     pub messages_total: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -908,7 +1364,9 @@ pub struct ConversationsMessagesListResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ConversationsMessagesCreateResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub message: ConversationMessage,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -916,7 +1374,9 @@ pub struct ConversationsMessagesCreateResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ConversationsMessagesEditResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub message: Conversation,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -924,8 +1384,11 @@ pub struct ConversationsMessagesEditResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ConversationsUnstarResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub message: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub status: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -933,8 +1396,11 @@ pub struct ConversationsUnstarResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ConversationsStarResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub message: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub status: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -942,7 +1408,9 @@ pub struct ConversationsStarResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct AssetsCssResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub contents: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -950,12 +1418,17 @@ pub struct AssetsCssResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct FormsListResponse {
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub forms: Vec<serde_json::Value>,
     #[serde(rename = "formsPerPage")]
+    #[serde(deserialize_with = "null_default", default)]
     pub forms_per_page: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub page: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
     #[serde(rename = "totalForms")]
+    #[serde(deserialize_with = "null_default", default)]
     pub total_forms: i64,
 }
 
@@ -963,8 +1436,11 @@ pub struct FormsListResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct FormsCreateResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub content: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub message: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -972,9 +1448,13 @@ pub struct FormsCreateResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ForumsListResponse {
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub forums: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub forums_total: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub tabs: Vec<serde_json::Value>,
 }
 
@@ -982,10 +1462,15 @@ pub struct ForumsListResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ForumsGetFeedOptionsResponse {
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub default_excluded_forums_ids: Vec<i64>,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub excluded_forums_ids: Vec<i64>,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub forums: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub keywords: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -993,7 +1478,9 @@ pub struct ForumsGetFeedOptionsResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ForumsFollowedResponse {
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub forums: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -1001,8 +1488,11 @@ pub struct ForumsFollowedResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ForumsGroupedResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub data: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub tabs: Vec<serde_json::Value>,
 }
 
@@ -1010,7 +1500,9 @@ pub struct ForumsGroupedResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ForumsGetResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub forum: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -1018,7 +1510,9 @@ pub struct ForumsGetResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ForumsFollowersResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub users: Vec<serde_json::Value>,
 }
 
@@ -1027,9 +1521,12 @@ pub struct ForumsFollowersResponse {
 #[serde(default)]
 pub struct LinksListResponse {
     #[serde(rename = "link-forums")]
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub link_forums: Vec<Link>,
     #[serde(rename = "link-forums_total")]
+    #[serde(deserialize_with = "null_default", default)]
     pub link_forums_total: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -1038,7 +1535,9 @@ pub struct LinksListResponse {
 #[serde(default)]
 pub struct LinksGetResponse {
     #[serde(rename = "link-forum")]
+    #[serde(deserialize_with = "null_default", default)]
     pub link_forum: Link,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -1046,8 +1545,11 @@ pub struct LinksGetResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct NavigationListResponse {
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub elements: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub elements_count: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -1055,9 +1557,13 @@ pub struct NavigationListResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct NotificationsListResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub links: serde_json::Value,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub notifications: Vec<Notification>,
+    #[serde(deserialize_with = "null_default", default)]
     pub notifications_total: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -1065,8 +1571,11 @@ pub struct NotificationsListResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct NotificationsGetResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub notification: Notification,
+    #[serde(deserialize_with = "null_default", default)]
     pub notification_id: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -1075,14 +1584,17 @@ pub struct NotificationsGetResponse {
 #[serde(default)]
 pub struct OAuthTokenResponse {
     /// The access token issued by the authorization server
+    #[serde(deserialize_with = "null_default", default)]
     pub access_token: String,
     /// The lifetime in seconds of the access token
+    #[serde(deserialize_with = "null_default", default)]
     pub expires_in: i64,
     /// The refresh token, which can be used to obtain new access tokens
     pub refresh_token: Option<String>,
     /// The scope of the access token
     pub scope: Option<String>,
     /// The type of the token
+    #[serde(deserialize_with = "null_default", default)]
     pub token_type: String,
 }
 
@@ -1090,8 +1602,11 @@ pub struct OAuthTokenResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct PagesListResponse {
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub pages: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub pages_total: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -1099,7 +1614,9 @@ pub struct PagesListResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct PagesGetResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub page: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -1107,9 +1624,13 @@ pub struct PagesGetResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct PostsListResponse {
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub posts: Vec<Thread>,
+    #[serde(deserialize_with = "null_default", default)]
     pub posts_total: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
+    #[serde(deserialize_with = "null_default", default)]
     pub thread: Thread,
 }
 
@@ -1117,7 +1638,9 @@ pub struct PostsListResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct PostsCreateResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub post: Post,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -1125,7 +1648,9 @@ pub struct PostsCreateResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct PostsCommentsGetResponse {
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub comments: Vec<PostComment>,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -1133,7 +1658,9 @@ pub struct PostsCommentsGetResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct PostsCommentsCreateResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub comment: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -1141,7 +1668,9 @@ pub struct PostsCommentsCreateResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct PostsCommentsEditResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub comment: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -1149,7 +1678,9 @@ pub struct PostsCommentsEditResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct PostsGetResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub post: Post,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -1157,7 +1688,9 @@ pub struct PostsGetResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct PostsEditResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub post: Post,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -1165,7 +1698,9 @@ pub struct PostsEditResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct PostsLikesResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub users: Vec<serde_json::Value>,
 }
 
@@ -1173,7 +1708,9 @@ pub struct PostsLikesResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct PostsReportReasonsResponse {
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub reasons: Vec<String>,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -1181,7 +1718,9 @@ pub struct PostsReportReasonsResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ProfilePostsCreateResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub profile_post: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -1189,10 +1728,15 @@ pub struct ProfilePostsCreateResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ProfilePostsCommentsListResponse {
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub comments: Vec<ProfilePostComment>,
+    #[serde(deserialize_with = "null_default", default)]
     pub comments_total: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub profile_post: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
+    #[serde(deserialize_with = "null_default", default)]
     pub timeline_user: User,
 }
 
@@ -1200,7 +1744,9 @@ pub struct ProfilePostsCommentsListResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ProfilePostsCommentsCreateResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub comment: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -1208,7 +1754,9 @@ pub struct ProfilePostsCommentsCreateResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ProfilePostsCommentsEditResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub comment: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -1216,7 +1764,9 @@ pub struct ProfilePostsCommentsEditResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ProfilePostsGetResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub profile_post: ProfilePost,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -1224,7 +1774,9 @@ pub struct ProfilePostsGetResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ProfilePostsEditResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub profile_post: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -1232,7 +1784,9 @@ pub struct ProfilePostsEditResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ProfilePostsCommentsGetResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub comment: ProfilePostComment,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -1240,7 +1794,9 @@ pub struct ProfilePostsCommentsGetResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ProfilePostsLikesResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub users: Vec<serde_json::Value>,
 }
 
@@ -1248,7 +1804,9 @@ pub struct ProfilePostsLikesResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ProfilePostsReportReasonsResponse {
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub reasons: Vec<String>,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -1256,10 +1814,15 @@ pub struct ProfilePostsReportReasonsResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct SearchAllResponse {
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub data: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub data_total: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub links: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub users: Vec<User>,
 }
 
@@ -1267,9 +1830,13 @@ pub struct SearchAllResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct SearchPostsResponse {
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub data: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub data_total: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub links: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -1277,9 +1844,13 @@ pub struct SearchPostsResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct SearchProfilePostsResponse {
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub data: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub data_total: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub links: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -1287,9 +1858,13 @@ pub struct SearchProfilePostsResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct SearchTaggedResponse {
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub data: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub data_total: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub search_tags: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -1297,9 +1872,13 @@ pub struct SearchTaggedResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct SearchThreadsResponse {
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub data: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub data_total: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub links: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -1307,7 +1886,9 @@ pub struct SearchThreadsResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct SearchUsersResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub users: Vec<User>,
 }
 
@@ -1315,9 +1896,13 @@ pub struct SearchUsersResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct SearchResultsResponse {
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub data: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub data_total: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub search_tags: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -1325,7 +1910,9 @@ pub struct SearchResultsResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct TagsPopularResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
+    #[serde(deserialize_with = "null_default", default)]
     pub tags: serde_json::Value,
 }
 
@@ -1333,8 +1920,11 @@ pub struct TagsPopularResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct TagsFindResponse {
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub ids: Vec<i64>,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub tags: Vec<String>,
 }
 
@@ -1342,9 +1932,13 @@ pub struct TagsFindResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct TagsListResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub links: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
+    #[serde(deserialize_with = "null_default", default)]
     pub tags: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub tags_total: i64,
 }
 
@@ -1352,10 +1946,15 @@ pub struct TagsListResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct TagsGetResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub links: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
+    #[serde(deserialize_with = "null_default", default)]
     pub tag: serde_json::Value,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub tagged: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub tagged_total: i64,
 }
 
@@ -1363,10 +1962,15 @@ pub struct TagsGetResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ThreadsListResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub forum: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub links: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub threads: Vec<Thread>,
+    #[serde(deserialize_with = "null_default", default)]
     pub threads_total: i64,
 }
 
@@ -1374,7 +1978,9 @@ pub struct ThreadsListResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ThreadsCreateResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
+    #[serde(deserialize_with = "null_default", default)]
     pub thread: Thread,
 }
 
@@ -1382,8 +1988,11 @@ pub struct ThreadsCreateResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ThreadsFollowedResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub threads: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub threads_total: i64,
 }
 
@@ -1391,8 +2000,11 @@ pub struct ThreadsFollowedResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ThreadsUnreadResponse {
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub data: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub threads: Vec<Thread>,
 }
 
@@ -1400,8 +2012,11 @@ pub struct ThreadsUnreadResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ThreadsRecentResponse {
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub data: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub threads: Vec<Thread>,
 }
 
@@ -1409,7 +2024,9 @@ pub struct ThreadsRecentResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ThreadsGetResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
+    #[serde(deserialize_with = "null_default", default)]
     pub thread: Thread,
 }
 
@@ -1417,7 +2034,9 @@ pub struct ThreadsGetResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ThreadsEditResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
+    #[serde(deserialize_with = "null_default", default)]
     pub thread: Thread,
 }
 
@@ -1425,8 +2044,11 @@ pub struct ThreadsEditResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ThreadsBumpResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub message: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub status: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -1434,7 +2056,9 @@ pub struct ThreadsBumpResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ThreadsFollowersResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub users: Vec<serde_json::Value>,
 }
 
@@ -1442,8 +2066,11 @@ pub struct ThreadsFollowersResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ThreadsHideResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub message: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub status: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -1451,8 +2078,11 @@ pub struct ThreadsHideResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ThreadsNavigationResponse {
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub elements: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub elements_count: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -1460,7 +2090,9 @@ pub struct ThreadsNavigationResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ThreadsPollGetResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub poll: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -1468,9 +2100,13 @@ pub struct ThreadsPollGetResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct UsersListResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub links: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub users: Vec<User>,
+    #[serde(deserialize_with = "null_default", default)]
     pub users_total: i64,
 }
 
@@ -1478,7 +2114,9 @@ pub struct UsersListResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct UsersFieldsResponse {
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub fields: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -1486,7 +2124,9 @@ pub struct UsersFieldsResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct UsersFindResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub users: Vec<User>,
 }
 
@@ -1494,7 +2134,9 @@ pub struct UsersFindResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct UsersIgnoredResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub users: Vec<serde_json::Value>,
 }
 
@@ -1502,7 +2144,9 @@ pub struct UsersIgnoredResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct UsersSecretAnswerTypesResponse {
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub data: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -1510,7 +2154,9 @@ pub struct UsersSecretAnswerTypesResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct UsersGetResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
+    #[serde(deserialize_with = "null_default", default)]
     pub user: User,
 }
 
@@ -1518,8 +2164,11 @@ pub struct UsersGetResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct UsersAvatarUploadResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub message: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub status: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -1527,8 +2176,11 @@ pub struct UsersAvatarUploadResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct UsersAvatarCropResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub message: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub status: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -1536,8 +2188,11 @@ pub struct UsersAvatarCropResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct UsersBackgroundUploadResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub message: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub status: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -1545,8 +2200,11 @@ pub struct UsersBackgroundUploadResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct UsersBackgroundCropResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub message: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub status: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -1554,8 +2212,11 @@ pub struct UsersBackgroundCropResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct UsersClaimsResponse {
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub claims: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub stats: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -1563,9 +2224,13 @@ pub struct UsersClaimsResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct UsersFollowersResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub links: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub users: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub users_total: i64,
 }
 
@@ -1573,8 +2238,11 @@ pub struct UsersFollowersResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct UsersFollowingsResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub users: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub users_total: i64,
 }
 
@@ -1583,13 +2251,19 @@ pub struct UsersFollowingsResponse {
 #[serde(default)]
 pub struct UsersLikesResponse {
     #[serde(rename = "contentType")]
+    #[serde(deserialize_with = "null_default", default)]
     pub content_type: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub likes: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub page: i64,
     #[serde(rename = "perPage")]
+    #[serde(deserialize_with = "null_default", default)]
     pub per_page: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
     #[serde(rename = "totalLikes")]
+    #[serde(deserialize_with = "null_default", default)]
     pub total_likes: i64,
 }
 
@@ -1598,11 +2272,16 @@ pub struct UsersLikesResponse {
 #[serde(default)]
 pub struct ProfilePostsListResponse {
     #[serde(rename = "canPostOnProfile")]
+    #[serde(deserialize_with = "null_default", default)]
     pub can_post_on_profile: bool,
+    #[serde(deserialize_with = "null_default", default)]
     pub links: serde_json::Value,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub profile_posts: Vec<ProfilePost>,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
     #[serde(rename = "totalProfilePosts")]
+    #[serde(deserialize_with = "null_default", default)]
     pub total_profile_posts: i64,
 }
 
@@ -1610,10 +2289,15 @@ pub struct ProfilePostsListResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct UsersContentsResponse {
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub data: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub data_total: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub links: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
+    #[serde(deserialize_with = "null_default", default)]
     pub user: User,
 }
 
@@ -1621,7 +2305,9 @@ pub struct UsersContentsResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct UsersTrophiesResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub trophies: Vec<serde_json::Value>,
 }
 
@@ -1629,9 +2315,13 @@ pub struct UsersTrophiesResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct AutoPaymentsCreateResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub auto_payment_id: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub message: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub status: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -1639,7 +2329,9 @@ pub struct AutoPaymentsCreateResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct AutoPaymentsListResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub payments: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -1647,7 +2339,9 @@ pub struct AutoPaymentsListResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct PaymentsPayoutServicesResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub systems: Vec<serde_json::Value>,
 }
 
@@ -1655,10 +2349,14 @@ pub struct PaymentsPayoutServicesResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct PaymentsFeeResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub calculator: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub commission_percentage: i64,
     #[serde(rename = "spentCurrentMonth")]
+    #[serde(deserialize_with = "null_default", default)]
     pub spent_current_month: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -1666,6 +2364,7 @@ pub struct PaymentsFeeResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct BatchResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub jobs: serde_json::Value,
     pub system_info: Option<SystemInfo>,
 }
@@ -1675,27 +2374,40 @@ pub struct BatchResponse {
 #[serde(default)]
 pub struct CategoryBattleNetResponse {
     #[serde(rename = "cacheTTL")]
+    #[serde(deserialize_with = "null_default", default)]
     pub cache_ttl: i64,
     #[serde(rename = "hasNextPage")]
+    #[serde(deserialize_with = "null_default", default)]
     pub has_next_page: bool,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub items: Vec<serde_json::Value>,
     #[serde(rename = "lastModified")]
+    #[serde(deserialize_with = "null_default", default)]
     pub last_modified: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub page: i64,
     #[serde(rename = "perPage")]
+    #[serde(deserialize_with = "null_default", default)]
     pub per_page: i64,
     #[serde(rename = "searchUrl")]
+    #[serde(deserialize_with = "null_default", default)]
     pub search_url: String,
     #[serde(rename = "serverTime")]
+    #[serde(deserialize_with = "null_default", default)]
     pub server_time: i64,
     #[serde(rename = "stickyItems")]
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub sticky_items: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
     #[serde(rename = "totalItems")]
+    #[serde(deserialize_with = "null_default", default)]
     pub total_items: i64,
     #[serde(rename = "totalItemsPrice")]
+    #[serde(deserialize_with = "null_default", default)]
     pub total_items_price: serde_json::Value,
     #[serde(rename = "wasCached")]
+    #[serde(deserialize_with = "null_default", default)]
     pub was_cached: bool,
 }
 
@@ -1703,8 +2415,11 @@ pub struct CategoryBattleNetResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ManagingBulkGetResponse {
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub items: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub left_item_id: Vec<i64>,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -1712,7 +2427,9 @@ pub struct ManagingBulkGetResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct CartDeleteResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub success: bool,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -1720,7 +2437,9 @@ pub struct CartDeleteResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct CartAddResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub success: bool,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -1728,7 +2447,9 @@ pub struct CartAddResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct CategoryListResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub category: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -1737,27 +2458,40 @@ pub struct CategoryListResponse {
 #[serde(default)]
 pub struct CategoryChatGptResponse {
     #[serde(rename = "cacheTTL")]
+    #[serde(deserialize_with = "null_default", default)]
     pub cache_ttl: i64,
     #[serde(rename = "hasNextPage")]
+    #[serde(deserialize_with = "null_default", default)]
     pub has_next_page: bool,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub items: Vec<serde_json::Value>,
     #[serde(rename = "lastModified")]
+    #[serde(deserialize_with = "null_default", default)]
     pub last_modified: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub page: i64,
     #[serde(rename = "perPage")]
+    #[serde(deserialize_with = "null_default", default)]
     pub per_page: i64,
     #[serde(rename = "searchUrl")]
+    #[serde(deserialize_with = "null_default", default)]
     pub search_url: String,
     #[serde(rename = "serverTime")]
+    #[serde(deserialize_with = "null_default", default)]
     pub server_time: i64,
     #[serde(rename = "stickyItems")]
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub sticky_items: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
     #[serde(rename = "totalItems")]
+    #[serde(deserialize_with = "null_default", default)]
     pub total_items: i64,
     #[serde(rename = "totalItemsPrice")]
+    #[serde(deserialize_with = "null_default", default)]
     pub total_items_price: serde_json::Value,
     #[serde(rename = "wasCached")]
+    #[serde(deserialize_with = "null_default", default)]
     pub was_cached: bool,
 }
 
@@ -1765,8 +2499,11 @@ pub struct CategoryChatGptResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ProfileClaimsResponse {
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub claims: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub stats: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -1774,7 +2511,9 @@ pub struct ProfileClaimsResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ManagingCreateClaimResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub thread: serde_json::Value,
 }
 
@@ -1783,11 +2522,15 @@ pub struct ManagingCreateClaimResponse {
 #[serde(default)]
 pub struct PaymentsCurrencyResponse {
     #[serde(rename = "currencyList")]
+    #[serde(deserialize_with = "null_default", default)]
     pub currency_list: serde_json::Value,
     #[serde(rename = "lastUpdate")]
+    #[serde(deserialize_with = "null_default", default)]
     pub last_update: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
     #[serde(rename = "visitorCurrency")]
+    #[serde(deserialize_with = "null_default", default)]
     pub visitor_currency: String,
 }
 
@@ -1795,8 +2538,11 @@ pub struct PaymentsCurrencyResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct CustomDiscountsGetResponse {
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub discounts: Vec<Discount>,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
+    #[serde(deserialize_with = "null_default", default)]
     pub total: i64,
 }
 
@@ -1804,8 +2550,11 @@ pub struct CustomDiscountsGetResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct CustomDiscountsCreateResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub discount: Discount,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
+    #[serde(deserialize_with = "null_default", default)]
     pub total: i64,
 }
 
@@ -1813,8 +2562,11 @@ pub struct CustomDiscountsCreateResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct CustomDiscountsEditResponse {
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub discounts: Vec<Discount>,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
+    #[serde(deserialize_with = "null_default", default)]
     pub total: i64,
 }
 
@@ -1823,27 +2575,40 @@ pub struct CustomDiscountsEditResponse {
 #[serde(default)]
 pub struct CategoryDiscordResponse {
     #[serde(rename = "cacheTTL")]
+    #[serde(deserialize_with = "null_default", default)]
     pub cache_ttl: i64,
     #[serde(rename = "hasNextPage")]
+    #[serde(deserialize_with = "null_default", default)]
     pub has_next_page: bool,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub items: Vec<serde_json::Value>,
     #[serde(rename = "lastModified")]
+    #[serde(deserialize_with = "null_default", default)]
     pub last_modified: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub page: i64,
     #[serde(rename = "perPage")]
+    #[serde(deserialize_with = "null_default", default)]
     pub per_page: i64,
     #[serde(rename = "searchUrl")]
+    #[serde(deserialize_with = "null_default", default)]
     pub search_url: String,
     #[serde(rename = "serverTime")]
+    #[serde(deserialize_with = "null_default", default)]
     pub server_time: i64,
     #[serde(rename = "stickyItems")]
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub sticky_items: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
     #[serde(rename = "totalItems")]
+    #[serde(deserialize_with = "null_default", default)]
     pub total_items: i64,
     #[serde(rename = "totalItemsPrice")]
+    #[serde(deserialize_with = "null_default", default)]
     pub total_items_price: serde_json::Value,
     #[serde(rename = "wasCached")]
+    #[serde(deserialize_with = "null_default", default)]
     pub was_cached: bool,
 }
 
@@ -1852,27 +2617,40 @@ pub struct CategoryDiscordResponse {
 #[serde(default)]
 pub struct CategoryEaResponse {
     #[serde(rename = "cacheTTL")]
+    #[serde(deserialize_with = "null_default", default)]
     pub cache_ttl: i64,
     #[serde(rename = "hasNextPage")]
+    #[serde(deserialize_with = "null_default", default)]
     pub has_next_page: bool,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub items: Vec<serde_json::Value>,
     #[serde(rename = "lastModified")]
+    #[serde(deserialize_with = "null_default", default)]
     pub last_modified: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub page: i64,
     #[serde(rename = "perPage")]
+    #[serde(deserialize_with = "null_default", default)]
     pub per_page: i64,
     #[serde(rename = "searchUrl")]
+    #[serde(deserialize_with = "null_default", default)]
     pub search_url: String,
     #[serde(rename = "serverTime")]
+    #[serde(deserialize_with = "null_default", default)]
     pub server_time: i64,
     #[serde(rename = "stickyItems")]
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub sticky_items: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
     #[serde(rename = "totalItems")]
+    #[serde(deserialize_with = "null_default", default)]
     pub total_items: i64,
     #[serde(rename = "totalItemsPrice")]
+    #[serde(deserialize_with = "null_default", default)]
     pub total_items_price: serde_json::Value,
     #[serde(rename = "wasCached")]
+    #[serde(deserialize_with = "null_default", default)]
     pub was_cached: bool,
 }
 
@@ -1881,27 +2659,40 @@ pub struct CategoryEaResponse {
 #[serde(default)]
 pub struct CategoryEpicGamesResponse {
     #[serde(rename = "cacheTTL")]
+    #[serde(deserialize_with = "null_default", default)]
     pub cache_ttl: i64,
     #[serde(rename = "hasNextPage")]
+    #[serde(deserialize_with = "null_default", default)]
     pub has_next_page: bool,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub items: Vec<serde_json::Value>,
     #[serde(rename = "lastModified")]
+    #[serde(deserialize_with = "null_default", default)]
     pub last_modified: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub page: i64,
     #[serde(rename = "perPage")]
+    #[serde(deserialize_with = "null_default", default)]
     pub per_page: i64,
     #[serde(rename = "searchUrl")]
+    #[serde(deserialize_with = "null_default", default)]
     pub search_url: String,
     #[serde(rename = "serverTime")]
+    #[serde(deserialize_with = "null_default", default)]
     pub server_time: i64,
     #[serde(rename = "stickyItems")]
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub sticky_items: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
     #[serde(rename = "totalItems")]
+    #[serde(deserialize_with = "null_default", default)]
     pub total_items: i64,
     #[serde(rename = "totalItemsPrice")]
+    #[serde(deserialize_with = "null_default", default)]
     pub total_items_price: serde_json::Value,
     #[serde(rename = "wasCached")]
+    #[serde(deserialize_with = "null_default", default)]
     pub was_cached: bool,
 }
 
@@ -1910,27 +2701,40 @@ pub struct CategoryEpicGamesResponse {
 #[serde(default)]
 pub struct CategoryEscapeFromTarkovResponse {
     #[serde(rename = "cacheTTL")]
+    #[serde(deserialize_with = "null_default", default)]
     pub cache_ttl: i64,
     #[serde(rename = "hasNextPage")]
+    #[serde(deserialize_with = "null_default", default)]
     pub has_next_page: bool,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub items: Vec<serde_json::Value>,
     #[serde(rename = "lastModified")]
+    #[serde(deserialize_with = "null_default", default)]
     pub last_modified: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub page: i64,
     #[serde(rename = "perPage")]
+    #[serde(deserialize_with = "null_default", default)]
     pub per_page: i64,
     #[serde(rename = "searchUrl")]
+    #[serde(deserialize_with = "null_default", default)]
     pub search_url: String,
     #[serde(rename = "serverTime")]
+    #[serde(deserialize_with = "null_default", default)]
     pub server_time: i64,
     #[serde(rename = "stickyItems")]
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub sticky_items: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
     #[serde(rename = "totalItems")]
+    #[serde(deserialize_with = "null_default", default)]
     pub total_items: i64,
     #[serde(rename = "totalItemsPrice")]
+    #[serde(deserialize_with = "null_default", default)]
     pub total_items_price: serde_json::Value,
     #[serde(rename = "wasCached")]
+    #[serde(deserialize_with = "null_default", default)]
     pub was_cached: bool,
 }
 
@@ -1939,27 +2743,40 @@ pub struct CategoryEscapeFromTarkovResponse {
 #[serde(default)]
 pub struct CategoryFortniteResponse {
     #[serde(rename = "cacheTTL")]
+    #[serde(deserialize_with = "null_default", default)]
     pub cache_ttl: i64,
     #[serde(rename = "hasNextPage")]
+    #[serde(deserialize_with = "null_default", default)]
     pub has_next_page: bool,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub items: Vec<serde_json::Value>,
     #[serde(rename = "lastModified")]
+    #[serde(deserialize_with = "null_default", default)]
     pub last_modified: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub page: i64,
     #[serde(rename = "perPage")]
+    #[serde(deserialize_with = "null_default", default)]
     pub per_page: i64,
     #[serde(rename = "searchUrl")]
+    #[serde(deserialize_with = "null_default", default)]
     pub search_url: String,
     #[serde(rename = "serverTime")]
+    #[serde(deserialize_with = "null_default", default)]
     pub server_time: i64,
     #[serde(rename = "stickyItems")]
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub sticky_items: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
     #[serde(rename = "totalItems")]
+    #[serde(deserialize_with = "null_default", default)]
     pub total_items: i64,
     #[serde(rename = "totalItemsPrice")]
+    #[serde(deserialize_with = "null_default", default)]
     pub total_items_price: serde_json::Value,
     #[serde(rename = "wasCached")]
+    #[serde(deserialize_with = "null_default", default)]
     pub was_cached: bool,
 }
 
@@ -1968,27 +2785,40 @@ pub struct CategoryFortniteResponse {
 #[serde(default)]
 pub struct CategoryGiftsResponse {
     #[serde(rename = "cacheTTL")]
+    #[serde(deserialize_with = "null_default", default)]
     pub cache_ttl: i64,
     #[serde(rename = "hasNextPage")]
+    #[serde(deserialize_with = "null_default", default)]
     pub has_next_page: bool,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub items: Vec<serde_json::Value>,
     #[serde(rename = "lastModified")]
+    #[serde(deserialize_with = "null_default", default)]
     pub last_modified: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub page: i64,
     #[serde(rename = "perPage")]
+    #[serde(deserialize_with = "null_default", default)]
     pub per_page: i64,
     #[serde(rename = "searchUrl")]
+    #[serde(deserialize_with = "null_default", default)]
     pub search_url: String,
     #[serde(rename = "serverTime")]
+    #[serde(deserialize_with = "null_default", default)]
     pub server_time: i64,
     #[serde(rename = "stickyItems")]
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub sticky_items: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
     #[serde(rename = "totalItems")]
+    #[serde(deserialize_with = "null_default", default)]
     pub total_items: i64,
     #[serde(rename = "totalItemsPrice")]
+    #[serde(deserialize_with = "null_default", default)]
     pub total_items_price: serde_json::Value,
     #[serde(rename = "wasCached")]
+    #[serde(deserialize_with = "null_default", default)]
     pub was_cached: bool,
 }
 
@@ -1997,27 +2827,40 @@ pub struct CategoryGiftsResponse {
 #[serde(default)]
 pub struct CategoryHytaleResponse {
     #[serde(rename = "cacheTTL")]
+    #[serde(deserialize_with = "null_default", default)]
     pub cache_ttl: i64,
     #[serde(rename = "hasNextPage")]
+    #[serde(deserialize_with = "null_default", default)]
     pub has_next_page: bool,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub items: Vec<serde_json::Value>,
     #[serde(rename = "lastModified")]
+    #[serde(deserialize_with = "null_default", default)]
     pub last_modified: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub page: i64,
     #[serde(rename = "perPage")]
+    #[serde(deserialize_with = "null_default", default)]
     pub per_page: i64,
     #[serde(rename = "searchUrl")]
+    #[serde(deserialize_with = "null_default", default)]
     pub search_url: String,
     #[serde(rename = "serverTime")]
+    #[serde(deserialize_with = "null_default", default)]
     pub server_time: i64,
     #[serde(rename = "stickyItems")]
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub sticky_items: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
     #[serde(rename = "totalItems")]
+    #[serde(deserialize_with = "null_default", default)]
     pub total_items: i64,
     #[serde(rename = "totalItemsPrice")]
+    #[serde(deserialize_with = "null_default", default)]
     pub total_items_price: serde_json::Value,
     #[serde(rename = "wasCached")]
+    #[serde(deserialize_with = "null_default", default)]
     pub was_cached: bool,
 }
 
@@ -2026,27 +2869,40 @@ pub struct CategoryHytaleResponse {
 #[serde(default)]
 pub struct CategoryInstagramResponse {
     #[serde(rename = "cacheTTL")]
+    #[serde(deserialize_with = "null_default", default)]
     pub cache_ttl: i64,
     #[serde(rename = "hasNextPage")]
+    #[serde(deserialize_with = "null_default", default)]
     pub has_next_page: bool,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub items: Vec<serde_json::Value>,
     #[serde(rename = "lastModified")]
+    #[serde(deserialize_with = "null_default", default)]
     pub last_modified: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub page: i64,
     #[serde(rename = "perPage")]
+    #[serde(deserialize_with = "null_default", default)]
     pub per_page: i64,
     #[serde(rename = "searchUrl")]
+    #[serde(deserialize_with = "null_default", default)]
     pub search_url: String,
     #[serde(rename = "serverTime")]
+    #[serde(deserialize_with = "null_default", default)]
     pub server_time: i64,
     #[serde(rename = "stickyItems")]
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub sticky_items: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
     #[serde(rename = "totalItems")]
+    #[serde(deserialize_with = "null_default", default)]
     pub total_items: i64,
     #[serde(rename = "totalItemsPrice")]
+    #[serde(deserialize_with = "null_default", default)]
     pub total_items_price: serde_json::Value,
     #[serde(rename = "wasCached")]
+    #[serde(deserialize_with = "null_default", default)]
     pub was_cached: bool,
 }
 
@@ -2054,7 +2910,9 @@ pub struct CategoryInstagramResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct PaymentsInvoiceGetResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub invoice: Invoice,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -2062,7 +2920,9 @@ pub struct PaymentsInvoiceGetResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct PaymentsInvoiceCreateResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub invoice: Invoice,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -2070,11 +2930,16 @@ pub struct PaymentsInvoiceCreateResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct PaymentsInvoiceListResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub count: i64,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub invoices: Vec<Invoice>,
+    #[serde(deserialize_with = "null_default", default)]
     pub page: i64,
     #[serde(rename = "perPage")]
+    #[serde(deserialize_with = "null_default", default)]
     pub per_page: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -2082,8 +2947,11 @@ pub struct PaymentsInvoiceListResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct PublishingAddResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub item: Item,
+    #[serde(deserialize_with = "null_default", default)]
     pub status: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -2091,9 +2959,12 @@ pub struct PublishingAddResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct PublishingFastSellResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub item: Item,
     #[serde(rename = "itemLink")]
+    #[serde(deserialize_with = "null_default", default)]
     pub item_link: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -2101,8 +2972,11 @@ pub struct PublishingFastSellResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ManagingGetLetters2Response {
+    #[serde(deserialize_with = "null_default", default)]
     pub email: String,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub letters: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -2110,7 +2984,9 @@ pub struct ManagingGetLetters2Response {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ProfileGetResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
+    #[serde(deserialize_with = "null_default", default)]
     pub user: User,
 }
 
@@ -2119,27 +2995,40 @@ pub struct ProfileGetResponse {
 #[serde(default)]
 pub struct CategoryMihoyoResponse {
     #[serde(rename = "cacheTTL")]
+    #[serde(deserialize_with = "null_default", default)]
     pub cache_ttl: i64,
     #[serde(rename = "hasNextPage")]
+    #[serde(deserialize_with = "null_default", default)]
     pub has_next_page: bool,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub items: Vec<serde_json::Value>,
     #[serde(rename = "lastModified")]
+    #[serde(deserialize_with = "null_default", default)]
     pub last_modified: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub page: i64,
     #[serde(rename = "perPage")]
+    #[serde(deserialize_with = "null_default", default)]
     pub per_page: i64,
     #[serde(rename = "searchUrl")]
+    #[serde(deserialize_with = "null_default", default)]
     pub search_url: String,
     #[serde(rename = "serverTime")]
+    #[serde(deserialize_with = "null_default", default)]
     pub server_time: i64,
     #[serde(rename = "stickyItems")]
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub sticky_items: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
     #[serde(rename = "totalItems")]
+    #[serde(deserialize_with = "null_default", default)]
     pub total_items: i64,
     #[serde(rename = "totalItemsPrice")]
+    #[serde(deserialize_with = "null_default", default)]
     pub total_items_price: serde_json::Value,
     #[serde(rename = "wasCached")]
+    #[serde(deserialize_with = "null_default", default)]
     pub was_cached: bool,
 }
 
@@ -2148,27 +3037,40 @@ pub struct CategoryMihoyoResponse {
 #[serde(default)]
 pub struct CategoryMinecraftResponse {
     #[serde(rename = "cacheTTL")]
+    #[serde(deserialize_with = "null_default", default)]
     pub cache_ttl: i64,
     #[serde(rename = "hasNextPage")]
+    #[serde(deserialize_with = "null_default", default)]
     pub has_next_page: bool,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub items: Vec<serde_json::Value>,
     #[serde(rename = "lastModified")]
+    #[serde(deserialize_with = "null_default", default)]
     pub last_modified: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub page: i64,
     #[serde(rename = "perPage")]
+    #[serde(deserialize_with = "null_default", default)]
     pub per_page: i64,
     #[serde(rename = "searchUrl")]
+    #[serde(deserialize_with = "null_default", default)]
     pub search_url: String,
     #[serde(rename = "serverTime")]
+    #[serde(deserialize_with = "null_default", default)]
     pub server_time: i64,
     #[serde(rename = "stickyItems")]
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub sticky_items: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
     #[serde(rename = "totalItems")]
+    #[serde(deserialize_with = "null_default", default)]
     pub total_items: i64,
     #[serde(rename = "totalItemsPrice")]
+    #[serde(deserialize_with = "null_default", default)]
     pub total_items_price: serde_json::Value,
     #[serde(rename = "wasCached")]
+    #[serde(deserialize_with = "null_default", default)]
     pub was_cached: bool,
 }
 
@@ -2176,7 +3078,9 @@ pub struct CategoryMinecraftResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ProxyGetResponse {
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub proxies: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -2185,27 +3089,40 @@ pub struct ProxyGetResponse {
 #[serde(default)]
 pub struct CategoryRiotResponse {
     #[serde(rename = "cacheTTL")]
+    #[serde(deserialize_with = "null_default", default)]
     pub cache_ttl: i64,
     #[serde(rename = "hasNextPage")]
+    #[serde(deserialize_with = "null_default", default)]
     pub has_next_page: bool,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub items: Vec<serde_json::Value>,
     #[serde(rename = "lastModified")]
+    #[serde(deserialize_with = "null_default", default)]
     pub last_modified: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub page: i64,
     #[serde(rename = "perPage")]
+    #[serde(deserialize_with = "null_default", default)]
     pub per_page: i64,
     #[serde(rename = "searchUrl")]
+    #[serde(deserialize_with = "null_default", default)]
     pub search_url: String,
     #[serde(rename = "serverTime")]
+    #[serde(deserialize_with = "null_default", default)]
     pub server_time: i64,
     #[serde(rename = "stickyItems")]
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub sticky_items: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
     #[serde(rename = "totalItems")]
+    #[serde(deserialize_with = "null_default", default)]
     pub total_items: i64,
     #[serde(rename = "totalItemsPrice")]
+    #[serde(deserialize_with = "null_default", default)]
     pub total_items_price: serde_json::Value,
     #[serde(rename = "wasCached")]
+    #[serde(deserialize_with = "null_default", default)]
     pub was_cached: bool,
 }
 
@@ -2214,27 +3131,40 @@ pub struct CategoryRiotResponse {
 #[serde(default)]
 pub struct CategoryRobloxResponse {
     #[serde(rename = "cacheTTL")]
+    #[serde(deserialize_with = "null_default", default)]
     pub cache_ttl: i64,
     #[serde(rename = "hasNextPage")]
+    #[serde(deserialize_with = "null_default", default)]
     pub has_next_page: bool,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub items: Vec<serde_json::Value>,
     #[serde(rename = "lastModified")]
+    #[serde(deserialize_with = "null_default", default)]
     pub last_modified: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub page: i64,
     #[serde(rename = "perPage")]
+    #[serde(deserialize_with = "null_default", default)]
     pub per_page: i64,
     #[serde(rename = "searchUrl")]
+    #[serde(deserialize_with = "null_default", default)]
     pub search_url: String,
     #[serde(rename = "serverTime")]
+    #[serde(deserialize_with = "null_default", default)]
     pub server_time: i64,
     #[serde(rename = "stickyItems")]
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub sticky_items: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
     #[serde(rename = "totalItems")]
+    #[serde(deserialize_with = "null_default", default)]
     pub total_items: i64,
     #[serde(rename = "totalItemsPrice")]
+    #[serde(deserialize_with = "null_default", default)]
     pub total_items_price: serde_json::Value,
     #[serde(rename = "wasCached")]
+    #[serde(deserialize_with = "null_default", default)]
     pub was_cached: bool,
 }
 
@@ -2243,27 +3173,40 @@ pub struct CategoryRobloxResponse {
 #[serde(default)]
 pub struct CategorySocialClubResponse {
     #[serde(rename = "cacheTTL")]
+    #[serde(deserialize_with = "null_default", default)]
     pub cache_ttl: i64,
     #[serde(rename = "hasNextPage")]
+    #[serde(deserialize_with = "null_default", default)]
     pub has_next_page: bool,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub items: Vec<serde_json::Value>,
     #[serde(rename = "lastModified")]
+    #[serde(deserialize_with = "null_default", default)]
     pub last_modified: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub page: i64,
     #[serde(rename = "perPage")]
+    #[serde(deserialize_with = "null_default", default)]
     pub per_page: i64,
     #[serde(rename = "searchUrl")]
+    #[serde(deserialize_with = "null_default", default)]
     pub search_url: String,
     #[serde(rename = "serverTime")]
+    #[serde(deserialize_with = "null_default", default)]
     pub server_time: i64,
     #[serde(rename = "stickyItems")]
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub sticky_items: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
     #[serde(rename = "totalItems")]
+    #[serde(deserialize_with = "null_default", default)]
     pub total_items: i64,
     #[serde(rename = "totalItemsPrice")]
+    #[serde(deserialize_with = "null_default", default)]
     pub total_items_price: serde_json::Value,
     #[serde(rename = "wasCached")]
+    #[serde(deserialize_with = "null_default", default)]
     pub was_cached: bool,
 }
 
@@ -2272,27 +3215,40 @@ pub struct CategorySocialClubResponse {
 #[serde(default)]
 pub struct CategorySteamResponse {
     #[serde(rename = "cacheTTL")]
+    #[serde(deserialize_with = "null_default", default)]
     pub cache_ttl: i64,
     #[serde(rename = "hasNextPage")]
+    #[serde(deserialize_with = "null_default", default)]
     pub has_next_page: bool,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub items: Vec<serde_json::Value>,
     #[serde(rename = "lastModified")]
+    #[serde(deserialize_with = "null_default", default)]
     pub last_modified: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub page: i64,
     #[serde(rename = "perPage")]
+    #[serde(deserialize_with = "null_default", default)]
     pub per_page: i64,
     #[serde(rename = "searchUrl")]
+    #[serde(deserialize_with = "null_default", default)]
     pub search_url: String,
     #[serde(rename = "serverTime")]
+    #[serde(deserialize_with = "null_default", default)]
     pub server_time: i64,
     #[serde(rename = "stickyItems")]
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub sticky_items: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
     #[serde(rename = "totalItems")]
+    #[serde(deserialize_with = "null_default", default)]
     pub total_items: i64,
     #[serde(rename = "totalItemsPrice")]
+    #[serde(deserialize_with = "null_default", default)]
     pub total_items_price: serde_json::Value,
     #[serde(rename = "wasCached")]
+    #[serde(deserialize_with = "null_default", default)]
     pub was_cached: bool,
 }
 
@@ -2312,27 +3268,40 @@ pub struct ManagingSteamValueResponse {
 #[serde(default)]
 pub struct CategorySupercellResponse {
     #[serde(rename = "cacheTTL")]
+    #[serde(deserialize_with = "null_default", default)]
     pub cache_ttl: i64,
     #[serde(rename = "hasNextPage")]
+    #[serde(deserialize_with = "null_default", default)]
     pub has_next_page: bool,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub items: Vec<serde_json::Value>,
     #[serde(rename = "lastModified")]
+    #[serde(deserialize_with = "null_default", default)]
     pub last_modified: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub page: i64,
     #[serde(rename = "perPage")]
+    #[serde(deserialize_with = "null_default", default)]
     pub per_page: i64,
     #[serde(rename = "searchUrl")]
+    #[serde(deserialize_with = "null_default", default)]
     pub search_url: String,
     #[serde(rename = "serverTime")]
+    #[serde(deserialize_with = "null_default", default)]
     pub server_time: i64,
     #[serde(rename = "stickyItems")]
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub sticky_items: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
     #[serde(rename = "totalItems")]
+    #[serde(deserialize_with = "null_default", default)]
     pub total_items: i64,
     #[serde(rename = "totalItemsPrice")]
+    #[serde(deserialize_with = "null_default", default)]
     pub total_items_price: serde_json::Value,
     #[serde(rename = "wasCached")]
+    #[serde(deserialize_with = "null_default", default)]
     pub was_cached: bool,
 }
 
@@ -2341,27 +3310,40 @@ pub struct CategorySupercellResponse {
 #[serde(default)]
 pub struct CategoryTelegramResponse {
     #[serde(rename = "cacheTTL")]
+    #[serde(deserialize_with = "null_default", default)]
     pub cache_ttl: i64,
     #[serde(rename = "hasNextPage")]
+    #[serde(deserialize_with = "null_default", default)]
     pub has_next_page: bool,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub items: Vec<serde_json::Value>,
     #[serde(rename = "lastModified")]
+    #[serde(deserialize_with = "null_default", default)]
     pub last_modified: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub page: i64,
     #[serde(rename = "perPage")]
+    #[serde(deserialize_with = "null_default", default)]
     pub per_page: i64,
     #[serde(rename = "searchUrl")]
+    #[serde(deserialize_with = "null_default", default)]
     pub search_url: String,
     #[serde(rename = "serverTime")]
+    #[serde(deserialize_with = "null_default", default)]
     pub server_time: i64,
     #[serde(rename = "stickyItems")]
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub sticky_items: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
     #[serde(rename = "totalItems")]
+    #[serde(deserialize_with = "null_default", default)]
     pub total_items: i64,
     #[serde(rename = "totalItemsPrice")]
+    #[serde(deserialize_with = "null_default", default)]
     pub total_items_price: serde_json::Value,
     #[serde(rename = "wasCached")]
+    #[serde(deserialize_with = "null_default", default)]
     pub was_cached: bool,
 }
 
@@ -2370,27 +3352,40 @@ pub struct CategoryTelegramResponse {
 #[serde(default)]
 pub struct CategoryTikTokResponse {
     #[serde(rename = "cacheTTL")]
+    #[serde(deserialize_with = "null_default", default)]
     pub cache_ttl: i64,
     #[serde(rename = "hasNextPage")]
+    #[serde(deserialize_with = "null_default", default)]
     pub has_next_page: bool,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub items: Vec<serde_json::Value>,
     #[serde(rename = "lastModified")]
+    #[serde(deserialize_with = "null_default", default)]
     pub last_modified: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub page: i64,
     #[serde(rename = "perPage")]
+    #[serde(deserialize_with = "null_default", default)]
     pub per_page: i64,
     #[serde(rename = "searchUrl")]
+    #[serde(deserialize_with = "null_default", default)]
     pub search_url: String,
     #[serde(rename = "serverTime")]
+    #[serde(deserialize_with = "null_default", default)]
     pub server_time: i64,
     #[serde(rename = "stickyItems")]
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub sticky_items: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
     #[serde(rename = "totalItems")]
+    #[serde(deserialize_with = "null_default", default)]
     pub total_items: i64,
     #[serde(rename = "totalItemsPrice")]
+    #[serde(deserialize_with = "null_default", default)]
     pub total_items_price: serde_json::Value,
     #[serde(rename = "wasCached")]
+    #[serde(deserialize_with = "null_default", default)]
     pub was_cached: bool,
 }
 
@@ -2399,27 +3394,40 @@ pub struct CategoryTikTokResponse {
 #[serde(default)]
 pub struct CategoryUplayResponse {
     #[serde(rename = "cacheTTL")]
+    #[serde(deserialize_with = "null_default", default)]
     pub cache_ttl: i64,
     #[serde(rename = "hasNextPage")]
+    #[serde(deserialize_with = "null_default", default)]
     pub has_next_page: bool,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub items: Vec<serde_json::Value>,
     #[serde(rename = "lastModified")]
+    #[serde(deserialize_with = "null_default", default)]
     pub last_modified: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub page: i64,
     #[serde(rename = "perPage")]
+    #[serde(deserialize_with = "null_default", default)]
     pub per_page: i64,
     #[serde(rename = "searchUrl")]
+    #[serde(deserialize_with = "null_default", default)]
     pub search_url: String,
     #[serde(rename = "serverTime")]
+    #[serde(deserialize_with = "null_default", default)]
     pub server_time: i64,
     #[serde(rename = "stickyItems")]
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub sticky_items: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
     #[serde(rename = "totalItems")]
+    #[serde(deserialize_with = "null_default", default)]
     pub total_items: i64,
     #[serde(rename = "totalItemsPrice")]
+    #[serde(deserialize_with = "null_default", default)]
     pub total_items_price: serde_json::Value,
     #[serde(rename = "wasCached")]
+    #[serde(deserialize_with = "null_default", default)]
     pub was_cached: bool,
 }
 
@@ -2427,8 +3435,10 @@ pub struct CategoryUplayResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ListStatesResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
     #[serde(rename = "userItemStates")]
+    #[serde(deserialize_with = "null_default", default)]
     pub user_item_states: serde_json::Value,
 }
 
@@ -2437,28 +3447,42 @@ pub struct ListStatesResponse {
 #[serde(default)]
 pub struct PaymentsHistoryResponse {
     #[serde(rename = "filterDatesDefault")]
+    #[serde(deserialize_with = "null_default", default)]
     pub filter_dates_default: bool,
     #[serde(rename = "hasNextPage")]
+    #[serde(deserialize_with = "null_default", default)]
     pub has_next_page: bool,
+    #[serde(deserialize_with = "null_default", default)]
     pub input: serde_json::Value,
     #[serde(rename = "lastOperationId")]
+    #[serde(deserialize_with = "null_default", default)]
     pub last_operation_id: i64,
     #[serde(rename = "nextPageHref")]
+    #[serde(deserialize_with = "null_default", default)]
     pub next_page_href: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub page: i64,
     #[serde(rename = "pageNavLink")]
+    #[serde(deserialize_with = "null_default", default)]
     pub page_nav_link: String,
     #[serde(rename = "pageNavParams")]
+    #[serde(deserialize_with = "null_default", default)]
     pub page_nav_params: serde_json::Value,
     #[serde(rename = "paymentStats")]
+    #[serde(deserialize_with = "null_default", default)]
     pub payment_stats: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub payments: serde_json::Value,
     #[serde(rename = "perPage")]
+    #[serde(deserialize_with = "null_default", default)]
     pub per_page: String,
     #[serde(rename = "periodLabel")]
+    #[serde(deserialize_with = "null_default", default)]
     pub period_label: String,
     #[serde(rename = "periodLabelPhrase")]
+    #[serde(deserialize_with = "null_default", default)]
     pub period_label_phrase: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -2467,27 +3491,40 @@ pub struct PaymentsHistoryResponse {
 #[serde(default)]
 pub struct CategoryVpnResponse {
     #[serde(rename = "cacheTTL")]
+    #[serde(deserialize_with = "null_default", default)]
     pub cache_ttl: i64,
     #[serde(rename = "hasNextPage")]
+    #[serde(deserialize_with = "null_default", default)]
     pub has_next_page: bool,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub items: Vec<serde_json::Value>,
     #[serde(rename = "lastModified")]
+    #[serde(deserialize_with = "null_default", default)]
     pub last_modified: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub page: i64,
     #[serde(rename = "perPage")]
+    #[serde(deserialize_with = "null_default", default)]
     pub per_page: i64,
     #[serde(rename = "searchUrl")]
+    #[serde(deserialize_with = "null_default", default)]
     pub search_url: String,
     #[serde(rename = "serverTime")]
+    #[serde(deserialize_with = "null_default", default)]
     pub server_time: i64,
     #[serde(rename = "stickyItems")]
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub sticky_items: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
     #[serde(rename = "totalItems")]
+    #[serde(deserialize_with = "null_default", default)]
     pub total_items: i64,
     #[serde(rename = "totalItemsPrice")]
+    #[serde(deserialize_with = "null_default", default)]
     pub total_items_price: serde_json::Value,
     #[serde(rename = "wasCached")]
+    #[serde(deserialize_with = "null_default", default)]
     pub was_cached: bool,
 }
 
@@ -2496,27 +3533,40 @@ pub struct CategoryVpnResponse {
 #[serde(default)]
 pub struct CategoryWarfaceResponse {
     #[serde(rename = "cacheTTL")]
+    #[serde(deserialize_with = "null_default", default)]
     pub cache_ttl: i64,
     #[serde(rename = "hasNextPage")]
+    #[serde(deserialize_with = "null_default", default)]
     pub has_next_page: bool,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub items: Vec<serde_json::Value>,
     #[serde(rename = "lastModified")]
+    #[serde(deserialize_with = "null_default", default)]
     pub last_modified: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub page: i64,
     #[serde(rename = "perPage")]
+    #[serde(deserialize_with = "null_default", default)]
     pub per_page: i64,
     #[serde(rename = "searchUrl")]
+    #[serde(deserialize_with = "null_default", default)]
     pub search_url: String,
     #[serde(rename = "serverTime")]
+    #[serde(deserialize_with = "null_default", default)]
     pub server_time: i64,
     #[serde(rename = "stickyItems")]
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub sticky_items: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
     #[serde(rename = "totalItems")]
+    #[serde(deserialize_with = "null_default", default)]
     pub total_items: i64,
     #[serde(rename = "totalItemsPrice")]
+    #[serde(deserialize_with = "null_default", default)]
     pub total_items_price: serde_json::Value,
     #[serde(rename = "wasCached")]
+    #[serde(deserialize_with = "null_default", default)]
     pub was_cached: bool,
 }
 
@@ -2525,27 +3575,40 @@ pub struct CategoryWarfaceResponse {
 #[serde(default)]
 pub struct CategoryWotResponse {
     #[serde(rename = "cacheTTL")]
+    #[serde(deserialize_with = "null_default", default)]
     pub cache_ttl: i64,
     #[serde(rename = "hasNextPage")]
+    #[serde(deserialize_with = "null_default", default)]
     pub has_next_page: bool,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub items: Vec<serde_json::Value>,
     #[serde(rename = "lastModified")]
+    #[serde(deserialize_with = "null_default", default)]
     pub last_modified: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub page: i64,
     #[serde(rename = "perPage")]
+    #[serde(deserialize_with = "null_default", default)]
     pub per_page: i64,
     #[serde(rename = "searchUrl")]
+    #[serde(deserialize_with = "null_default", default)]
     pub search_url: String,
     #[serde(rename = "serverTime")]
+    #[serde(deserialize_with = "null_default", default)]
     pub server_time: i64,
     #[serde(rename = "stickyItems")]
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub sticky_items: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
     #[serde(rename = "totalItems")]
+    #[serde(deserialize_with = "null_default", default)]
     pub total_items: i64,
     #[serde(rename = "totalItemsPrice")]
+    #[serde(deserialize_with = "null_default", default)]
     pub total_items_price: serde_json::Value,
     #[serde(rename = "wasCached")]
+    #[serde(deserialize_with = "null_default", default)]
     pub was_cached: bool,
 }
 
@@ -2554,27 +3617,40 @@ pub struct CategoryWotResponse {
 #[serde(default)]
 pub struct CategoryWotBlitzResponse {
     #[serde(rename = "cacheTTL")]
+    #[serde(deserialize_with = "null_default", default)]
     pub cache_ttl: i64,
     #[serde(rename = "hasNextPage")]
+    #[serde(deserialize_with = "null_default", default)]
     pub has_next_page: bool,
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub items: Vec<serde_json::Value>,
     #[serde(rename = "lastModified")]
+    #[serde(deserialize_with = "null_default", default)]
     pub last_modified: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub page: i64,
     #[serde(rename = "perPage")]
+    #[serde(deserialize_with = "null_default", default)]
     pub per_page: i64,
     #[serde(rename = "searchUrl")]
+    #[serde(deserialize_with = "null_default", default)]
     pub search_url: String,
     #[serde(rename = "serverTime")]
+    #[serde(deserialize_with = "null_default", default)]
     pub server_time: i64,
     #[serde(rename = "stickyItems")]
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub sticky_items: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
     #[serde(rename = "totalItems")]
+    #[serde(deserialize_with = "null_default", default)]
     pub total_items: i64,
     #[serde(rename = "totalItemsPrice")]
+    #[serde(deserialize_with = "null_default", default)]
     pub total_items_price: serde_json::Value,
     #[serde(rename = "wasCached")]
+    #[serde(deserialize_with = "null_default", default)]
     pub was_cached: bool,
 }
 
@@ -2601,44 +3677,65 @@ pub struct CategoryParamsResponse {
 #[serde(default)]
 pub struct ManagingGetResponse {
     #[serde(rename = "canBuyItem")]
+    #[serde(deserialize_with = "null_default", default)]
     pub can_buy_item: bool,
     #[serde(rename = "canCancelConfirmedBuy")]
+    #[serde(deserialize_with = "null_default", default)]
     pub can_cancel_confirmed_buy: bool,
     #[serde(rename = "canChangeOwner")]
+    #[serde(deserialize_with = "null_default", default)]
     pub can_change_owner: bool,
     #[serde(rename = "canCloseItem")]
+    #[serde(deserialize_with = "null_default", default)]
     pub can_close_item: bool,
     #[serde(rename = "canDeleteItem")]
+    #[serde(deserialize_with = "null_default", default)]
     pub can_delete_item: bool,
     #[serde(rename = "canEditItem")]
+    #[serde(deserialize_with = "null_default", default)]
     pub can_edit_item: bool,
     #[serde(rename = "canOpenItem")]
+    #[serde(deserialize_with = "null_default", default)]
     pub can_open_item: bool,
     #[serde(rename = "canReportItem")]
+    #[serde(deserialize_with = "null_default", default)]
     pub can_report_item: bool,
     #[serde(rename = "canStickItem")]
+    #[serde(deserialize_with = "null_default", default)]
     pub can_stick_item: bool,
     #[serde(rename = "canUnstickItem")]
+    #[serde(deserialize_with = "null_default", default)]
     pub can_unstick_item: bool,
     #[serde(rename = "canViewItemHistory")]
+    #[serde(deserialize_with = "null_default", default)]
     pub can_view_item_history: bool,
     #[serde(rename = "canViewLoginData")]
+    #[serde(deserialize_with = "null_default", default)]
     pub can_view_login_data: bool,
     #[serde(rename = "cannotBuyItemError")]
+    #[serde(deserialize_with = "null_default", default)]
     pub cannot_buy_item_error: String,
     #[serde(rename = "faveCount")]
+    #[serde(deserialize_with = "null_default", default)]
     pub fave_count: bool,
     #[serde(rename = "isVisibleItem")]
+    #[serde(deserialize_with = "null_default", default)]
     pub is_visible_item: bool,
+    #[serde(deserialize_with = "null_default", default)]
     pub item: Item,
     #[serde(rename = "itemLink")]
+    #[serde(deserialize_with = "null_default", default)]
     pub item_link: String,
     #[serde(rename = "sameItemsCount")]
+    #[serde(deserialize_with = "null_default", default)]
     pub same_items_count: i64,
     #[serde(rename = "sameItemsIds")]
+    #[serde(deserialize_with = "null_or_vec", default)]
     pub same_items_ids: Vec<i64>,
     #[serde(rename = "showToFavouritesButton")]
+    #[serde(deserialize_with = "null_default", default)]
     pub show_to_favourites_button: bool,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -2646,7 +3743,9 @@ pub struct ManagingGetResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ManagingAiPriceResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub price: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -2654,7 +3753,9 @@ pub struct ManagingAiPriceResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ManagingAutoBuyPriceResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub price: i64,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -2663,6 +3764,7 @@ pub struct ManagingAutoBuyPriceResponse {
 #[serde(default)]
 pub struct ManagingChangePasswordResponse {
     pub message: Option<String>,
+    #[serde(deserialize_with = "null_default", default)]
     pub new_password: String,
     pub status: Option<String>,
 }
@@ -2671,7 +3773,9 @@ pub struct ManagingChangePasswordResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ManagingCheckGuaranteeResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub message: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -2679,8 +3783,10 @@ pub struct ManagingCheckGuaranteeResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct PurchasingConfirmResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub item: serde_json::Value,
     pub status: Option<String>,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -2688,7 +3794,9 @@ pub struct PurchasingConfirmResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ManagingImageResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub base64: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -2708,7 +3816,9 @@ pub struct ManagingSteamInventoryValueResponse {
 #[serde(default)]
 pub struct ManagingSteamGetMafileResponse {
     #[serde(rename = "maFile")]
+    #[serde(deserialize_with = "null_default", default)]
     pub ma_file: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
 
@@ -2716,7 +3826,9 @@ pub struct ManagingSteamGetMafileResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ManagingTelegramCodeResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub codes: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
     pub item: Item,
 }
 
@@ -2724,6 +3836,7 @@ pub struct ManagingTelegramCodeResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ManagingTempEmailPasswordResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub item: serde_json::Value,
 }
 
@@ -2731,7 +3844,11 @@ pub struct ManagingTempEmailPasswordResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct ManagingSteamUpdateValueResponse {
+    #[serde(deserialize_with = "null_default", default)]
     pub item: Item,
+    #[serde(deserialize_with = "null_default", default)]
     pub status: String,
+    #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
+

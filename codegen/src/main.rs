@@ -583,7 +583,45 @@ fn generate_models(models: &[SchemaModel], response_models: &[SchemaModel]) -> S
          //!\n\
          //! DO NOT EDIT — regenerate with `cargo run -p lolzteam-codegen`.\n\n\
          #![allow(unused, clippy::all)]\n\n\
-         use serde::{Deserialize, Serialize};\n\n",
+         use serde::{Deserialize, Deserializer, Serialize};\n\n\
+         /// Deserialize a field that may be `null` or have a mismatched type.\n\
+         /// Falls back to `T::default()` on any type mismatch (e.g. `false` for i64, `null` for String).\n\
+         fn null_default<'de, D, T>(deserializer: D) -> std::result::Result<T, D::Error>\n\
+         where\n\
+         \x20   D: Deserializer<'de>,\n\
+         \x20   T: Default + serde::de::DeserializeOwned,\n\
+         {\n\
+         \x20   let v = serde_json::Value::deserialize(deserializer)?;\n\
+         \x20   Ok(serde_json::from_value(v).unwrap_or_default())\n\
+         }\n\n\
+         /// Deserialize a Vec field that may be null, an array, or an object (takes values).\n\
+         /// The LOLZTEAM API sometimes returns `{}` or `{\"key\": val}` instead of `[]`.\n\
+         fn null_or_vec<'de, D, T>(deserializer: D) -> std::result::Result<Vec<T>, D::Error>\n\
+         where\n\
+         \x20   D: Deserializer<'de>,\n\
+         \x20   T: serde::de::DeserializeOwned + Default,\n\
+         {\n\
+         \x20   use serde_json::Value;\n\
+         \x20   let v = Value::deserialize(deserializer)?;\n\
+         \x20   match v {\n\
+         \x20       Value::Array(arr) => {\n\
+         \x20           let mut out = Vec::with_capacity(arr.len());\n\
+         \x20           for item in arr {\n\
+         \x20               out.push(serde_json::from_value(item).unwrap_or_default());\n\
+         \x20           }\n\
+         \x20           Ok(out)\n\
+         \x20       }\n\
+         \x20       Value::Object(map) => {\n\
+         \x20           let mut out = Vec::with_capacity(map.len());\n\
+         \x20           for (_key, item) in map {\n\
+         \x20               out.push(serde_json::from_value(item).unwrap_or_default());\n\
+         \x20           }\n\
+         \x20           Ok(out)\n\
+         \x20       }\n\
+         \x20       Value::Null => Ok(Vec::new()),\n\
+         \x20       _ => Ok(Vec::new()),\n\
+         \x20   }\n\
+         }\n\n",
     );
 
     // component schema models
@@ -658,6 +696,14 @@ fn emit_model_struct(out: &mut String, model: &SchemaModel) {
         // Special handling: ItemList.items needs custom deserializer
         if model.name == "ItemList" && field.name == "items" {
             out.push_str("    #[serde(deserialize_with = \"deserialize_items\", default)]\n");
+        } else if !field.rust_type.starts_with("Option<") {
+            // Vec fields: API may return object instead of array
+            if field.rust_type.starts_with("Vec<") {
+                out.push_str("    #[serde(deserialize_with = \"null_or_vec\", default)]\n");
+            } else {
+                // API may return explicit null for non-Option fields — treat as default
+                out.push_str("    #[serde(deserialize_with = \"null_default\", default)]\n");
+            }
         }
         out.push_str(&format!("    pub {}: {},\n", rust_name, field.rust_type));
     }
