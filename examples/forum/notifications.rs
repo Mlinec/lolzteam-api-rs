@@ -22,7 +22,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 };
                 println!(
                     "  [{}] {} - {} ({})",
-                    notif.notification_id, status, notif.notification_type, notif.notification_create_date
+                    notif.notification_id,
+                    status,
+                    notif.notification_type,
+                    notif.notification_create_date
                 );
             }
         }

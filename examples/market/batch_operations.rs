@@ -46,7 +46,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
             Err(e) => {
                 let title = item.title.as_deref().unwrap_or("N/A");
-                println!("⏭️  [{}] {} - пропущен: {}", item.item_id.unwrap_or(0), title, e);
+                println!(
+                    "⏭️  [{}] {} - пропущен: {}",
+                    item.item_id.unwrap_or(0),
+                    title,
+                    e
+                );
                 skipped += 1;
             }
         }
@@ -65,7 +70,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("Общая стоимость первых 10 лотов: {} руб", total_price);
     println!("Общее количество просмотров: {}", total_views);
 
-    println!("\nНОТА: массовое изменение цен не выполнено (используй managing_edit для каждого лота)");
+    println!(
+        "\nНОТА: массовое изменение цен не выполнено (используй managing_edit для каждого лота)"
+    );
     println!("done");
     Ok(())
 }
