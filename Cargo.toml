@@ -19,5 +19,109 @@ tracing = "0.1"
 [dev-dependencies]
 tokio = { version = "1", features = ["full"] }
 
+[[example]]
+name = "basic"
+path = "examples/general/basic.rs"
+
+[[example]]
+name = "error_handling"
+path = "examples/general/error_handling.rs"
+
+[[example]]
+name = "proxy"
+path = "examples/general/proxy.rs"
+
+[[example]]
+name = "separate_proxies"
+path = "examples/general/separate_proxies.rs"
+
+[[example]]
+name = "forum_activity"
+path = "examples/forum/activity.rs"
+
+[[example]]
+name = "forum_categories"
+path = "examples/forum/forum_categories.rs"
+
+[[example]]
+name = "forum_chatbox"
+path = "examples/forum/chatbox.rs"
+
+[[example]]
+name = "forum_conversations"
+path = "examples/forum/conversations.rs"
+
+[[example]]
+name = "forum_misc"
+path = "examples/forum/forum_misc.rs"
+
+[[example]]
+name = "forum_notifications"
+path = "examples/forum/notifications.rs"
+
+[[example]]
+name = "forum_posts"
+path = "examples/forum/posts.rs"
+
+[[example]]
+name = "forum_profile_posts"
+path = "examples/forum/profile_posts.rs"
+
+[[example]]
+name = "forum_search"
+path = "examples/forum/forum_search.rs"
+
+[[example]]
+name = "forum_threads"
+path = "examples/forum/forum_threads.rs"
+
+[[example]]
+name = "forum_users"
+path = "examples/forum/forum_users.rs"
+
+[[example]]
+name = "market_arbitrage"
+path = "examples/market/arbitrage.rs"
+
+[[example]]
+name = "market_batch_operations"
+path = "examples/market/batch_operations.rs"
+
+[[example]]
+name = "market_categories"
+path = "examples/market/market_categories.rs"
+
+[[example]]
+name = "market_item"
+path = "examples/market/market_item.rs"
+
+[[example]]
+name = "market_managing"
+path = "examples/market/managing.rs"
+
+[[example]]
+name = "market_monitor"
+path = "examples/market/monitor.rs"
+
+[[example]]
+name = "market_orders"
+path = "examples/market/orders.rs"
+
+[[example]]
+name = "market_payments"
+path = "examples/market/payments.rs"
+
+[[example]]
+name = "market_profile"
+path = "examples/market/market_profile.rs"
+
+[[example]]
+name = "market_purchasing"
+path = "examples/market/purchasing.rs"
+
+[[example]]
+name = "market_search"
+path = "examples/market/market_search.rs"
+
 [workspace]
 members = [".", "codegen"]
