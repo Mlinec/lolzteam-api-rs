@@ -9,7 +9,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .nth(1)
         .expect("Usage: forum_threads <TOKEN>");
     let client = LolzteamClient::new(&token);
-    let forum = client.expect("failed to build client").forum();
+    let forum = client.forum();
 
     println!("--- threads ---");
     let threads = forum

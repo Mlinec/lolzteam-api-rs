@@ -11,7 +11,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .nth(1)
         .expect("Usage: market_profile <TOKEN>");
     let client = LolzteamClient::new(&token);
-    let market = client.expect("failed to build client").market();
+    let market = client.market();
 
     println!("--- profile ---");
     match market.profile_get(None).await {

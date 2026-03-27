@@ -11,7 +11,7 @@ fn token() -> String {
 }
 
 fn client() -> LolzteamClient {
-    LolzteamClient::new(token()).expect("failed to build client")
+    LolzteamClient::new(token())
 }
 
 fn has_token() -> bool {
@@ -439,7 +439,7 @@ async fn market_auto_payments() {
 
 #[test]
 fn client_default() {
-    let c = LolzteamClient::new("test").expect("failed to build client");
+    let c = LolzteamClient::new("test");
     let _ = c.forum();
     let _ = c.market();
 }

@@ -7,7 +7,7 @@ use lolzteam::LolzteamClient;
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let token = std::env::args().nth(1).expect("Usage: posts <TOKEN>");
     let client = LolzteamClient::new(&token);
-    let forum = client.expect("failed to build client").forum();
+    let forum = client.forum();
 
     println!("--- последние посты ---");
     let posts = forum

@@ -12,7 +12,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .expect("Usage: cargo run --example market/batch_operations -- YOUR_TOKEN");
 
     let client = LolzteamClient::new(&token);
-    let market = client.expect("failed to build client").market();
+    let market = client.market();
 
     println!("📦 Пакетные операции\n");
 

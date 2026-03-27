@@ -18,7 +18,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .expect("USER_ID must be a number");
 
     let client = LolzteamClient::new(&token);
-    let forum = client.expect("failed to build client").forum();
+    let forum = client.forum();
 
     println!("📊 Активность пользователя #{user_id}\n");
 
