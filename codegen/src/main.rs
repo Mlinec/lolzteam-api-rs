@@ -32,6 +32,7 @@ struct Endpoint {
     path_params: Vec<Param>,
     query_params: Vec<Param>,
     body_params: Vec<Param>,
+    request_body: Option<RequestBodySpec>,
     response_type: String,
 }
 
@@ -43,6 +44,16 @@ struct Param {
     required: bool,
     description: Option<String>,
     is_vec: bool,
+    style: Option<String>,
+    explode: Option<bool>,
+    format: Option<String>,
+}
+
+#[derive(Debug, Clone)]
+struct RequestBodySpec {
+    content_type: String,
+    is_multipart: bool,
+    is_form: bool,
 }
 
 // ── JSON helpers ──
@@ -186,6 +197,77 @@ fn is_vec_type(rust_type: &str) -> bool {
     inner.starts_with("Vec<")
 }
 
+fn param_string(schema: &Value, root: &Value) -> (String, Option<String>) {
+    let ty = json_type_to_rust(schema, root, false);
+    let format = schema
+        .get("format")
+        .and_then(|v| v.as_str())
+        .map(|s| s.to_string());
+    (ty, format)
+}
+
+fn request_body_spec(details: &Value) -> Option<RequestBodySpec> {
+    let rb = details.get("requestBody")?;
+    let content = rb.get("content")?.as_object()?;
+    if content.contains_key("multipart/form-data") {
+        Some(RequestBodySpec {
+            content_type: "multipart/form-data".to_string(),
+            is_multipart: true,
+            is_form: true,
+        })
+    } else if content.contains_key("application/x-www-form-urlencoded") {
+        Some(RequestBodySpec {
+            content_type: "application/x-www-form-urlencoded".to_string(),
+            is_multipart: false,
+            is_form: true,
+        })
+    } else if content.contains_key("application/json") {
+        Some(RequestBodySpec {
+            content_type: "application/json".to_string(),
+            is_multipart: false,
+            is_form: false,
+        })
+    } else {
+        content.keys().next().map(|ct| RequestBodySpec {
+            content_type: ct.clone(),
+            is_multipart: ct == "multipart/form-data",
+            is_form: ct == "multipart/form-data" || ct == "application/x-www-form-urlencoded",
+        })
+    }
+}
+
+fn param_style(param: &Value) -> (Option<String>, Option<bool>) {
+    (
+        param.get("style").and_then(|v| v.as_str()).map(|s| s.to_string()),
+        param.get("explode").and_then(|v| v.as_bool()),
+    )
+}
+
+fn schema_is_binary(schema: &Value) -> bool {
+    schema.get("format").and_then(|v| v.as_str()) == Some("binary")
+}
+
+fn rust_type_for_param(schema: &Value, root: &Value, required: bool) -> String {
+    let base = if schema_is_binary(schema) {
+        "crate::client::RequestBody".to_string()
+    } else {
+        json_type_to_rust(schema, root, false)
+    };
+    if required || base.starts_with("Option<") {
+        base
+    } else {
+        format!("Option<{}>", base)
+    }
+}
+
+fn request_body_arg(spec: &RequestBodySpec) -> String {
+    if spec.is_multipart || spec.is_form {
+        "crate::client::RequestBody::Form(body)".to_string()
+    } else {
+        "crate::client::RequestBody::Json(serde_json::Value::Object(body))".to_string()
+    }
+}
+
 fn method_name_from_op_id(op_id: &str) -> String {
     op_id.replace('.', "_").to_snake_case()
 }
@@ -315,15 +397,13 @@ fn extract_endpoints(root: &Value, response_model_names: &BTreeSet<String>) -> V
                         .unwrap_or(location == "path");
 
                     let schema = param.get("schema").unwrap_or(&Value::Null);
+                    let (base_ty, format) = param_string(schema, root);
                     let rust_type = if required {
-                        json_type_to_rust(schema, root, false)
+                        base_ty.clone()
+                    } else if base_ty.starts_with("Option<") {
+                        base_ty.clone()
                     } else {
-                        let base = json_type_to_rust(schema, root, false);
-                        if base.starts_with("Option<") {
-                            base
-                        } else {
-                            format!("Option<{}>", base)
-                        }
+                        format!("Option<{}>", base_ty)
                     };
 
                     let description = param
@@ -332,6 +412,7 @@ fn extract_endpoints(root: &Value, response_model_names: &BTreeSet<String>) -> V
                         .map(|s| s.to_string());
 
                     let is_vec = is_vec_type(&rust_type);
+                    let (style, explode) = param_style(param);
 
                     let p = Param {
                         name: pname.clone(),
@@ -340,7 +421,15 @@ fn extract_endpoints(root: &Value, response_model_names: &BTreeSet<String>) -> V
                         required,
                         description,
                         is_vec,
+                        style,
+                        explode,
+                        format,
                     };
+
+                    if schema_is_binary(schema) {
+                        query_params.push(p);
+                        continue;
+                    }
 
                     match location {
                         "path" => path_params.push(p),
@@ -352,12 +441,14 @@ fn extract_endpoints(root: &Value, response_model_names: &BTreeSet<String>) -> V
             // Parse request body
             let mut body_params = Vec::new();
 
+            let request_body = request_body_spec(details);
             if let Some(rb) = details.get("requestBody") {
                 let content = rb.get("content").and_then(|c| c.as_object());
                 if let Some(content_map) = content {
                     let ct_schema = content_map
                         .get("application/json")
                         .or_else(|| content_map.get("multipart/form-data"))
+                        .or_else(|| content_map.get("application/x-www-form-urlencoded"))
                         .or_else(|| content_map.values().next());
 
                     if let Some(ct_schema) = ct_schema {
@@ -384,15 +475,13 @@ fn extract_endpoints(root: &Value, response_model_names: &BTreeSet<String>) -> V
                             {
                                 for (pname, pschema) in props {
                                     let required = required_set.contains(pname.as_str());
+                                    let (base_ty, format) = param_string(pschema, root);
                                     let rust_type = if required {
-                                        json_type_to_rust(pschema, root, false)
+                                        base_ty.clone()
+                                    } else if base_ty.starts_with("Option<") {
+                                        base_ty.clone()
                                     } else {
-                                        let base = json_type_to_rust(pschema, root, false);
-                                        if base.starts_with("Option<") {
-                                            base
-                                        } else {
-                                            format!("Option<{}>", base)
-                                        }
+                                        format!("Option<{}>", base_ty)
                                     };
 
                                     let description = pschema
@@ -401,6 +490,7 @@ fn extract_endpoints(root: &Value, response_model_names: &BTreeSet<String>) -> V
                                         .map(|s| s.to_string());
 
                                     let is_vec = is_vec_type(&rust_type);
+                                    let (style, explode) = param_style(pschema);
 
                                     body_params.push(Param {
                                         name: pname.clone(),
@@ -409,6 +499,9 @@ fn extract_endpoints(root: &Value, response_model_names: &BTreeSet<String>) -> V
                                         required,
                                         description,
                                         is_vec,
+                                        style,
+                                        explode,
+                                        format,
                                     });
                                 }
                             }
@@ -428,6 +521,7 @@ fn extract_endpoints(root: &Value, response_model_names: &BTreeSet<String>) -> V
                 path_params,
                 query_params,
                 body_params,
+                request_body,
                 response_type,
             });
         }
@@ -901,39 +995,43 @@ fn generate_method(out: &mut String, ep: &Endpoint, prefix: &str) {
             } else {
                 p.rust_name.clone()
             };
-
+            let explode = p.explode.unwrap_or(true);
             if p.required {
                 if p.is_vec {
-                    out.push_str(&format!(
-                        "        for item in &{} {{\n\
-                         \x20           query.push((\"{}\", item.to_string()));\n\
-                         \x20       }}\n",
-                        accessor, p.name
-                    ));
+                    if explode {
+                        out.push_str(&format!(
+                            "        for item in &{} {{ query.push((\"{}\", item.to_string())); }}\n",
+                            accessor, p.name
+                        ));
+                    } else {
+                        out.push_str(&format!(
+                            "        query.push((\"{}\", {}.iter().map(|v| v.to_string()).collect::<Vec<_>>().join(\",\")));\n",
+                            p.name, accessor
+                        ));
+                    }
                 } else {
                     out.push_str(&format!(
                         "        query.push((\"{}\", {}.to_string()));\n",
                         p.name, accessor
                     ));
                 }
-            } else {
-                if p.is_vec {
+            } else if p.is_vec {
+                if explode {
                     out.push_str(&format!(
-                        "        if let Some(v) = &{} {{\n\
-                         \x20           for item in v {{\n\
-                         \x20               query.push((\"{}\", item.to_string()));\n\
-                         \x20           }}\n\
-                         \x20       }}\n",
+                        "        if let Some(v) = &{} {{ for item in v {{ query.push((\"{}\", item.to_string())); }} }}\n",
                         accessor, p.name
                     ));
                 } else {
                     out.push_str(&format!(
-                        "        if let Some(v) = &{} {{\n\
-                         \x20           query.push((\"{}\", v.to_string()));\n\
-                         \x20       }}\n",
+                        "        if let Some(v) = &{} {{ query.push((\"{}\", v.iter().map(|x| x.to_string()).collect::<Vec<_>>().join(\",\"))); }}\n",
                         accessor, p.name
                     ));
                 }
+            } else {
+                out.push_str(&format!(
+                    "        if let Some(v) = &{} {{ query.push((\"{}\", v.to_string())); }}\n",
+                    accessor, p.name
+                ));
             }
         }
     }
@@ -943,26 +1041,47 @@ fn generate_method(out: &mut String, ep: &Endpoint, prefix: &str) {
         !ep.body_params.is_empty() && matches!(ep.method.as_str(), "POST" | "PUT" | "PATCH");
 
     if has_body {
-        out.push_str("        let mut body = serde_json::Map::new();\n");
-        for p in &ep.body_params {
-            let accessor = if use_params_struct {
-                format!("params.{}", p.rust_name)
+        if let Some(spec) = &ep.request_body {
+            if spec.is_multipart || spec.is_form {
+                out.push_str("        let mut body = Vec::<(String, String)>::new();\n");
+                for p in &ep.body_params {
+                    let accessor = if use_params_struct {
+                        format!("params.{}", p.rust_name)
+                    } else {
+                        p.rust_name.clone()
+                    };
+                    if p.required {
+                        out.push_str(&format!(
+                            "        body.push((\"{}\".into(), {}.to_string()));\n",
+                            p.name, accessor
+                        ));
+                    } else {
+                        out.push_str(&format!(
+                            "        if let Some(v) = &{} {{ body.push((\"{}\".into(), v.to_string())); }}\n",
+                            accessor, p.name
+                        ));
+                    }
+                }
             } else {
-                p.rust_name.clone()
-            };
-
-            if p.required {
-                out.push_str(&format!(
-                    "        body.insert(\"{}\".into(), serde_json::to_value(&{}).unwrap_or_default());\n",
-                    p.name, accessor
-                ));
-            } else {
-                out.push_str(&format!(
-                    "        if let Some(v) = &{} {{\n\
-                     \x20           body.insert(\"{}\".into(), serde_json::to_value(v).unwrap_or_default());\n\
-                     \x20       }}\n",
-                    accessor, p.name
-                ));
+                out.push_str("        let mut body = serde_json::Map::new();\n");
+                for p in &ep.body_params {
+                    let accessor = if use_params_struct {
+                        format!("params.{}", p.rust_name)
+                    } else {
+                        p.rust_name.clone()
+                    };
+                    if p.required {
+                        out.push_str(&format!(
+                            "        body.insert(\"{}\".into(), serde_json::to_value(&{}).unwrap_or_default());\n",
+                            p.name, accessor
+                        ));
+                    } else {
+                        out.push_str(&format!(
+                            "        if let Some(v) = &{} {{ body.insert(\"{}\".into(), serde_json::to_value(v).unwrap_or_default()); }}\n",
+                            accessor, p.name
+                        ));
+                    }
+                }
             }
         }
     }
