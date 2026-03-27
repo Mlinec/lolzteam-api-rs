@@ -2,8 +2,64 @@ use crate::error::{Error, Result};
 use reqwest::{Client, Proxy, StatusCode};
 use serde::de::DeserializeOwned;
 use serde::Serialize;
-use std::time::Duration;
+use std::time::{Duration, SystemTime};
 use tracing::{debug, warn};
+
+#[derive(Debug)]
+pub enum RequestBody {
+    Json(serde_json::Value),
+    Form(Vec<(String, String)>),
+    Multipart(reqwest::multipart::Form),
+}
+
+impl RequestBody {
+    fn into_builder(self, req: reqwest::RequestBuilder) -> reqwest::RequestBuilder {
+        match self {
+            RequestBody::Json(value) => req.json(&value),
+            RequestBody::Form(fields) => req.form(&fields),
+            RequestBody::Multipart(form) => req.multipart(form),
+        }
+    }
+}
+
+impl Clone for RequestBody {
+    fn clone(&self) -> Self {
+        match self {
+            RequestBody::Json(value) => RequestBody::Json(value.clone()),
+            RequestBody::Form(fields) => RequestBody::Form(fields.clone()),
+            RequestBody::Multipart(_) => panic!("multipart request bodies cannot be cloned"),
+        }
+    }
+}
+
+impl PartialEq for RequestBody {
+    fn eq(&self, other: &Self) -> bool {
+        match (self, other) {
+            (RequestBody::Json(a), RequestBody::Json(b)) => a == b,
+            (RequestBody::Form(a), RequestBody::Form(b)) => a == b,
+            (RequestBody::Multipart(_), RequestBody::Multipart(_)) => true,
+            _ => false,
+        }
+    }
+}
+
+impl Eq for RequestBody {}
+
+fn parse_retry_after(value: &str) -> Option<Duration> {
+    if let Ok(secs) = value.parse::<u64>() {
+        return Some(Duration::from_secs(secs));
+    }
+
+    let at = httpdate::parse_http_date(value).ok()?;
+    Some(
+        at.duration_since(SystemTime::now())
+            .unwrap_or(Duration::ZERO),
+    )
+}
+
+fn apply_body(req: reqwest::RequestBuilder, body: RequestBody) -> reqwest::RequestBuilder {
+    body.into_builder(req)
+}
 
 const DEFAULT_MAX_RETRIES: u32 = 5;
 const INITIAL_BACKOFF: Duration = Duration::from_secs(2);
@@ -104,16 +160,15 @@ impl ApiClient {
     }
 
     /// Выполняет запрос с авто-ретраем на 429/502/503.
-    pub async fn request<Q, B, R>(
+    pub async fn request<Q, R>(
         &self,
         method: &str,
         path: &str,
         query: Option<&Q>,
-        body: Option<B>,
+        body: Option<RequestBody>,
     ) -> Result<R>
     where
         Q: Serialize + ?Sized,
-        B: Serialize + Clone,
         R: DeserializeOwned,
     {
         let url = if path.starts_with("http") {
@@ -146,8 +201,8 @@ impl ApiClient {
             if let Some(q) = query {
                 req = req.query(q);
             }
-            if let Some(ref b) = body {
-                req = req.json(b);
+            if let Some(b) = body.clone() {
+                req = apply_body(req, b);
             }
 
             debug!(attempt, method, url = %url, "sending request");
@@ -176,8 +231,7 @@ impl ApiClient {
                         .headers()
                         .get("retry-after")
                         .and_then(|v| v.to_str().ok())
-                        .and_then(|s| s.parse::<u64>().ok())
-                        .map(Duration::from_secs);
+                        .and_then(parse_retry_after);
 
                     let wait = retry_after.unwrap_or(backoff);
                     warn!(

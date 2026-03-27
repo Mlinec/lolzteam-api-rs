@@ -23,7 +23,12 @@ impl crate::forum::ForumApi {
             }
         }
         self.client
-            .request("get", "/css", Some(&query), None::<serde_json::Value>)
+            .request(
+                "get",
+                "/css",
+                Some(&query),
+                None::<crate::client::RequestBody>,
+            )
             .await
     }
 
@@ -37,7 +42,7 @@ impl crate::forum::ForumApi {
                 "post",
                 "/oauth/token",
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -52,7 +57,7 @@ impl crate::forum::ForumApi {
                 "post",
                 "/batch",
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -67,7 +72,7 @@ impl crate::forum::ForumApi {
                 "get",
                 &format!("/categories/{category_id}"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -95,7 +100,7 @@ impl crate::forum::ForumApi {
                 "get",
                 "/categories",
                 Some(&query),
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -113,7 +118,7 @@ impl crate::forum::ForumApi {
                 "delete",
                 "/chatbox/ignore",
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -126,7 +131,7 @@ impl crate::forum::ForumApi {
                 "delete",
                 "/chatbox/messages",
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -152,7 +157,9 @@ impl crate::forum::ForumApi {
                 "put",
                 "/chatbox/messages",
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -165,7 +172,7 @@ impl crate::forum::ForumApi {
                 "get",
                 "/chatbox/ignore",
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -185,7 +192,7 @@ impl crate::forum::ForumApi {
                 "get",
                 "/chatbox/messages/leaderboard",
                 Some(&query),
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -207,7 +214,7 @@ impl crate::forum::ForumApi {
                 "get",
                 "/chatbox/messages",
                 Some(&query),
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -223,7 +230,12 @@ impl crate::forum::ForumApi {
             query.push(("room_id", v.to_string()));
         }
         self.client
-            .request("get", "/chatbox", Some(&query), None::<serde_json::Value>)
+            .request(
+                "get",
+                "/chatbox",
+                Some(&query),
+                None::<crate::client::RequestBody>,
+            )
             .await
     }
 
@@ -240,7 +252,7 @@ impl crate::forum::ForumApi {
                 "get",
                 "/chatbox/messages/online",
                 Some(&query),
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -261,7 +273,9 @@ impl crate::forum::ForumApi {
                 "post",
                 "/chatbox/ignore",
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -294,7 +308,9 @@ impl crate::forum::ForumApi {
                 "post",
                 "/chatbox/messages",
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -320,7 +336,9 @@ impl crate::forum::ForumApi {
                 "post",
                 "/chatbox/messages/report",
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -338,7 +356,7 @@ impl crate::forum::ForumApi {
                 "get",
                 "/chatbox/messages/report",
                 Some(&query),
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -351,7 +369,12 @@ impl crate::forum::ForumApi {
         let mut query: Vec<(&str, String)> = Vec::new();
         query.push(("tag", tag.to_string()));
         self.client
-            .request("get", "/tags/find", Some(&query), None::<serde_json::Value>)
+            .request(
+                "get",
+                "/tags/find",
+                Some(&query),
+                None::<crate::client::RequestBody>,
+            )
             .await
     }
 
@@ -375,7 +398,7 @@ impl crate::forum::ForumApi {
                 "get",
                 &format!("/tags/{tag_id}"),
                 Some(&query),
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -395,7 +418,12 @@ impl crate::forum::ForumApi {
             query.push(("limit", v.to_string()));
         }
         self.client
-            .request("get", "/tags/list", Some(&query), None::<serde_json::Value>)
+            .request(
+                "get",
+                "/tags/list",
+                Some(&query),
+                None::<crate::client::RequestBody>,
+            )
             .await
     }
 
@@ -407,7 +435,7 @@ impl crate::forum::ForumApi {
                 "get",
                 "/tags",
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -425,7 +453,7 @@ impl crate::forum::ForumApi {
                 "delete",
                 &format!("/conversations/{conversation_id}/alerts"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -441,7 +469,7 @@ impl crate::forum::ForumApi {
                 "post",
                 &format!("/conversations/{conversation_id}/alerts"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -509,7 +537,9 @@ impl crate::forum::ForumApi {
                 "post",
                 "/conversations",
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -526,7 +556,7 @@ impl crate::forum::ForumApi {
                 "delete",
                 "/conversations",
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -542,7 +572,7 @@ impl crate::forum::ForumApi {
                 "get",
                 &format!("/conversations/{conversation_id}"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -564,7 +594,9 @@ impl crate::forum::ForumApi {
                 "post",
                 &format!("/conversations/{conversation_id}/invite"),
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -586,7 +618,9 @@ impl crate::forum::ForumApi {
                 "post",
                 &format!("/conversations/{conversation_id}/kick"),
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -614,7 +648,7 @@ impl crate::forum::ForumApi {
                 "get",
                 "/conversations",
                 Some(&query),
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -643,7 +677,9 @@ impl crate::forum::ForumApi {
                 "post",
                 &format!("/conversations/{conversation_id}/messages"),
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -660,7 +696,7 @@ impl crate::forum::ForumApi {
                 "delete",
                 &format!("/conversations/{conversation_id}/messages/{message_id}"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -683,7 +719,9 @@ impl crate::forum::ForumApi {
                 "put",
                 &format!("/conversations/{conversation_id}/messages/{message_id}"),
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -699,7 +737,7 @@ impl crate::forum::ForumApi {
                 "get",
                 &format!("/conversations/messages/{message_id}"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -732,7 +770,7 @@ impl crate::forum::ForumApi {
                 "get",
                 &format!("/conversations/{conversation_id}/messages"),
                 Some(&query),
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -749,7 +787,7 @@ impl crate::forum::ForumApi {
                 "post",
                 &format!("/conversations/{conversation_id}/messages/{message_id}/stick"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -766,7 +804,7 @@ impl crate::forum::ForumApi {
                 "delete",
                 &format!("/conversations/{conversation_id}/messages/{message_id}/stick"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -779,7 +817,7 @@ impl crate::forum::ForumApi {
                 "post",
                 &format!("/conversations/{conversation_id}/read"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -792,7 +830,7 @@ impl crate::forum::ForumApi {
                 "post",
                 "/conversations/read-all",
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -810,7 +848,9 @@ impl crate::forum::ForumApi {
                 "post",
                 "/conversations/save",
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -844,7 +884,9 @@ impl crate::forum::ForumApi {
                 "post",
                 "/conversations/search",
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -860,7 +902,7 @@ impl crate::forum::ForumApi {
                 "post",
                 &format!("/conversations/{conversation_id}/star"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -881,7 +923,9 @@ impl crate::forum::ForumApi {
                 "post",
                 "/conversations/start",
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -897,7 +941,7 @@ impl crate::forum::ForumApi {
                 "delete",
                 &format!("/conversations/{conversation_id}/star"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -951,7 +995,9 @@ impl crate::forum::ForumApi {
                 "put",
                 "/conversations",
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -966,7 +1012,7 @@ impl crate::forum::ForumApi {
                 "post",
                 "/forms/save",
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -979,7 +1025,12 @@ impl crate::forum::ForumApi {
             query.push(("page", v.to_string()));
         }
         self.client
-            .request("get", "/forms", Some(&query), None::<serde_json::Value>)
+            .request(
+                "get",
+                "/forms",
+                Some(&query),
+                None::<crate::client::RequestBody>,
+            )
             .await
     }
 
@@ -1010,7 +1061,9 @@ impl crate::forum::ForumApi {
                 "put",
                 "/forums/feed/options",
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -1049,7 +1102,9 @@ impl crate::forum::ForumApi {
                 "post",
                 &format!("/forums/{forum_id}/followers"),
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -1066,7 +1121,7 @@ impl crate::forum::ForumApi {
                 "get",
                 "/forums/followed",
                 Some(&query),
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -1079,7 +1134,7 @@ impl crate::forum::ForumApi {
                 "get",
                 &format!("/forums/{forum_id}/followers"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -1092,7 +1147,7 @@ impl crate::forum::ForumApi {
                 "get",
                 &format!("/forums/{forum_id}"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -1105,7 +1160,7 @@ impl crate::forum::ForumApi {
                 "get",
                 "/forums/feed/options",
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -1118,7 +1173,7 @@ impl crate::forum::ForumApi {
                 "get",
                 "/forums/grouped",
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -1142,7 +1197,12 @@ impl crate::forum::ForumApi {
             query.push(("order", v.to_string()));
         }
         self.client
-            .request("get", "/forums", Some(&query), None::<serde_json::Value>)
+            .request(
+                "get",
+                "/forums",
+                Some(&query),
+                None::<crate::client::RequestBody>,
+            )
             .await
     }
 
@@ -1154,7 +1214,7 @@ impl crate::forum::ForumApi {
                 "delete",
                 &format!("/forums/{forum_id}/followers"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -1169,7 +1229,7 @@ impl crate::forum::ForumApi {
                 "get",
                 &format!("/link-forums/{link_id}"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -1182,7 +1242,7 @@ impl crate::forum::ForumApi {
                 "get",
                 "/link-forums",
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -1201,7 +1261,7 @@ impl crate::forum::ForumApi {
                 "get",
                 "/navigation",
                 Some(&query),
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -1219,7 +1279,7 @@ impl crate::forum::ForumApi {
                 "get",
                 &format!("/notifications/{notification_id}/content"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -1247,7 +1307,7 @@ impl crate::forum::ForumApi {
                 "get",
                 "/notifications",
                 Some(&query),
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -1270,7 +1330,9 @@ impl crate::forum::ForumApi {
                 "post",
                 "/notifications/read",
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -1285,7 +1347,7 @@ impl crate::forum::ForumApi {
                 "get",
                 &format!("/pages/{page_id}"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -1305,7 +1367,12 @@ impl crate::forum::ForumApi {
             query.push(("order", v.to_string()));
         }
         self.client
-            .request("get", "/pages", Some(&query), None::<serde_json::Value>)
+            .request(
+                "get",
+                "/pages",
+                Some(&query),
+                None::<crate::client::RequestBody>,
+            )
             .await
     }
 
@@ -1332,7 +1399,9 @@ impl crate::forum::ForumApi {
                 "post",
                 "/posts/comments",
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -1349,7 +1418,7 @@ impl crate::forum::ForumApi {
                 "delete",
                 "/posts/comments",
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -1375,7 +1444,9 @@ impl crate::forum::ForumApi {
                 "put",
                 "/posts/comments",
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -1401,7 +1472,7 @@ impl crate::forum::ForumApi {
                 "get",
                 "/posts/comments",
                 Some(&query),
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -1429,7 +1500,9 @@ impl crate::forum::ForumApi {
                 "post",
                 "/posts/comments/report",
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -1464,7 +1537,9 @@ impl crate::forum::ForumApi {
                 "post",
                 "/posts",
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -1481,7 +1556,7 @@ impl crate::forum::ForumApi {
                 "delete",
                 &format!("/posts/{post_id}"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -1505,7 +1580,9 @@ impl crate::forum::ForumApi {
                 "put",
                 &format!("/posts/{post_id}"),
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -1518,7 +1595,7 @@ impl crate::forum::ForumApi {
                 "get",
                 &format!("/posts/{post_id}"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -1531,7 +1608,7 @@ impl crate::forum::ForumApi {
                 "post",
                 &format!("/posts/{post_id}/likes"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -1556,7 +1633,7 @@ impl crate::forum::ForumApi {
                 "get",
                 &format!("/posts/{post_id}/likes"),
                 Some(&query),
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -1581,7 +1658,12 @@ impl crate::forum::ForumApi {
             query.push(("order", v.to_string()));
         }
         self.client
-            .request("get", "/posts", Some(&query), None::<serde_json::Value>)
+            .request(
+                "get",
+                "/posts",
+                Some(&query),
+                None::<crate::client::RequestBody>,
+            )
             .await
     }
 
@@ -1598,7 +1680,9 @@ impl crate::forum::ForumApi {
                 "post",
                 &format!("/posts/{post_id}/report"),
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -1611,7 +1695,7 @@ impl crate::forum::ForumApi {
                 "get",
                 &format!("/posts/{post_id}/report"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -1624,7 +1708,7 @@ impl crate::forum::ForumApi {
                 "delete",
                 &format!("/posts/{post_id}/likes"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -1652,7 +1736,9 @@ impl crate::forum::ForumApi {
                 "post",
                 "/profile-posts/comments",
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -1668,7 +1754,7 @@ impl crate::forum::ForumApi {
                 "delete",
                 "/profile-posts/comments",
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -1694,7 +1780,9 @@ impl crate::forum::ForumApi {
                 "put",
                 "/profile-posts/comments",
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -1711,7 +1799,7 @@ impl crate::forum::ForumApi {
                 "get",
                 &format!("/profile-posts/{profile_post_id}/comments/{comment_id}"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -1737,7 +1825,7 @@ impl crate::forum::ForumApi {
                 "get",
                 "/profile-posts/comments",
                 Some(&query),
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -1759,7 +1847,9 @@ impl crate::forum::ForumApi {
                 "post",
                 &format!("/profile-posts/comments/{comment_id}/report"),
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -1787,7 +1877,9 @@ impl crate::forum::ForumApi {
                 "post",
                 "/profile-posts",
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -1808,7 +1900,7 @@ impl crate::forum::ForumApi {
                 "delete",
                 &format!("/profile-posts/{profile_post_id}"),
                 Some(&query),
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -1839,7 +1931,9 @@ impl crate::forum::ForumApi {
                 "put",
                 &format!("/profile-posts/{profile_post_id}"),
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -1852,7 +1946,7 @@ impl crate::forum::ForumApi {
                 "get",
                 &format!("/profile-posts/{profile_post_id}"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -1865,7 +1959,7 @@ impl crate::forum::ForumApi {
                 "post",
                 &format!("/profile-posts/{profile_post_id}/likes"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -1881,7 +1975,7 @@ impl crate::forum::ForumApi {
                 "get",
                 &format!("/profile-posts/{profile_post_id}/likes"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -1913,7 +2007,7 @@ impl crate::forum::ForumApi {
                 "get",
                 &format!("/users/{user_id}/profile-posts"),
                 Some(&query),
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -1935,7 +2029,9 @@ impl crate::forum::ForumApi {
                 "post",
                 &format!("/profile-posts/{profile_post_id}/report"),
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -1951,7 +2047,7 @@ impl crate::forum::ForumApi {
                 "get",
                 &format!("/profile-posts/{profile_post_id}/report"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -1964,7 +2060,7 @@ impl crate::forum::ForumApi {
                 "post",
                 &format!("/profile-posts/{profile_post_id}/stick"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -1977,7 +2073,7 @@ impl crate::forum::ForumApi {
                 "delete",
                 &format!("/profile-posts/{profile_post_id}/likes"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -1990,7 +2086,7 @@ impl crate::forum::ForumApi {
                 "delete",
                 &format!("/profile-posts/{profile_post_id}/stick"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -2030,7 +2126,9 @@ impl crate::forum::ForumApi {
                 "post",
                 "/search",
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -2077,7 +2175,9 @@ impl crate::forum::ForumApi {
                 "post",
                 "/search/posts",
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -2109,7 +2209,9 @@ impl crate::forum::ForumApi {
                 "post",
                 "/search/profile-posts",
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -2127,7 +2229,7 @@ impl crate::forum::ForumApi {
                 "get",
                 &format!("/search/{search_id}/results"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -2156,7 +2258,9 @@ impl crate::forum::ForumApi {
                 "post",
                 "/search/tagged",
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -2203,7 +2307,9 @@ impl crate::forum::ForumApi {
                 "post",
                 "/search/threads",
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -2220,7 +2326,9 @@ impl crate::forum::ForumApi {
                 "post",
                 "/search/users",
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -2235,7 +2343,7 @@ impl crate::forum::ForumApi {
                 "post",
                 &format!("/threads/{thread_id}/bump"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -2371,7 +2479,9 @@ impl crate::forum::ForumApi {
                 "post",
                 "/claims",
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -2474,7 +2584,9 @@ impl crate::forum::ForumApi {
                 "post",
                 "/threads",
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -2631,7 +2743,9 @@ impl crate::forum::ForumApi {
                 "post",
                 "/contests",
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -2648,7 +2762,7 @@ impl crate::forum::ForumApi {
                 "delete",
                 &format!("/threads/{thread_id}"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -2714,7 +2828,9 @@ impl crate::forum::ForumApi {
                 "put",
                 &format!("/threads/{thread_id}"),
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -2727,7 +2843,7 @@ impl crate::forum::ForumApi {
                 "post",
                 &format!("/contests/{thread_id}/finish"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -2748,7 +2864,9 @@ impl crate::forum::ForumApi {
                 "post",
                 &format!("/threads/{thread_id}/followers"),
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -2774,7 +2892,7 @@ impl crate::forum::ForumApi {
                 "get",
                 "/threads/followed",
                 Some(&query),
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -2787,7 +2905,7 @@ impl crate::forum::ForumApi {
                 "get",
                 &format!("/threads/{thread_id}/followers"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -2810,7 +2928,7 @@ impl crate::forum::ForumApi {
                 "get",
                 &format!("/threads/{thread_id}"),
                 Some(&query),
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -2823,7 +2941,7 @@ impl crate::forum::ForumApi {
                 "post",
                 &format!("/threads/{thread_id}/hide"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -2896,7 +3014,12 @@ impl crate::forum::ForumApi {
             }
         }
         self.client
-            .request("get", "/threads", Some(&query), None::<serde_json::Value>)
+            .request(
+                "get",
+                "/threads",
+                Some(&query),
+                None::<crate::client::RequestBody>,
+            )
             .await
     }
 
@@ -2944,7 +3067,9 @@ impl crate::forum::ForumApi {
                 "post",
                 &format!("/threads/{thread_id}/move"),
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -2957,7 +3082,7 @@ impl crate::forum::ForumApi {
                 "get",
                 &format!("/threads/{thread_id}/navigation"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -2970,7 +3095,7 @@ impl crate::forum::ForumApi {
                 "get",
                 &format!("/threads/{thread_id}/poll"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -3001,7 +3126,9 @@ impl crate::forum::ForumApi {
                 "post",
                 &format!("/threads/{thread_id}/poll/votes"),
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -3030,7 +3157,7 @@ impl crate::forum::ForumApi {
                 "get",
                 "/threads/recent",
                 Some(&query),
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -3043,7 +3170,7 @@ impl crate::forum::ForumApi {
                 "post",
                 &format!("/threads/{thread_id}/star"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -3056,7 +3183,7 @@ impl crate::forum::ForumApi {
                 "delete",
                 &format!("/threads/{thread_id}/followers"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -3084,7 +3211,7 @@ impl crate::forum::ForumApi {
                 "get",
                 "/threads/new",
                 Some(&query),
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -3097,7 +3224,7 @@ impl crate::forum::ForumApi {
                 "delete",
                 &format!("/threads/{thread_id}/star"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -3128,7 +3255,9 @@ impl crate::forum::ForumApi {
                 "post",
                 &format!("/users/{user_id}/avatar/crop"),
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -3141,7 +3270,7 @@ impl crate::forum::ForumApi {
                 "delete",
                 &format!("/users/{user_id}/avatar"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -3172,7 +3301,9 @@ impl crate::forum::ForumApi {
                 "post",
                 &format!("/users/{user_id}/avatar"),
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -3201,7 +3332,9 @@ impl crate::forum::ForumApi {
                 "post",
                 &format!("/users/{user_id}/background/crop"),
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -3214,7 +3347,7 @@ impl crate::forum::ForumApi {
                 "delete",
                 &format!("/users/{user_id}/background"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -3245,7 +3378,9 @@ impl crate::forum::ForumApi {
                 "post",
                 &format!("/users/{user_id}/background"),
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -3270,7 +3405,7 @@ impl crate::forum::ForumApi {
                 "get",
                 &format!("/users/{user_id}/claims"),
                 Some(&query),
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -3295,7 +3430,7 @@ impl crate::forum::ForumApi {
                 "get",
                 &format!("/users/{user_id}/timeline"),
                 Some(&query),
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -3466,7 +3601,9 @@ impl crate::forum::ForumApi {
                 "put",
                 &format!("/users/{user_id}"),
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -3479,7 +3616,7 @@ impl crate::forum::ForumApi {
                 "get",
                 "/users/fields",
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -3509,7 +3646,7 @@ impl crate::forum::ForumApi {
                 "get",
                 "/users/find",
                 Some(&query),
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -3522,7 +3659,7 @@ impl crate::forum::ForumApi {
                 "post",
                 &format!("/users/{user_id}/followers"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -3551,7 +3688,7 @@ impl crate::forum::ForumApi {
                 "get",
                 &format!("/users/{user_id}/followers"),
                 Some(&query),
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -3580,7 +3717,7 @@ impl crate::forum::ForumApi {
                 "get",
                 &format!("/users/{user_id}/followings"),
                 Some(&query),
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -3603,7 +3740,7 @@ impl crate::forum::ForumApi {
                 "get",
                 &format!("/users/{user_id}"),
                 Some(&query),
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -3616,7 +3753,7 @@ impl crate::forum::ForumApi {
                 "post",
                 &format!("/users/{user_id}/ignore"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -3645,7 +3782,7 @@ impl crate::forum::ForumApi {
                 "put",
                 &format!("/users/{user_id}/ignore"),
                 Some(&query),
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -3662,7 +3799,7 @@ impl crate::forum::ForumApi {
                 "get",
                 "/users/ignored",
                 Some(&query),
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -3701,7 +3838,7 @@ impl crate::forum::ForumApi {
                 "get",
                 &format!("/users/{user_id}/likes"),
                 Some(&query),
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -3727,7 +3864,12 @@ impl crate::forum::ForumApi {
             }
         }
         self.client
-            .request("get", "/users", Some(&query), None::<serde_json::Value>)
+            .request(
+                "get",
+                "/users",
+                Some(&query),
+                None::<crate::client::RequestBody>,
+            )
             .await
     }
 
@@ -3739,7 +3881,7 @@ impl crate::forum::ForumApi {
                 "delete",
                 "/account/secret-answer/reset",
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -3752,7 +3894,7 @@ impl crate::forum::ForumApi {
                 "post",
                 "/account/secret-answer/reset",
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -3765,7 +3907,7 @@ impl crate::forum::ForumApi {
                 "get",
                 "/users/secret-answer/types",
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -3778,7 +3920,7 @@ impl crate::forum::ForumApi {
                 "get",
                 &format!("/users/{user_id}/trophies"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -3791,7 +3933,7 @@ impl crate::forum::ForumApi {
                 "delete",
                 &format!("/users/{user_id}/followers"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -3804,7 +3946,7 @@ impl crate::forum::ForumApi {
                 "delete",
                 &format!("/users/{user_id}/ignore"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }

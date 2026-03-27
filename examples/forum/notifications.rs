@@ -8,7 +8,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .nth(1)
         .expect("Usage: notifications <TOKEN>");
     let client = LolzteamClient::new(&token);
-    let forum = client.forum();
+    let forum = client.expect("failed to build client").forum();
 
     println!("--- уведомления ---");
     match forum.notifications_list(None, None, Some(10)).await {

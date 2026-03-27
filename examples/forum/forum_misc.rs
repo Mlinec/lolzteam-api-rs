@@ -9,7 +9,7 @@ use lolzteam::LolzteamClient;
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let token = std::env::args().nth(1).expect("Usage: forum_misc <TOKEN>");
     let client = LolzteamClient::new(&token);
-    let forum = client.forum();
+    let forum = client.expect("failed to build client").forum();
 
     println!("--- notifications ---");
     match forum.notifications_list(None, None, Some(5)).await {
