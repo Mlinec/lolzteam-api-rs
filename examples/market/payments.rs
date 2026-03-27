@@ -7,7 +7,7 @@ use lolzteam::LolzteamClient;
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let token = std::env::args().nth(1).expect("Usage: payments <TOKEN>");
     let client = LolzteamClient::new(&token);
-    let market = client.market();
+    let market = client.expect("failed to build client").market();
 
     println!("--- баланс ---");
     match market.profile_get(None).await {

@@ -16,7 +16,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .expect("ITEM_ID must be a number");
 
     let client = LolzteamClient::new(&token);
-    let market = client.market();
+    let market = client.expect("failed to build client").market();
 
     println!("--- информация об аккаунте #{item_id} ---");
     match market.managing_get(item_id, None).await {

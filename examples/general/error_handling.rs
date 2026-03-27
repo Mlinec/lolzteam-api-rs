@@ -9,7 +9,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let token = std::env::args()
         .nth(1)
         .expect("Usage: error_handling <TOKEN>");
-    let client = LolzteamClient::new(&token);
+    let client = LolzteamClient::new(&token).expect("failed to build client");
 
     // 1. Успешный запрос
     println!("--- successful request ---");
@@ -27,7 +27,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // 3. 401 — невалидный токен
     println!("\n--- auth error (401) ---");
-    let bad_client = LolzteamClient::new("invalid_token_12345");
+    let bad_client = LolzteamClient::new("invalid_token_12345").expect("failed to build client");
     match bad_client.forum().users_get(1, None).await {
         Ok(resp) => println!("user: {}", resp.user.username),
         Err(e) => handle_error(&e),

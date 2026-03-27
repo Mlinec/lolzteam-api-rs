@@ -116,7 +116,9 @@ impl crate::market::MarketApi {
                 "post",
                 "/item/add",
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -182,7 +184,9 @@ impl crate::market::MarketApi {
                 "post",
                 &format!("/{item_id}/goods/check"),
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -219,7 +223,9 @@ impl crate::market::MarketApi {
                 "post",
                 &format!("/{item_id}/external-account"),
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -333,7 +339,9 @@ impl crate::market::MarketApi {
                 "post",
                 "/item/fast-sell",
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -348,7 +356,7 @@ impl crate::market::MarketApi {
                 "post",
                 &format!("/{item_id}/check-account"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -376,7 +384,9 @@ impl crate::market::MarketApi {
                 "post",
                 &format!("/{item_id}/confirm-buy"),
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -389,7 +399,7 @@ impl crate::market::MarketApi {
                 "delete",
                 &format!("/{item_id}/discount"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -418,7 +428,9 @@ impl crate::market::MarketApi {
                 "post",
                 &format!("/{item_id}/discount"),
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -446,7 +458,9 @@ impl crate::market::MarketApi {
                 "post",
                 &format!("/{item_id}/fast-buy"),
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -549,7 +563,7 @@ impl crate::market::MarketApi {
                 "get",
                 &format!("/user/{_path_type}/download"),
                 Some(&query),
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -599,7 +613,12 @@ impl crate::market::MarketApi {
             query.push(("nsb_by_me", v.to_string()));
         }
         self.client
-            .request("get", "/fave", Some(&query), None::<serde_json::Value>)
+            .request(
+                "get",
+                "/fave",
+                Some(&query),
+                None::<crate::client::RequestBody>,
+            )
             .await
     }
 
@@ -661,7 +680,7 @@ impl crate::market::MarketApi {
                 "get",
                 "/user/orders",
                 Some(&query),
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -678,7 +697,7 @@ impl crate::market::MarketApi {
                 "get",
                 "/user/item-states",
                 Some(&query),
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -774,7 +793,7 @@ impl crate::market::MarketApi {
                 "get",
                 "/user/items",
                 Some(&query),
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -824,7 +843,12 @@ impl crate::market::MarketApi {
             query.push(("nsb_by_me", v.to_string()));
         }
         self.client
-            .request("get", "/viewed", Some(&query), None::<serde_json::Value>)
+            .request(
+                "get",
+                "/viewed",
+                Some(&query),
+                None::<crate::client::RequestBody>,
+            )
             .await
     }
 
@@ -838,7 +862,7 @@ impl crate::market::MarketApi {
                 "get",
                 &format!("/{item_id}/ai-price"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -856,7 +880,9 @@ impl crate::market::MarketApi {
                 "post",
                 &format!("/{item_id}/auto-bump"),
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -869,7 +895,7 @@ impl crate::market::MarketApi {
                 "delete",
                 &format!("/{item_id}/auto-bump"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -885,7 +911,7 @@ impl crate::market::MarketApi {
                 "get",
                 &format!("/{item_id}/auto-buy-price"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -915,7 +941,9 @@ impl crate::market::MarketApi {
                 "post",
                 "/bulk/items",
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -928,7 +956,7 @@ impl crate::market::MarketApi {
                 "post",
                 &format!("/{item_id}/bump"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -952,7 +980,9 @@ impl crate::market::MarketApi {
                 "post",
                 &format!("/{item_id}/change-password"),
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -968,7 +998,7 @@ impl crate::market::MarketApi {
                 "post",
                 &format!("/{item_id}/check-guarantee"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -981,7 +1011,7 @@ impl crate::market::MarketApi {
                 "post",
                 &format!("/{item_id}/close"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -1007,7 +1037,9 @@ impl crate::market::MarketApi {
                 "post",
                 "/claims",
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -1026,7 +1058,9 @@ impl crate::market::MarketApi {
                 "post",
                 &format!("/{item_id}/decline-video-recording"),
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -1104,7 +1138,9 @@ impl crate::market::MarketApi {
                 "put",
                 &format!("/{item_id}/edit"),
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -1117,7 +1153,7 @@ impl crate::market::MarketApi {
                 "get",
                 &format!("/{item_id}/email-code"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -1130,7 +1166,7 @@ impl crate::market::MarketApi {
                 "post",
                 &format!("/{item_id}/star"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -1151,7 +1187,7 @@ impl crate::market::MarketApi {
                 "get",
                 &format!("/{item_id}"),
                 Some(&query),
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -1176,7 +1212,12 @@ impl crate::market::MarketApi {
             query.push(("limit", v.to_string()));
         }
         self.client
-            .request("get", "/letters2", Some(&query), None::<serde_json::Value>)
+            .request(
+                "get",
+                "/letters2",
+                Some(&query),
+                None::<crate::client::RequestBody>,
+            )
             .await
     }
 
@@ -1194,7 +1235,7 @@ impl crate::market::MarketApi {
                 "get",
                 &format!("/{item_id}/image"),
                 Some(&query),
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -1215,7 +1256,9 @@ impl crate::market::MarketApi {
                 "post",
                 &format!("/{item_id}/note-save"),
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -1228,7 +1271,7 @@ impl crate::market::MarketApi {
                 "post",
                 &format!("/{item_id}/open"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -1250,7 +1293,9 @@ impl crate::market::MarketApi {
                 "post",
                 &format!("/{item_id}/public-tag"),
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -1267,7 +1312,7 @@ impl crate::market::MarketApi {
                 "delete",
                 &format!("/{item_id}/public-tag"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -1280,7 +1325,7 @@ impl crate::market::MarketApi {
                 "post",
                 &format!("/{item_id}/refuse-guarantee"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -1293,7 +1338,7 @@ impl crate::market::MarketApi {
                 "post",
                 &format!("/{item_id}/mafile"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -1309,7 +1354,7 @@ impl crate::market::MarketApi {
                 "get",
                 &format!("/{item_id}/mafile"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -1322,7 +1367,7 @@ impl crate::market::MarketApi {
                 "delete",
                 &format!("/{item_id}/mafile"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -1351,7 +1396,7 @@ impl crate::market::MarketApi {
                 "get",
                 &format!("/{item_id}/inventory-value"),
                 Some(&query),
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -1364,7 +1409,7 @@ impl crate::market::MarketApi {
                 "get",
                 &format!("/{item_id}/guard-code"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -1385,7 +1430,7 @@ impl crate::market::MarketApi {
                 "get",
                 &format!("/{item_id}/steam-preview"),
                 Some(&query),
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -1410,7 +1455,9 @@ impl crate::market::MarketApi {
                 "post",
                 &format!("/{item_id}/confirm-sda"),
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -1442,7 +1489,9 @@ impl crate::market::MarketApi {
                 "post",
                 &format!("/{item_id}/update-inventory"),
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -1469,7 +1518,7 @@ impl crate::market::MarketApi {
                 "get",
                 "/steam-value",
                 Some(&query),
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -1482,7 +1531,7 @@ impl crate::market::MarketApi {
                 "post",
                 &format!("/{item_id}/stick"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -1500,7 +1549,9 @@ impl crate::market::MarketApi {
                 "post",
                 &format!("/{item_id}/tag"),
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -1516,7 +1567,7 @@ impl crate::market::MarketApi {
                 "get",
                 &format!("/{item_id}/telegram-login-code"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -1529,7 +1580,7 @@ impl crate::market::MarketApi {
                 "post",
                 &format!("/{item_id}/telegram-reset-authorizations"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -1545,7 +1596,7 @@ impl crate::market::MarketApi {
                 "get",
                 &format!("/{item_id}/temp-email-password"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -1572,7 +1623,9 @@ impl crate::market::MarketApi {
                 "post",
                 &format!("/{item_id}/change-owner"),
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -1585,7 +1638,7 @@ impl crate::market::MarketApi {
                 "delete",
                 &format!("/{item_id}/star"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -1598,7 +1651,7 @@ impl crate::market::MarketApi {
                 "delete",
                 &format!("/{item_id}/stick"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -1611,7 +1664,7 @@ impl crate::market::MarketApi {
                 "delete",
                 &format!("/{item_id}/tag"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -1624,7 +1677,7 @@ impl crate::market::MarketApi {
                 "delete",
                 &format!("/{item_id}"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -1644,7 +1697,12 @@ impl crate::market::MarketApi {
             query.push(("claim_state", v.to_string()));
         }
         self.client
-            .request("get", "/claims", Some(&query), None::<serde_json::Value>)
+            .request(
+                "get",
+                "/claims",
+                Some(&query),
+                None::<crate::client::RequestBody>,
+            )
             .await
     }
 
@@ -1658,7 +1716,7 @@ impl crate::market::MarketApi {
                 "post",
                 "/batch",
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -1678,7 +1736,9 @@ impl crate::market::MarketApi {
                 "post",
                 "/cart",
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -1694,7 +1754,7 @@ impl crate::market::MarketApi {
                 "delete",
                 "/cart",
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -1784,7 +1844,12 @@ impl crate::market::MarketApi {
             query.push(("parse_same_item_ids", v.to_string()));
         }
         self.client
-            .request("get", "/cart", Some(&query), None::<serde_json::Value>)
+            .request(
+                "get",
+                "/cart",
+                Some(&query),
+                None::<crate::client::RequestBody>,
+            )
             .await
     }
 
@@ -1798,7 +1863,7 @@ impl crate::market::MarketApi {
                 "get",
                 &format!("/{category_name}/games"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -1811,7 +1876,12 @@ impl crate::market::MarketApi {
             query.push(("top_queries", v.to_string()));
         }
         self.client
-            .request("get", "/category", Some(&query), None::<serde_json::Value>)
+            .request(
+                "get",
+                "/category",
+                Some(&query),
+                None::<crate::client::RequestBody>,
+            )
             .await
     }
 
@@ -1823,7 +1893,7 @@ impl crate::market::MarketApi {
                 "get",
                 &format!("/{category_name}/params"),
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -1912,7 +1982,7 @@ impl crate::market::MarketApi {
             query.push(("parse_same_item_ids", v.to_string()));
         }
         self.client
-            .request("get", "/", Some(&query), None::<serde_json::Value>)
+            .request("get", "/", Some(&query), None::<crate::client::RequestBody>)
             .await
     }
 
@@ -2054,7 +2124,12 @@ impl crate::market::MarketApi {
             query.push(("balance_max", v.to_string()));
         }
         self.client
-            .request("get", "/battlenet", Some(&query), None::<serde_json::Value>)
+            .request(
+                "get",
+                "/battlenet",
+                Some(&query),
+                None::<crate::client::RequestBody>,
+            )
             .await
     }
 
@@ -2188,7 +2263,12 @@ impl crate::market::MarketApi {
             query.push(("openai_balance_max", v.to_string()));
         }
         self.client
-            .request("get", "/chatgpt", Some(&query), None::<serde_json::Value>)
+            .request(
+                "get",
+                "/chatgpt",
+                Some(&query),
+                None::<crate::client::RequestBody>,
+            )
             .await
     }
 
@@ -2413,7 +2493,12 @@ impl crate::market::MarketApi {
             query.push(("max_orbs", v.to_string()));
         }
         self.client
-            .request("get", "/discord", Some(&query), None::<serde_json::Value>)
+            .request(
+                "get",
+                "/discord",
+                Some(&query),
+                None::<crate::client::RequestBody>,
+            )
             .await
     }
 
@@ -2570,7 +2655,12 @@ impl crate::market::MarketApi {
             query.push(("transactions", v.to_string()));
         }
         self.client
-            .request("get", "/ea", Some(&query), None::<serde_json::Value>)
+            .request(
+                "get",
+                "/ea",
+                Some(&query),
+                None::<crate::client::RequestBody>,
+            )
             .await
     }
 
@@ -2718,7 +2808,12 @@ impl crate::market::MarketApi {
             query.push(("hours_played_max", v.to_string()));
         }
         self.client
-            .request("get", "/epicgames", Some(&query), None::<serde_json::Value>)
+            .request(
+                "get",
+                "/epicgames",
+                Some(&query),
+                None::<crate::client::RequestBody>,
+            )
             .await
     }
 
@@ -2845,7 +2940,7 @@ impl crate::market::MarketApi {
                 "get",
                 "/escape-from-tarkov",
                 Some(&query),
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -3113,7 +3208,12 @@ impl crate::market::MarketApi {
             }
         }
         self.client
-            .request("get", "/fortnite", Some(&query), None::<serde_json::Value>)
+            .request(
+                "get",
+                "/fortnite",
+                Some(&query),
+                None::<crate::client::RequestBody>,
+            )
             .await
     }
 
@@ -3211,7 +3311,12 @@ impl crate::market::MarketApi {
             query.push(("subscription_period", v.to_string()));
         }
         self.client
-            .request("get", "/gifts", Some(&query), None::<serde_json::Value>)
+            .request(
+                "get",
+                "/gifts",
+                Some(&query),
+                None::<crate::client::RequestBody>,
+            )
             .await
     }
 
@@ -3311,7 +3416,12 @@ impl crate::market::MarketApi {
             query.push(("profiles_max", v.to_string()));
         }
         self.client
-            .request("get", "/hytale", Some(&query), None::<serde_json::Value>)
+            .request(
+                "get",
+                "/hytale",
+                Some(&query),
+                None::<crate::client::RequestBody>,
+            )
             .await
     }
 
@@ -3445,7 +3555,12 @@ impl crate::market::MarketApi {
             query.push(("reg_period", v.to_string()));
         }
         self.client
-            .request("get", "/instagram", Some(&query), None::<serde_json::Value>)
+            .request(
+                "get",
+                "/instagram",
+                Some(&query),
+                None::<crate::client::RequestBody>,
+            )
             .await
     }
 
@@ -3735,7 +3850,12 @@ impl crate::market::MarketApi {
             query.push(("daybreak", v.to_string()));
         }
         self.client
-            .request("get", "/mihoyo", Some(&query), None::<serde_json::Value>)
+            .request(
+                "get",
+                "/mihoyo",
+                Some(&query),
+                None::<crate::client::RequestBody>,
+            )
             .await
     }
 
@@ -3937,7 +4057,12 @@ impl crate::market::MarketApi {
             query.push(("minecoins_max", v.to_string()));
         }
         self.client
-            .request("get", "/minecraft", Some(&query), None::<serde_json::Value>)
+            .request(
+                "get",
+                "/minecraft",
+                Some(&query),
+                None::<crate::client::RequestBody>,
+            )
             .await
     }
 
@@ -4225,7 +4350,12 @@ impl crate::market::MarketApi {
             }
         }
         self.client
-            .request("get", "/riot", Some(&query), None::<serde_json::Value>)
+            .request(
+                "get",
+                "/riot",
+                Some(&query),
+                None::<crate::client::RequestBody>,
+            )
             .await
     }
 
@@ -4433,7 +4563,12 @@ impl crate::market::MarketApi {
             }
         }
         self.client
-            .request("get", "/roblox", Some(&query), None::<serde_json::Value>)
+            .request(
+                "get",
+                "/roblox",
+                Some(&query),
+                None::<crate::client::RequestBody>,
+            )
             .await
     }
 
@@ -4552,7 +4687,7 @@ impl crate::market::MarketApi {
                 "get",
                 "/socialclub",
                 Some(&query),
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -4950,7 +5085,12 @@ impl crate::market::MarketApi {
             query.push(("skip_vac_inv", v.to_string()));
         }
         self.client
-            .request("get", "/steam", Some(&query), None::<serde_json::Value>)
+            .request(
+                "get",
+                "/steam",
+                Some(&query),
+                None::<crate::client::RequestBody>,
+            )
             .await
     }
 
@@ -5196,7 +5336,12 @@ impl crate::market::MarketApi {
             query.push(("creation_year_max", v.to_string()));
         }
         self.client
-            .request("get", "/supercell", Some(&query), None::<serde_json::Value>)
+            .request(
+                "get",
+                "/supercell",
+                Some(&query),
+                None::<crate::client::RequestBody>,
+            )
             .await
     }
 
@@ -5431,7 +5576,12 @@ impl crate::market::MarketApi {
             query.push(("max_bot_active_users", v.to_string()));
         }
         self.client
-            .request("get", "/telegram", Some(&query), None::<serde_json::Value>)
+            .request(
+                "get",
+                "/telegram",
+                Some(&query),
+                None::<crate::client::RequestBody>,
+            )
             .await
     }
 
@@ -5570,7 +5720,12 @@ impl crate::market::MarketApi {
             query.push(("email", v.to_string()));
         }
         self.client
-            .request("get", "/tiktok", Some(&query), None::<serde_json::Value>)
+            .request(
+                "get",
+                "/tiktok",
+                Some(&query),
+                None::<crate::client::RequestBody>,
+            )
             .await
     }
 
@@ -5761,7 +5916,12 @@ impl crate::market::MarketApi {
             query.push(("reg_period", v.to_string()));
         }
         self.client
-            .request("get", "/uplay", Some(&query), None::<serde_json::Value>)
+            .request(
+                "get",
+                "/uplay",
+                Some(&query),
+                None::<crate::client::RequestBody>,
+            )
             .await
     }
 
@@ -5864,7 +6024,12 @@ impl crate::market::MarketApi {
             query.push(("autorenewal", v.to_string()));
         }
         self.client
-            .request("get", "/vpn", Some(&query), None::<serde_json::Value>)
+            .request(
+                "get",
+                "/vpn",
+                Some(&query),
+                None::<crate::client::RequestBody>,
+            )
             .await
     }
 
@@ -5983,7 +6148,12 @@ impl crate::market::MarketApi {
             query.push(("total_kredits_max", v.to_string()));
         }
         self.client
-            .request("get", "/warface", Some(&query), None::<serde_json::Value>)
+            .request(
+                "get",
+                "/warface",
+                Some(&query),
+                None::<crate::client::RequestBody>,
+            )
             .await
     }
 
@@ -6197,7 +6367,7 @@ impl crate::market::MarketApi {
                 "get",
                 "/world-of-tanks",
                 Some(&query),
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -6408,7 +6578,12 @@ impl crate::market::MarketApi {
             }
         }
         self.client
-            .request("get", "/wot-blitz", Some(&query), None::<serde_json::Value>)
+            .request(
+                "get",
+                "/wot-blitz",
+                Some(&query),
+                None::<crate::client::RequestBody>,
+            )
             .await
     }
 
@@ -6454,7 +6629,9 @@ impl crate::market::MarketApi {
                 "post",
                 "/custom-discounts",
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -6467,7 +6644,7 @@ impl crate::market::MarketApi {
                 "delete",
                 "/custom-discounts",
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -6506,7 +6683,9 @@ impl crate::market::MarketApi {
                 "put",
                 "/custom-discounts",
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -6519,7 +6698,7 @@ impl crate::market::MarketApi {
                 "get",
                 "/custom-discounts",
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -6551,7 +6730,9 @@ impl crate::market::MarketApi {
                 "post",
                 "/imap",
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -6564,7 +6745,7 @@ impl crate::market::MarketApi {
                 "delete",
                 "/imap",
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -6643,7 +6824,9 @@ impl crate::market::MarketApi {
                 "post",
                 "/invoice",
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -6663,7 +6846,12 @@ impl crate::market::MarketApi {
             query.push(("payment_id", v.to_string()));
         }
         self.client
-            .request("get", "/invoice", Some(&query), None::<serde_json::Value>)
+            .request(
+                "get",
+                "/invoice",
+                Some(&query),
+                None::<crate::client::RequestBody>,
+            )
             .await
     }
 
@@ -6694,7 +6882,7 @@ impl crate::market::MarketApi {
                 "get",
                 "/invoice/list",
                 Some(&query),
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -6743,7 +6931,9 @@ impl crate::market::MarketApi {
                 "post",
                 "/auto-payment",
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -6756,7 +6946,7 @@ impl crate::market::MarketApi {
                 "delete",
                 "/auto-payment",
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -6769,7 +6959,7 @@ impl crate::market::MarketApi {
                 "get",
                 "/auto-payments",
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -6782,7 +6972,7 @@ impl crate::market::MarketApi {
                 "get",
                 "/balance/exchange",
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -6813,7 +7003,9 @@ impl crate::market::MarketApi {
                 "post",
                 "/balance/exchange",
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -6831,7 +7023,9 @@ impl crate::market::MarketApi {
                 "post",
                 "/balance/transfer/cancel",
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -6844,7 +7038,7 @@ impl crate::market::MarketApi {
                 "get",
                 "/currency",
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -6861,7 +7055,7 @@ impl crate::market::MarketApi {
                 "get",
                 "/balance/transfer/fee",
                 Some(&query),
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -6923,7 +7117,7 @@ impl crate::market::MarketApi {
                 "get",
                 "/user/payments",
                 Some(&query),
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -6965,7 +7159,9 @@ impl crate::market::MarketApi {
                 "post",
                 "/balance/payout",
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -6978,7 +7174,7 @@ impl crate::market::MarketApi {
                 "get",
                 "/balance/payout/services",
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -7051,7 +7247,9 @@ impl crate::market::MarketApi {
                 "post",
                 "/balance/transfer",
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -7133,7 +7331,9 @@ impl crate::market::MarketApi {
                 "put",
                 "/me",
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -7151,7 +7351,12 @@ impl crate::market::MarketApi {
             }
         }
         self.client
-            .request("get", "/me", Some(&query), None::<serde_json::Value>)
+            .request(
+                "get",
+                "/me",
+                Some(&query),
+                None::<crate::client::RequestBody>,
+            )
             .await
     }
 
@@ -7196,7 +7401,9 @@ impl crate::market::MarketApi {
                 "post",
                 "/proxy",
                 None::<&[(&str, String)]>,
-                Some(serde_json::Value::Object(body)),
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -7213,7 +7420,7 @@ impl crate::market::MarketApi {
                 "delete",
                 "/proxy",
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }
@@ -7226,7 +7433,7 @@ impl crate::market::MarketApi {
                 "get",
                 "/proxy",
                 None::<&[(&str, String)]>,
-                None::<serde_json::Value>,
+                None::<crate::client::RequestBody>,
             )
             .await
     }

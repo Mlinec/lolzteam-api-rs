@@ -983,9 +983,9 @@ fn generate_method(out: &mut String, ep: &Endpoint, prefix: &str) {
     }
 
     if has_body {
-        out.push_str("            Some(serde_json::Value::Object(body)),\n");
+        out.push_str("            Some(crate::client::RequestBody::Json(serde_json::Value::Object(body))),\n");
     } else {
-        out.push_str("            None::<serde_json::Value>,\n");
+        out.push_str("            None::<crate::client::RequestBody>,\n");
     }
 
     out.push_str("        ).await\n");

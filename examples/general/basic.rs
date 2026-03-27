@@ -6,7 +6,7 @@ use lolzteam::LolzteamClient;
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let token = std::env::args().nth(1).expect("Usage: basic <TOKEN>");
 
-    let client = LolzteamClient::new(&token);
+    let client = LolzteamClient::new(&token).expect("failed to build client");
 
     println!("--- forum: user #1 ---");
     match client.forum().users_get(1, None).await {

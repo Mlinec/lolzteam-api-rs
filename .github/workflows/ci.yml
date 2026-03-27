@@ -28,8 +28,14 @@ jobs:
       - name: Clippy
         run: cargo clippy --all-targets -- -D warnings
 
+      - name: Test
+        run: cargo test --workspace --all-targets
+
       - name: Build
         run: cargo build --release
+
+      - name: Dry run publish
+        run: cargo publish --dry-run --locked
 
   codegen:
     name: Verify codegen is up-to-date

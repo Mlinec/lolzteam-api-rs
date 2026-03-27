@@ -139,18 +139,14 @@ impl LolzteamClientBuilder {
 }
 
 impl LolzteamClient {
-    pub fn new(token: impl Into<String>) -> Self {
+    pub fn new(token: impl Into<String>) -> error::Result<Self> {
         let token = token.into();
-        let forum_client = ApiClient::builder(FORUM_BASE_URL, &token)
-            .build()
-            .expect("failed to build default forum client");
-        let market_client = ApiClient::builder(MARKET_BASE_URL, &token)
-            .build()
-            .expect("failed to build default market client");
-        Self {
+        let forum_client = ApiClient::builder(FORUM_BASE_URL, &token).build()?;
+        let market_client = ApiClient::builder(MARKET_BASE_URL, &token).build()?;
+        Ok(Self {
             forum_client,
             market_client,
-        }
+        })
     }
 
     pub fn builder(token: impl Into<String>) -> LolzteamClientBuilder {
