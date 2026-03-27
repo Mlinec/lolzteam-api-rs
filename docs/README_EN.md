@@ -31,7 +31,7 @@ use lolzteam::LolzteamClient;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let client = LolzteamClient::new("YOUR_TOKEN");
+    let client = LolzteamClient::new("YOUR_TOKEN")?;
 
     let user = client.forum().users_get(1, None).await?;
     println!("{:?}", user);
