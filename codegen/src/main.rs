@@ -1047,6 +1047,9 @@ fn generate_method(out: &mut String, ep: &Endpoint, prefix: &str) {
         if let Some(spec) = &ep.request_body {
             if spec.is_multipart || spec.is_form {
                 out.push_str("        let mut body = Vec::<(String, String)>::new();\n");
+                out.push_str("        let _content_type = \"");
+                out.push_str(&spec.content_type);
+                out.push_str("\";\n");
                 for p in &ep.body_params {
                     let accessor = if use_params_struct {
                         format!("params.{}", p.rust_name)

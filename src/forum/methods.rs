@@ -3303,6 +3303,7 @@ impl crate::forum::ForumApi {
         params: ForumUsersAvatarUploadParams,
     ) -> Result<UsersAvatarUploadResponse> {
         let mut body = Vec::<(String, String)>::new();
+        let _content_type = "multipart/form-data";
         body.push(("avatar".into(), params.avatar.to_string()));
         if let Some(v) = &params.crop {
             body.push(("crop".into(), v.to_string()));
@@ -3375,6 +3376,7 @@ impl crate::forum::ForumApi {
         params: ForumUsersBackgroundUploadParams,
     ) -> Result<UsersBackgroundUploadResponse> {
         let mut body = Vec::<(String, String)>::new();
+        let _content_type = "multipart/form-data";
         body.push(("background".into(), params.background.to_string()));
         if let Some(v) = &params.crop {
             body.push(("crop".into(), v.to_string()));
