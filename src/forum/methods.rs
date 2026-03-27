@@ -18,9 +18,13 @@ impl crate::forum::ForumApi {
     pub async fn assets_css(&self, css: Option<Vec<String>>) -> Result<AssetsCssResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &css {
-            for item in v {
-                query.push(("css", item.to_string()));
-            }
+            query.push((
+                "css",
+                v.iter()
+                    .map(|x| x.to_string())
+                    .collect::<Vec<_>>()
+                    .join(","),
+            ));
         }
         self.client
             .request(
@@ -1998,9 +2002,13 @@ impl crate::forum::ForumApi {
             query.push(("limit", v.to_string()));
         }
         if let Some(v) = &params.fields_include {
-            for item in v {
-                query.push(("fields_include", item.to_string()));
-            }
+            query.push((
+                "fields_include",
+                v.iter()
+                    .map(|x| x.to_string())
+                    .collect::<Vec<_>>()
+                    .join(","),
+            ));
         }
         self.client
             .request(
@@ -2883,9 +2891,13 @@ impl crate::forum::ForumApi {
             query.push(("total", v.to_string()));
         }
         if let Some(v) = &fields_include {
-            for item in v {
-                query.push(("fields_include", item.to_string()));
-            }
+            query.push((
+                "fields_include",
+                v.iter()
+                    .map(|x| x.to_string())
+                    .collect::<Vec<_>>()
+                    .join(","),
+            ));
         }
         self.client
             .request(
@@ -2919,9 +2931,13 @@ impl crate::forum::ForumApi {
     ) -> Result<ThreadsGetResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &fields_include {
-            for item in v {
-                query.push(("fields_include", item.to_string()));
-            }
+            query.push((
+                "fields_include",
+                v.iter()
+                    .map(|x| x.to_string())
+                    .collect::<Vec<_>>()
+                    .join(","),
+            ));
         }
         self.client
             .request(
@@ -3009,9 +3025,13 @@ impl crate::forum::ForumApi {
             query.push(("thread_update_date", v.to_string()));
         }
         if let Some(v) = &params.fields_include {
-            for item in v {
-                query.push(("fields_include", item.to_string()));
-            }
+            query.push((
+                "fields_include",
+                v.iter()
+                    .map(|x| x.to_string())
+                    .collect::<Vec<_>>()
+                    .join(","),
+            ));
         }
         self.client
             .request(
@@ -3282,28 +3302,23 @@ impl crate::forum::ForumApi {
         user_id: i64,
         params: ForumUsersAvatarUploadParams,
     ) -> Result<UsersAvatarUploadResponse> {
-        let mut body = serde_json::Map::new();
-        body.insert(
-            "avatar".into(),
-            serde_json::to_value(&params.avatar).unwrap_or_default(),
-        );
+        let mut body = Vec::<(String, String)>::new();
+        body.push(("avatar".into(), params.avatar.to_string()));
         if let Some(v) = &params.crop {
-            body.insert("crop".into(), serde_json::to_value(v).unwrap_or_default());
+            body.push(("crop".into(), v.to_string()));
         }
         if let Some(v) = &params.x {
-            body.insert("x".into(), serde_json::to_value(v).unwrap_or_default());
+            body.push(("x".into(), v.to_string()));
         }
         if let Some(v) = &params.y {
-            body.insert("y".into(), serde_json::to_value(v).unwrap_or_default());
+            body.push(("y".into(), v.to_string()));
         }
         self.client
             .request(
                 "post",
                 &format!("/users/{user_id}/avatar"),
                 None::<&[(&str, String)]>,
-                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
-                    body,
-                ))),
+                Some(crate::client::RequestBody::Form(body)),
             )
             .await
     }
@@ -3359,28 +3374,23 @@ impl crate::forum::ForumApi {
         user_id: i64,
         params: ForumUsersBackgroundUploadParams,
     ) -> Result<UsersBackgroundUploadResponse> {
-        let mut body = serde_json::Map::new();
-        body.insert(
-            "background".into(),
-            serde_json::to_value(&params.background).unwrap_or_default(),
-        );
+        let mut body = Vec::<(String, String)>::new();
+        body.push(("background".into(), params.background.to_string()));
         if let Some(v) = &params.crop {
-            body.insert("crop".into(), serde_json::to_value(v).unwrap_or_default());
+            body.push(("crop".into(), v.to_string()));
         }
         if let Some(v) = &params.x {
-            body.insert("x".into(), serde_json::to_value(v).unwrap_or_default());
+            body.push(("x".into(), v.to_string()));
         }
         if let Some(v) = &params.y {
-            body.insert("y".into(), serde_json::to_value(v).unwrap_or_default());
+            body.push(("y".into(), v.to_string()));
         }
         self.client
             .request(
                 "post",
                 &format!("/users/{user_id}/background"),
                 None::<&[(&str, String)]>,
-                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
-                    body,
-                ))),
+                Some(crate::client::RequestBody::Form(body)),
             )
             .await
     }
@@ -3637,9 +3647,13 @@ impl crate::forum::ForumApi {
             query.push(("custom_fields", v.to_string()));
         }
         if let Some(v) = &fields_include {
-            for item in v {
-                query.push(("fields_include", item.to_string()));
-            }
+            query.push((
+                "fields_include",
+                v.iter()
+                    .map(|x| x.to_string())
+                    .collect::<Vec<_>>()
+                    .join(","),
+            ));
         }
         self.client
             .request(
@@ -3731,9 +3745,13 @@ impl crate::forum::ForumApi {
     ) -> Result<UsersGetResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &fields_include {
-            for item in v {
-                query.push(("fields_include", item.to_string()));
-            }
+            query.push((
+                "fields_include",
+                v.iter()
+                    .map(|x| x.to_string())
+                    .collect::<Vec<_>>()
+                    .join(","),
+            ));
         }
         self.client
             .request(
@@ -3859,9 +3877,13 @@ impl crate::forum::ForumApi {
             query.push(("limit", v.to_string()));
         }
         if let Some(v) = &fields_include {
-            for item in v {
-                query.push(("fields_include", item.to_string()));
-            }
+            query.push((
+                "fields_include",
+                v.iter()
+                    .map(|x| x.to_string())
+                    .collect::<Vec<_>>()
+                    .join(","),
+            ));
         }
         self.client
             .request(

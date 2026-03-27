@@ -238,7 +238,10 @@ fn request_body_spec(details: &Value) -> Option<RequestBodySpec> {
 
 fn param_style(param: &Value) -> (Option<String>, Option<bool>) {
     (
-        param.get("style").and_then(|v| v.as_str()).map(|s| s.to_string()),
+        param
+            .get("style")
+            .and_then(|v| v.as_str())
+            .map(|s| s.to_string()),
         param.get("explode").and_then(|v| v.as_bool()),
     )
 }
@@ -1102,7 +1105,15 @@ fn generate_method(out: &mut String, ep: &Endpoint, prefix: &str) {
     }
 
     if has_body {
-        out.push_str("            Some(crate::client::RequestBody::Json(serde_json::Value::Object(body))),\n");
+        if let Some(spec) = &ep.request_body {
+            if spec.is_multipart || spec.is_form {
+                out.push_str("            Some(crate::client::RequestBody::Form(body)),\n");
+            } else {
+                out.push_str("            Some(crate::client::RequestBody::Json(serde_json::Value::Object(body))),\n");
+            }
+        } else {
+            out.push_str("            None::<crate::client::RequestBody>,\n");
+        }
     } else {
         out.push_str("            None::<crate::client::RequestBody>,\n");
     }

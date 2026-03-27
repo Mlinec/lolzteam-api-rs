@@ -7346,9 +7346,13 @@ impl crate::market::MarketApi {
     ) -> Result<ProfileGetResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         if let Some(v) = &fields_include {
-            for item in v {
-                query.push(("fields_include", item.to_string()));
-            }
+            query.push((
+                "fields_include",
+                v.iter()
+                    .map(|x| x.to_string())
+                    .collect::<Vec<_>>()
+                    .join(","),
+            ));
         }
         self.client
             .request(
