@@ -37,7 +37,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("\n--- последние посты ---");
     match forum
         .search_posts(ForumSearchPostsParams {
-            user_id: Some(serde_json::json!(user_id)),
+            user_id: Some(user_id.to_string()),
             limit: Some(5),
             ..Default::default()
         })

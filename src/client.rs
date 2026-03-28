@@ -1,15 +1,89 @@
 use crate::error::{Error, Result};
 use reqwest::{Client, Proxy, StatusCode};
 use serde::de::DeserializeOwned;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use std::time::{Duration, SystemTime};
 use tracing::{debug, warn};
 
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Default)]
+pub struct MultipartFile {
+    pub bytes: Vec<u8>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub filename: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub mime_type: Option<String>,
+}
+
+impl MultipartFile {
+    pub fn new(bytes: impl Into<Vec<u8>>) -> Self {
+        Self {
+            bytes: bytes.into(),
+            filename: None,
+            mime_type: None,
+        }
+    }
+
+    pub fn with_filename(mut self, filename: impl Into<String>) -> Self {
+        self.filename = Some(filename.into());
+        self
+    }
+
+    pub fn with_mime_type(mut self, mime_type: impl Into<String>) -> Self {
+        self.mime_type = Some(mime_type.into());
+        self
+    }
+
+    fn into_part(self) -> reqwest::multipart::Part {
+        let mut part = reqwest::multipart::Part::bytes(self.bytes);
+        if let Some(filename) = self.filename {
+            part = part.file_name(filename);
+        }
+        part
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum MultipartField {
+    Text(String),
+    File(MultipartFile),
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Default)]
+pub struct MultipartForm {
+    fields: Vec<(String, MultipartField)>,
+}
+
+impl MultipartForm {
+    pub fn new() -> Self {
+        Self { fields: Vec::new() }
+    }
+
+    pub fn text(&mut self, name: impl Into<String>, value: impl Into<String>) {
+        self.fields
+            .push((name.into(), MultipartField::Text(value.into())));
+    }
+
+    pub fn file(&mut self, name: impl Into<String>, file: MultipartFile) {
+        self.fields.push((name.into(), MultipartField::File(file)));
+    }
+
+    fn into_reqwest(self) -> reqwest::multipart::Form {
+        let mut form = reqwest::multipart::Form::new();
+        for (name, field) in self.fields {
+            form = match field {
+                MultipartField::Text(value) => form.text(name, value),
+                MultipartField::File(file) => form.part(name, file.into_part()),
+            };
+        }
+        form
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum RequestBody {
     Json(serde_json::Value),
     Form(Vec<(String, String)>),
-    Multipart(reqwest::multipart::Form),
+    Multipart(MultipartForm),
 }
 
 impl RequestBody {
@@ -17,33 +91,10 @@ impl RequestBody {
         match self {
             RequestBody::Json(value) => req.json(&value),
             RequestBody::Form(fields) => req.form(&fields),
-            RequestBody::Multipart(form) => req.multipart(form),
+            RequestBody::Multipart(form) => req.multipart(form.into_reqwest()),
         }
     }
 }
-
-impl Clone for RequestBody {
-    fn clone(&self) -> Self {
-        match self {
-            RequestBody::Json(value) => RequestBody::Json(value.clone()),
-            RequestBody::Form(fields) => RequestBody::Form(fields.clone()),
-            RequestBody::Multipart(_) => panic!("multipart request bodies cannot be cloned"),
-        }
-    }
-}
-
-impl PartialEq for RequestBody {
-    fn eq(&self, other: &Self) -> bool {
-        match (self, other) {
-            (RequestBody::Json(a), RequestBody::Json(b)) => a == b,
-            (RequestBody::Form(a), RequestBody::Form(b)) => a == b,
-            (RequestBody::Multipart(_), RequestBody::Multipart(_)) => true,
-            _ => false,
-        }
-    }
-}
-
-impl Eq for RequestBody {}
 
 fn parse_retry_after(value: &str) -> Option<Duration> {
     if let Ok(secs) = value.parse::<u64>() {
@@ -77,6 +128,20 @@ fn extract_error_message(body: &str) -> String {
                 .map(|s| s.to_string())
         })
         .unwrap_or_else(|| body.to_string())
+}
+
+fn is_retryable_transport_error(error: &reqwest::Error) -> bool {
+    error.is_timeout() || error.is_connect()
+}
+
+fn is_retryable_status(status: StatusCode) -> bool {
+    matches!(
+        status,
+        StatusCode::TOO_MANY_REQUESTS
+            | StatusCode::BAD_GATEWAY
+            | StatusCode::SERVICE_UNAVAILABLE
+            | StatusCode::GATEWAY_TIMEOUT
+    )
 }
 
 #[derive(Debug, Clone)]
@@ -115,9 +180,9 @@ impl ApiClientBuilder {
     }
 
     pub fn build(self) -> Result<ApiClient> {
-        let mut builder = Client::builder().timeout(self.timeout).default_headers({
-            let mut h = reqwest::header::HeaderMap::new();
-            h.insert(
+        let mut headers = reqwest::header::HeaderMap::new();
+        if !self.token.is_empty() {
+            headers.insert(
                 reqwest::header::AUTHORIZATION,
                 format!("Bearer {}", self.token)
                     .parse()
@@ -127,9 +192,12 @@ impl ApiClientBuilder {
                             .into(),
                     })?,
             );
-            h.insert(reqwest::header::ACCEPT, "application/json".parse().unwrap());
-            h
-        });
+        }
+        headers.insert(reqwest::header::ACCEPT, "application/json".parse().unwrap());
+
+        let mut builder = Client::builder()
+            .timeout(self.timeout)
+            .default_headers(headers);
 
         if let Some(proxy_url) = &self.proxy {
             builder = builder.proxy(Proxy::all(proxy_url)?);
@@ -159,7 +227,7 @@ impl ApiClient {
         ApiClientBuilder::new(base_url, token)
     }
 
-    /// Выполняет запрос с авто-ретраем на 429/502/503.
+    /// Выполняет запрос с авто-ретраем на 429/502/503/504 и транзиентные ошибки сети.
     pub async fn request<Q, R>(
         &self,
         method: &str,
@@ -209,8 +277,8 @@ impl ApiClient {
 
             let resp = match req.send().await {
                 Ok(r) => r,
-                Err(e) if attempt < self.max_retries && e.is_timeout() => {
-                    warn!(attempt, "timeout, retrying in {:?}", backoff);
+                Err(e) if attempt < self.max_retries && is_retryable_transport_error(&e) => {
+                    warn!(attempt, error = %e, "transport error, retrying in {:?}", backoff);
                     tokio::time::sleep(backoff).await;
                     backoff = (backoff * 2).min(MAX_BACKOFF);
                     continue;
@@ -219,39 +287,33 @@ impl ApiClient {
             };
 
             let status = resp.status();
+            if is_retryable_status(status) && attempt < self.max_retries {
+                let retry_after = resp
+                    .headers()
+                    .get("retry-after")
+                    .and_then(|v| v.to_str().ok())
+                    .and_then(parse_retry_after);
 
-            if matches!(
-                status,
-                StatusCode::TOO_MANY_REQUESTS
-                    | StatusCode::BAD_GATEWAY
-                    | StatusCode::SERVICE_UNAVAILABLE
-            ) {
-                if attempt < self.max_retries {
-                    let retry_after = resp
-                        .headers()
-                        .get("retry-after")
-                        .and_then(|v| v.to_str().ok())
-                        .and_then(parse_retry_after);
-
-                    let wait = retry_after.unwrap_or(backoff);
-                    warn!(
-                        attempt,
-                        status = status.as_u16(),
-                        "retryable status, waiting {:?}",
-                        wait
-                    );
-                    tokio::time::sleep(wait).await;
-                    backoff = (backoff * 2).min(MAX_BACKOFF);
-                    continue;
-                }
-
-                return Err(Error::RateLimited {
-                    attempts: self.max_retries + 1,
-                });
+                let wait = retry_after.unwrap_or(backoff);
+                warn!(
+                    attempt,
+                    status = status.as_u16(),
+                    "retryable status, waiting {:?}",
+                    wait
+                );
+                tokio::time::sleep(wait).await;
+                backoff = (backoff * 2).min(MAX_BACKOFF);
+                continue;
             }
 
             let status_code = status.as_u16();
             let response_text = resp.text().await.map_err(Error::Http)?;
+
+            if status == StatusCode::TOO_MANY_REQUESTS {
+                return Err(Error::RateLimited {
+                    attempts: self.max_retries + 1,
+                });
+            }
 
             if !status.is_success() {
                 let message = extract_error_message(&response_text);

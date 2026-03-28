@@ -14,7 +14,7 @@ pub struct MarketAutoPaymentsCreateParams {
     pub amount: f64,
     /// Currency for the payment.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub currency: Option<serde_json::Value>,
+    pub currency: Option<String>,
     /// Day of the month for the payment. (Use "0" for the last day of the month)
     pub day: i64,
     /// Payment description.
@@ -4275,9 +4275,9 @@ pub struct MarketCategoryWotBlitzParams {
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
 pub struct MarketCustomDiscountsCreateParams {
-    pub category_id: serde_json::Value,
+    pub category_id: i64,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub currency: Option<serde_json::Value>,
+    pub currency: Option<String>,
     /// Discount percent to apply.
     pub discount_percent: f64,
     /// Maximum accounts price for which the discount applies.
@@ -4654,7 +4654,7 @@ pub struct MarketManagingEditParams {
     pub allow_ask_discount: Option<bool>,
     /// Using currency for amount. Required if you are trying to change price field.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub currency: Option<serde_json::Value>,
+    pub currency: Option<String>,
     /// Account public description.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
@@ -4784,7 +4784,7 @@ pub struct MarketPaymentsInvoiceCreateParams {
     /// Comment to the invoice.
     pub comment: String,
     /// Currency that will be used to create the invoice.
-    pub currency: serde_json::Value,
+    pub currency: String,
     /// Create a test invoice.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub is_test: Option<bool>,
@@ -4834,7 +4834,7 @@ pub struct MarketPaymentsInvoiceListParams {
 #[serde(default)]
 pub struct MarketPaymentsPayoutParams {
     pub amount: f64,
-    pub currency: serde_json::Value,
+    pub currency: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub extra: Option<serde_json::Value>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -4853,7 +4853,7 @@ pub struct MarketPaymentsTransferParams {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub comment: Option<String>,
     /// Using currency for amount.
-    pub currency: serde_json::Value,
+    pub currency: String,
     /// Hold length option.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub hold_length_option: Option<String>,
@@ -4947,7 +4947,7 @@ pub struct MarketPublishingAddParams {
     pub allow_ask_discount: Option<bool>,
     /// Accounts category.
     pub category_id: i64,
-    pub currency: serde_json::Value,
+    pub currency: String,
     /// Account public description.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
@@ -4978,7 +4978,7 @@ pub struct MarketPublishingAddParams {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub proxy_id: Option<i64>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub random_proxy: Option<serde_json::Value>,
+    pub random_proxy: Option<bool>,
     /// Put item id, if you are trying to resell item. This is useful to pass temporary email from reselling item to new item. You will get same temporary email from reselling account.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub resell_item_id: Option<i64>,
@@ -5001,7 +5001,7 @@ pub struct MarketPublishingCheckParams {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub email_type: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub extra: Option<Extra>,
+    pub extra: Option<serde_json::Value>,
     /// Required if a **category** is one of list of Required email login data categories.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub has_email_login_data: Option<bool>,
@@ -5051,7 +5051,7 @@ pub struct MarketPublishingFastSellParams {
     /// Accounts category.
     pub category_id: i64,
     /// Using currency.
-    pub currency: serde_json::Value,
+    pub currency: String,
     /// Account public description.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
@@ -5065,7 +5065,7 @@ pub struct MarketPublishingFastSellParams {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub extended_guarantee: Option<i64>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub extra: Option<Extra>,
+    pub extra: Option<serde_json::Value>,
     /// Required if a **category** is one of list of Required email login data categories.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub has_email_login_data: Option<bool>,
@@ -5089,7 +5089,7 @@ pub struct MarketPublishingFastSellParams {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub proxy_id: Option<i64>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub random_proxy: Option<serde_json::Value>,
+    pub random_proxy: Option<bool>,
     /// Title of account. If **title** specified and **title_en** is empty, **title_en** will be automatically translated to English language.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub title: Option<String>,

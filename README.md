@@ -11,10 +11,20 @@ Rust клиент для [LOLZTEAM API](https://github.com/AS7RIDENIED/LOLZTEAM)
 
 - 266 эндпоинтов — Forum (151) + Market (115)
 - Типизированные модели ответов
+- Типизированный multipart upload для forum-аватаров/обложек
 - Прокси — HTTP / HTTPS / SOCKS5 (раздельные для форума и маркета)
-- Авто-ретрай на 429 / 502 / 503 с экспоненциальным бэкоффом
+- Авто-ретрай на 429 / 502 / 503 / 504 и транзиентные сетевые ошибки
 - Кодогенерация из OpenAPI JSON
 - CI/CD — GitHub Actions
+
+## Соответствие ТЗ
+
+- Генерация методов и схем ответов из OpenAPI (`codegen/` + `make generate`)
+- Forum + Market в одном крейте
+- Раздельные прокси для forum/market и общий `.proxy(...)`
+- Автоматический ретрай 429 / 502 / 503 (дополнительно 504 и connect/timeout)
+- MIT лицензия
+- GitHub Actions: fmt, clippy, test, build, `cargo publish --dry-run`, проверка актуальности кодогена
 
 ## Установка
 
@@ -79,9 +89,30 @@ match client.forum().users_get(1, None).await {
 
 Автоматический ретрай с экспоненциальным бэкоффом:
 - **429** — учитывает `Retry-After`
-- **502 / 503** — транзиентные ошибки сервера
+- **502 / 503 / 504** — транзиентные ошибки сервера
+- **timeout / connect** — сетевые ошибки транспорта
 
 По умолчанию до 5 попыток, начиная с 2с, максимум 60с.
+
+## Multipart upload
+
+```rust
+use lolzteam::client::MultipartFile;
+use lolzteam::forum::types::ForumUsersAvatarUploadParams;
+
+let avatar = MultipartFile::new(std::fs::read("avatar.png")?)
+    .with_filename("avatar.png");
+
+client.forum().users_avatar_upload(
+    1,
+    ForumUsersAvatarUploadParams {
+        avatar,
+        crop: Some(256),
+        x: Some(0),
+        y: Some(0),
+    },
+).await?;
+```
 
 ## Параметры эндпоинтов
 

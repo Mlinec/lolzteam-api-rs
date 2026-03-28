@@ -40,13 +40,37 @@ impl crate::forum::ForumApi {
 
     /// Get Access Token
     /// `POST /oauth/token`
-    pub async fn o_auth_token(&self) -> Result<OAuthTokenResponse> {
+    pub async fn o_auth_token(&self, params: ForumOAuthTokenParams) -> Result<OAuthTokenResponse> {
+        let mut body = crate::client::MultipartForm::new();
+        body.text("client_id", params.client_id.to_string());
+        body.text("client_secret", params.client_secret.to_string());
+        if let Some(v) = &params.code {
+            body.text("code", v.to_string());
+        }
+        body.text("grant_type", params.grant_type.to_string());
+        if let Some(v) = &params.password {
+            body.text("password", v.to_string());
+        }
+        if let Some(v) = &params.redirect_uri {
+            body.text("redirect_uri", v.to_string());
+        }
+        if let Some(v) = &params.refresh_token {
+            body.text("refresh_token", v.to_string());
+        }
+        if let Some(v) = &params.scope {
+            for item in v {
+                body.text("scope", item.to_string());
+            }
+        }
+        if let Some(v) = &params.username {
+            body.text("username", v.to_string());
+        }
         self.client
             .request(
                 "post",
                 "/oauth/token",
                 None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
+                Some(crate::client::RequestBody::Multipart(body)),
             )
             .await
     }
@@ -55,13 +79,17 @@ impl crate::forum::ForumApi {
 
     /// Batch
     /// `POST /batch`
-    pub async fn batch_execute(&self) -> Result<BatchExecuteResponse> {
+    pub async fn batch_execute(
+        &self,
+        body: Vec<serde_json::Value>,
+    ) -> Result<BatchExecuteResponse> {
+        let body = serde_json::to_value(&body).unwrap_or_default();
         self.client
             .request(
                 "post",
                 "/batch",
                 None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
+                Some(crate::client::RequestBody::Json(body)),
             )
             .await
     }
@@ -113,10 +141,7 @@ impl crate::forum::ForumApi {
 
     /// Unignore Chat User
     /// `DELETE /chatbox/ignore`
-    pub async fn chatbox_delete_ignore(
-        &self,
-        user_id: serde_json::Value,
-    ) -> Result<serde_json::Value> {
+    pub async fn chatbox_delete_ignore(&self, user_id: String) -> Result<serde_json::Value> {
         self.client
             .request(
                 "delete",
@@ -263,10 +288,7 @@ impl crate::forum::ForumApi {
 
     /// Ignore Chat User
     /// `POST /chatbox/ignore`
-    pub async fn chatbox_post_ignore(
-        &self,
-        user_id: serde_json::Value,
-    ) -> Result<serde_json::Value> {
+    pub async fn chatbox_post_ignore(&self, user_id: String) -> Result<serde_json::Value> {
         let mut body = serde_json::Map::new();
         body.insert(
             "user_id".into(),
@@ -289,7 +311,7 @@ impl crate::forum::ForumApi {
     pub async fn chatbox_post_message(
         &self,
         message: String,
-        room_id: serde_json::Value,
+        room_id: i64,
         reply_message_id: Option<i64>,
     ) -> Result<ChatboxPostMessageResponse> {
         let mut body = serde_json::Map::new();
@@ -913,10 +935,7 @@ impl crate::forum::ForumApi {
 
     /// Start Conversation
     /// `POST /conversations/start`
-    pub async fn conversations_start(
-        &self,
-        user_id: serde_json::Value,
-    ) -> Result<ConversationsStartResponse> {
+    pub async fn conversations_start(&self, user_id: String) -> Result<ConversationsStartResponse> {
         let mut body = serde_json::Map::new();
         body.insert(
             "user_id".into(),
@@ -1010,13 +1029,28 @@ impl crate::forum::ForumApi {
 
     /// Create Form
     /// `POST /forms/save`
-    pub async fn forms_create(&self) -> Result<FormsCreateResponse> {
+    pub async fn forms_create(
+        &self,
+        fields: serde_json::Value,
+        form_id: i64,
+    ) -> Result<FormsCreateResponse> {
+        let mut body = serde_json::Map::new();
+        body.insert(
+            "fields".into(),
+            serde_json::to_value(&fields).unwrap_or_default(),
+        );
+        body.insert(
+            "form_id".into(),
+            serde_json::to_value(&form_id).unwrap_or_default(),
+        );
         self.client
             .request(
                 "post",
                 "/forms/save",
                 None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
+                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
+                    body,
+                ))),
             )
             .await
     }
@@ -1865,7 +1899,7 @@ impl crate::forum::ForumApi {
     pub async fn profile_posts_create(
         &self,
         post_body: String,
-        user_id: serde_json::Value,
+        user_id: String,
     ) -> Result<ProfilePostsCreateResponse> {
         let mut body = serde_json::Map::new();
         body.insert(
@@ -3302,24 +3336,23 @@ impl crate::forum::ForumApi {
         user_id: i64,
         params: ForumUsersAvatarUploadParams,
     ) -> Result<UsersAvatarUploadResponse> {
-        let mut body = Vec::<(String, String)>::new();
-        let _content_type = "multipart/form-data";
-        body.push(("avatar".into(), params.avatar.to_string()));
+        let mut body = crate::client::MultipartForm::new();
+        body.file("avatar", params.avatar.clone());
         if let Some(v) = &params.crop {
-            body.push(("crop".into(), v.to_string()));
+            body.text("crop", v.to_string());
         }
         if let Some(v) = &params.x {
-            body.push(("x".into(), v.to_string()));
+            body.text("x", v.to_string());
         }
         if let Some(v) = &params.y {
-            body.push(("y".into(), v.to_string()));
+            body.text("y", v.to_string());
         }
         self.client
             .request(
                 "post",
                 &format!("/users/{user_id}/avatar"),
                 None::<&[(&str, String)]>,
-                Some(crate::client::RequestBody::Form(body)),
+                Some(crate::client::RequestBody::Multipart(body)),
             )
             .await
     }
@@ -3375,24 +3408,23 @@ impl crate::forum::ForumApi {
         user_id: i64,
         params: ForumUsersBackgroundUploadParams,
     ) -> Result<UsersBackgroundUploadResponse> {
-        let mut body = Vec::<(String, String)>::new();
-        let _content_type = "multipart/form-data";
-        body.push(("background".into(), params.background.to_string()));
+        let mut body = crate::client::MultipartForm::new();
+        body.file("background", params.background.clone());
         if let Some(v) = &params.crop {
-            body.push(("crop".into(), v.to_string()));
+            body.text("crop", v.to_string());
         }
         if let Some(v) = &params.x {
-            body.push(("x".into(), v.to_string()));
+            body.text("x", v.to_string());
         }
         if let Some(v) = &params.y {
-            body.push(("y".into(), v.to_string()));
+            body.text("y", v.to_string());
         }
         self.client
             .request(
                 "post",
                 &format!("/users/{user_id}/background"),
                 None::<&[(&str, String)]>,
-                Some(crate::client::RequestBody::Form(body)),
+                Some(crate::client::RequestBody::Multipart(body)),
             )
             .await
     }

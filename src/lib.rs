@@ -41,7 +41,7 @@ pub mod forum;
 pub mod market;
 pub mod models;
 
-pub use client::{ApiClient, ApiClientBuilder};
+pub use client::{ApiClient, ApiClientBuilder, MultipartFile, MultipartForm, RequestBody};
 pub use error::Error;
 
 use std::time::Duration;

@@ -44,6 +44,7 @@ struct Param {
     required: bool,
     description: Option<String>,
     is_vec: bool,
+    #[allow(dead_code)]
     style: Option<String>,
     explode: Option<bool>,
     format: Option<String>,
@@ -206,6 +207,16 @@ fn param_string(schema: &Value, root: &Value) -> (String, Option<String>) {
     (ty, format)
 }
 
+const RAW_BODY_PARAM_NAME: &str = "__raw_body";
+
+fn resolved_schema<'a>(schema: &'a Value, root: &'a Value) -> &'a Value {
+    if let Some(r) = schema.get("$ref").and_then(|v| v.as_str()) {
+        resolve_ref(root, r)
+    } else {
+        schema
+    }
+}
+
 fn request_body_spec(details: &Value) -> Option<RequestBodySpec> {
     let rb = details.get("requestBody")?;
     let content = rb.get("content")?.as_object()?;
@@ -250,9 +261,10 @@ fn schema_is_binary(schema: &Value) -> bool {
     schema.get("format").and_then(|v| v.as_str()) == Some("binary")
 }
 
-fn rust_type_for_param(schema: &Value, root: &Value, required: bool) -> String {
+fn rust_type_for_body_param(schema: &Value, root: &Value, required: bool) -> String {
+    let schema = resolved_schema(schema, root);
     let base = if schema_is_binary(schema) {
-        "crate::client::RequestBody".to_string()
+        "crate::client::MultipartFile".to_string()
     } else {
         json_type_to_rust(schema, root, false)
     };
@@ -263,12 +275,155 @@ fn rust_type_for_param(schema: &Value, root: &Value, required: bool) -> String {
     }
 }
 
-fn request_body_arg(spec: &RequestBodySpec) -> String {
-    if spec.is_multipart || spec.is_form {
-        "crate::client::RequestBody::Form(body)".to_string()
-    } else {
-        "crate::client::RequestBody::Json(serde_json::Value::Object(body))".to_string()
+fn request_body_required(details: &Value) -> bool {
+    details
+        .get("requestBody")
+        .and_then(|rb| rb.get("required"))
+        .and_then(|v| v.as_bool())
+        .unwrap_or(true)
+}
+
+fn required_fields_for_schema(schema: &Value, root: &Value) -> BTreeSet<String> {
+    let schema = resolved_schema(schema, root);
+    let mut required: BTreeSet<String> = schema
+        .get("required")
+        .and_then(|r| r.as_array())
+        .map(|arr| {
+            arr.iter()
+                .filter_map(|v| v.as_str().map(|s| s.to_string()))
+                .collect()
+        })
+        .unwrap_or_default();
+
+    if let Some(items) = schema.get("allOf").and_then(|v| v.as_array()) {
+        for item in items {
+            required.extend(required_fields_for_schema(item, root));
+        }
     }
+
+    for key in ["oneOf", "anyOf"] {
+        if let Some(items) = schema.get(key).and_then(|v| v.as_array()) {
+            let mut iter = items.iter();
+            if let Some(first) = iter.next() {
+                let mut intersection = required_fields_for_schema(first, root);
+                for item in iter {
+                    let item_required = required_fields_for_schema(item, root);
+                    intersection = intersection.intersection(&item_required).cloned().collect();
+                }
+                required.extend(intersection);
+            }
+        }
+    }
+
+    required
+}
+
+fn collect_object_properties(schema: &Value, root: &Value, props: &mut BTreeMap<String, Value>) {
+    let schema = resolved_schema(schema, root);
+
+    if let Some(schema_props) = schema.get("properties").and_then(|p| p.as_object()) {
+        for (name, prop_schema) in schema_props {
+            props
+                .entry(name.clone())
+                .or_insert_with(|| prop_schema.clone());
+        }
+    }
+
+    for key in ["allOf", "oneOf", "anyOf"] {
+        if let Some(items) = schema.get(key).and_then(|v| v.as_array()) {
+            for item in items {
+                collect_object_properties(item, root, props);
+            }
+        }
+    }
+}
+
+fn extract_request_body_params(details: &Value, root: &Value) -> Vec<Param> {
+    let mut body_params = Vec::new();
+    let request_body = match details.get("requestBody") {
+        Some(rb) => rb,
+        None => return body_params,
+    };
+
+    let content = match request_body.get("content").and_then(|c| c.as_object()) {
+        Some(content) => content,
+        None => return body_params,
+    };
+
+    let ct_schema = content
+        .get("application/json")
+        .or_else(|| content.get("multipart/form-data"))
+        .or_else(|| content.get("application/x-www-form-urlencoded"))
+        .or_else(|| content.values().next());
+
+    let Some(ct_schema) = ct_schema else {
+        return body_params;
+    };
+
+    let Some(schema) = ct_schema.get("schema") else {
+        return body_params;
+    };
+
+    let schema = resolved_schema(schema, root);
+    let required_set = required_fields_for_schema(schema, root);
+    let mut props = BTreeMap::new();
+    collect_object_properties(schema, root, &mut props);
+
+    if !props.is_empty() {
+        for (pname, pschema) in props {
+            let required = required_set.contains(pname.as_str());
+            let rust_type = rust_type_for_body_param(&pschema, root, required);
+            let description = pschema
+                .get("description")
+                .and_then(|v| v.as_str())
+                .map(|s| s.to_string());
+            let is_vec = is_vec_type(&rust_type);
+            let (style, explode) = param_style(&pschema);
+            let format = pschema
+                .get("format")
+                .and_then(|v| v.as_str())
+                .map(|s| s.to_string());
+
+            body_params.push(Param {
+                name: pname.clone(),
+                rust_name: sanitize_field_name(&pname),
+                rust_type,
+                required,
+                description,
+                is_vec,
+                style,
+                explode,
+                format,
+            });
+        }
+
+        return body_params;
+    }
+
+    let required = request_body_required(details);
+    let (base_ty, format) = param_string(schema, root);
+    let rust_type = if required || base_ty.starts_with("Option<") {
+        base_ty.clone()
+    } else {
+        format!("Option<{}>", base_ty)
+    };
+
+    body_params.push(Param {
+        name: RAW_BODY_PARAM_NAME.to_string(),
+        rust_name: "body".to_string(),
+        rust_type,
+        required,
+        description: request_body
+            .get("description")
+            .and_then(|v| v.as_str())
+            .map(|s| s.to_string()),
+        is_vec: is_vec_type(&base_ty),
+        style: None,
+        explode: None,
+        format,
+    });
+
+    body_params
 }
 
 fn method_name_from_op_id(op_id: &str) -> String {
@@ -442,76 +597,8 @@ fn extract_endpoints(root: &Value, response_model_names: &BTreeSet<String>) -> V
             }
 
             // Parse request body
-            let mut body_params = Vec::new();
-
             let request_body = request_body_spec(details);
-            if let Some(rb) = details.get("requestBody") {
-                let content = rb.get("content").and_then(|c| c.as_object());
-                if let Some(content_map) = content {
-                    let ct_schema = content_map
-                        .get("application/json")
-                        .or_else(|| content_map.get("multipart/form-data"))
-                        .or_else(|| content_map.get("application/x-www-form-urlencoded"))
-                        .or_else(|| content_map.values().next());
-
-                    if let Some(ct_schema) = ct_schema {
-                        if let Some(schema) = ct_schema.get("schema") {
-                            let schema =
-                                if let Some(r) = schema.get("$ref").and_then(|v| v.as_str()) {
-                                    resolve_ref(root, r)
-                                } else {
-                                    schema
-                                };
-
-                            let required_set: BTreeSet<String> = schema
-                                .get("required")
-                                .and_then(|r| r.as_array())
-                                .map(|arr| {
-                                    arr.iter()
-                                        .filter_map(|v| v.as_str().map(|s| s.to_string()))
-                                        .collect()
-                                })
-                                .unwrap_or_default();
-
-                            if let Some(props) =
-                                schema.get("properties").and_then(|p| p.as_object())
-                            {
-                                for (pname, pschema) in props {
-                                    let required = required_set.contains(pname.as_str());
-                                    let (base_ty, format) = param_string(pschema, root);
-                                    let rust_type = if required {
-                                        base_ty.clone()
-                                    } else if base_ty.starts_with("Option<") {
-                                        base_ty.clone()
-                                    } else {
-                                        format!("Option<{}>", base_ty)
-                                    };
-
-                                    let description = pschema
-                                        .get("description")
-                                        .and_then(|v| v.as_str())
-                                        .map(|s| s.to_string());
-
-                                    let is_vec = is_vec_type(&rust_type);
-                                    let (style, explode) = param_style(pschema);
-
-                                    body_params.push(Param {
-                                        name: pname.clone(),
-                                        rust_name: sanitize_field_name(pname),
-                                        rust_type,
-                                        required,
-                                        description,
-                                        is_vec,
-                                        style,
-                                        explode,
-                                        format,
-                                    });
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            let body_params = extract_request_body_params(details, root);
 
             let response_type = extract_response_type(details, root, response_model_names);
 
@@ -918,6 +1005,10 @@ fn generate_method(out: &mut String, ep: &Endpoint, prefix: &str) {
         .iter()
         .chain(ep.body_params.iter())
         .collect();
+    let raw_body_param = ep
+        .body_params
+        .iter()
+        .find(|p| p.name == RAW_BODY_PARAM_NAME);
 
     let use_params_struct = all_optional_params.len() > 3;
     let params_struct_name = format!(
@@ -1041,11 +1132,73 @@ fn generate_method(out: &mut String, ep: &Endpoint, prefix: &str) {
 
     // body
     let has_body =
-        !ep.body_params.is_empty() && matches!(ep.method.as_str(), "POST" | "PUT" | "PATCH");
+        ep.request_body.is_some() && matches!(ep.method.as_str(), "POST" | "PUT" | "PATCH");
 
     if has_body {
         if let Some(spec) = &ep.request_body {
-            if spec.is_multipart || spec.is_form {
+            if let Some(raw) = raw_body_param {
+                let accessor = if use_params_struct {
+                    format!("params.{}", raw.rust_name)
+                } else {
+                    raw.rust_name.clone()
+                };
+
+                if raw.required {
+                    out.push_str(&format!(
+                        "        let body = serde_json::to_value(&{}).unwrap_or_default();\n",
+                        accessor
+                    ));
+                } else {
+                    out.push_str(&format!(
+                        "        let body = if let Some(v) = &{} {{ Some(serde_json::to_value(v).unwrap_or_default()) }} else {{ None }};\n",
+                        accessor
+                    ));
+                }
+            } else if spec.is_multipart {
+                out.push_str("        let mut body = crate::client::MultipartForm::new();\n");
+                for p in &ep.body_params {
+                    let accessor = if use_params_struct {
+                        format!("params.{}", p.rust_name)
+                    } else {
+                        p.rust_name.clone()
+                    };
+                    let is_binary = p.format.as_deref() == Some("binary")
+                        || p.rust_type.contains("MultipartFile");
+                    if p.required {
+                        if is_binary {
+                            out.push_str(&format!(
+                                "        body.file(\"{}\", {}.clone());\n",
+                                p.name, accessor
+                            ));
+                        } else if p.is_vec {
+                            out.push_str(&format!(
+                                "        for item in &{} {{ body.text(\"{}\", item.to_string()); }}\n",
+                                accessor, p.name
+                            ));
+                        } else {
+                            out.push_str(&format!(
+                                "        body.text(\"{}\", {}.to_string());\n",
+                                p.name, accessor
+                            ));
+                        }
+                    } else if is_binary {
+                        out.push_str(&format!(
+                            "        if let Some(v) = &{} {{ body.file(\"{}\", v.clone()); }}\n",
+                            accessor, p.name
+                        ));
+                    } else if p.is_vec {
+                        out.push_str(&format!(
+                            "        if let Some(v) = &{} {{ for item in v {{ body.text(\"{}\", item.to_string()); }} }}\n",
+                            accessor, p.name
+                        ));
+                    } else {
+                        out.push_str(&format!(
+                            "        if let Some(v) = &{} {{ body.text(\"{}\", v.to_string()); }}\n",
+                            accessor, p.name
+                        ));
+                    }
+                }
+            } else if spec.is_form {
                 out.push_str("        let mut body = Vec::<(String, String)>::new();\n");
                 out.push_str("        let _content_type = \"");
                 out.push_str(&spec.content_type);
@@ -1057,9 +1210,21 @@ fn generate_method(out: &mut String, ep: &Endpoint, prefix: &str) {
                         p.rust_name.clone()
                     };
                     if p.required {
+                        if p.is_vec {
+                            out.push_str(&format!(
+                                "        for item in &{} {{ body.push((\"{}\".into(), item.to_string())); }}\n",
+                                accessor, p.name
+                            ));
+                        } else {
+                            out.push_str(&format!(
+                                "        body.push((\"{}\".into(), {}.to_string()));\n",
+                                p.name, accessor
+                            ));
+                        }
+                    } else if p.is_vec {
                         out.push_str(&format!(
-                            "        body.push((\"{}\".into(), {}.to_string()));\n",
-                            p.name, accessor
+                            "        if let Some(v) = &{} {{ for item in v {{ body.push((\"{}\".into(), item.to_string())); }} }}\n",
+                            accessor, p.name
                         ));
                     } else {
                         out.push_str(&format!(
@@ -1109,7 +1274,15 @@ fn generate_method(out: &mut String, ep: &Endpoint, prefix: &str) {
 
     if has_body {
         if let Some(spec) = &ep.request_body {
-            if spec.is_multipart || spec.is_form {
+            if let Some(raw) = raw_body_param {
+                if raw.required {
+                    out.push_str("            Some(crate::client::RequestBody::Json(body)),\n");
+                } else {
+                    out.push_str("            body.map(crate::client::RequestBody::Json),\n");
+                }
+            } else if spec.is_multipart {
+                out.push_str("            Some(crate::client::RequestBody::Multipart(body)),\n");
+            } else if spec.is_form {
                 out.push_str("            Some(crate::client::RequestBody::Form(body)),\n");
             } else {
                 out.push_str("            Some(crate::client::RequestBody::Json(serde_json::Value::Object(body))),\n");

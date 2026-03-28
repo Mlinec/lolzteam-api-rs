@@ -107,6 +107,36 @@ pub struct ForumForumsFollowParams {
     pub prefix_ids: Option<Vec<i64>>,
 }
 
+/// Parameters for `OAuth.Token` (POST /oauth/token).
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[serde(default)]
+pub struct ForumOAuthTokenParams {
+    /// Client ID.
+    pub client_id: String,
+    /// Client secret.
+    pub client_secret: String,
+    /// Authorization code.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub code: Option<String>,
+    /// Grant type.
+    pub grant_type: String,
+    /// Account password.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub password: Option<String>,
+    /// Redirect URI.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub redirect_uri: Option<String>,
+    /// Refresh token.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub refresh_token: Option<String>,
+    /// Scope.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub scope: Option<Vec<String>>,
+    /// Account username/email.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub username: Option<String>,
+}
+
 /// Parameters for `Posts.List` (GET /posts).
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
@@ -166,7 +196,7 @@ pub struct ForumSearchAllParams {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tag: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub user_id: Option<serde_json::Value>,
+    pub user_id: Option<String>,
 }
 
 /// Parameters for `Search.Posts` (POST /search/posts).
@@ -192,7 +222,7 @@ pub struct ForumSearchPostsParams {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tag: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub user_id: Option<serde_json::Value>,
+    pub user_id: Option<String>,
 }
 
 /// Parameters for `Search.ProfilePosts` (POST /search/profile-posts).
@@ -254,7 +284,7 @@ pub struct ForumSearchThreadsParams {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tag: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub user_id: Option<serde_json::Value>,
+    pub user_id: Option<String>,
 }
 
 /// Parameters for `Threads.Claim` (POST /claims).
@@ -608,7 +638,7 @@ pub struct ForumThreadsRecentParams {
 #[serde(default)]
 pub struct ForumUsersAvatarUploadParams {
     /// Binary data of the avatar.
-    pub avatar: String,
+    pub avatar: crate::client::MultipartFile,
     /// Selection size.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub crop: Option<i64>,
@@ -625,7 +655,7 @@ pub struct ForumUsersAvatarUploadParams {
 #[serde(default)]
 pub struct ForumUsersBackgroundUploadParams {
     /// Binary data of the background. Background image must be 1920x1080 pixels
-    pub background: String,
+    pub background: crate::client::MultipartFile,
     /// Selection size.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub crop: Option<i64>,

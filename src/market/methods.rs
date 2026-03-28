@@ -1020,7 +1020,7 @@ impl crate::market::MarketApi {
     /// `POST /claims`
     pub async fn managing_create_claim(
         &self,
-        item_id: serde_json::Value,
+        item_id: i64,
         post_body: String,
     ) -> Result<ManagingCreateClaimResponse> {
         let mut body = serde_json::Map::new();
@@ -1710,13 +1710,14 @@ impl crate::market::MarketApi {
 
     /// Batch
     /// `POST /batch`
-    pub async fn batch(&self) -> Result<BatchResponse> {
+    pub async fn batch(&self, body: Vec<serde_json::Value>) -> Result<BatchResponse> {
+        let body = serde_json::to_value(&body).unwrap_or_default();
         self.client
             .request(
                 "post",
                 "/batch",
                 None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
+                Some(crate::client::RequestBody::Json(body)),
             )
             .await
     }
@@ -1725,7 +1726,7 @@ impl crate::market::MarketApi {
 
     /// Add Item to Cart
     /// `POST /cart`
-    pub async fn cart_add(&self, item_id: serde_json::Value) -> Result<CartAddResponse> {
+    pub async fn cart_add(&self, item_id: i64) -> Result<CartAddResponse> {
         let mut body = serde_json::Map::new();
         body.insert(
             "item_id".into(),
@@ -1745,10 +1746,7 @@ impl crate::market::MarketApi {
 
     /// Delete Item From Cart
     /// `DELETE /cart`
-    pub async fn cart_delete(
-        &self,
-        item_id: Option<serde_json::Value>,
-    ) -> Result<CartDeleteResponse> {
+    pub async fn cart_delete(&self, item_id: Option<i64>) -> Result<CartDeleteResponse> {
         self.client
             .request(
                 "delete",
