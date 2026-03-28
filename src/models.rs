@@ -6,6 +6,940 @@
 
 use serde::{Deserialize, Deserializer, Serialize};
 
+// ── Enums ──
+
+/// Auto-generated enum for `RoomId`.
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum RoomId {
+    #[serde(rename = "1")]
+    V1,
+    #[serde(rename = "2")]
+    V2,
+    #[serde(rename = "3")]
+    V3,
+    #[serde(rename = "4")]
+    V4,
+    #[serde(rename = "13")]
+    V13,
+    /// Unknown or new value not yet in the schema.
+    #[serde(untagged)]
+    Unknown(i64),
+}
+
+impl std::fmt::Display for RoomId {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            RoomId::V1 => write!(f, "1"),
+            RoomId::V2 => write!(f, "2"),
+            RoomId::V3 => write!(f, "3"),
+            RoomId::V4 => write!(f, "4"),
+            RoomId::V13 => write!(f, "13"),
+            RoomId::Unknown(n) => write!(f, "{}", n),
+        }
+    }
+}
+
+impl Default for RoomId {
+    fn default() -> Self {
+        RoomId::V1
+    }
+}
+
+/// Auto-generated enum for `CategoryId`.
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CategoryId {
+    #[serde(rename = "1")]
+    V1,
+    #[serde(rename = "3")]
+    V3,
+    #[serde(rename = "4")]
+    V4,
+    #[serde(rename = "5")]
+    V5,
+    #[serde(rename = "6")]
+    V6,
+    #[serde(rename = "7")]
+    V7,
+    #[serde(rename = "8")]
+    V8,
+    #[serde(rename = "9")]
+    V9,
+    #[serde(rename = "10")]
+    V10,
+    #[serde(rename = "11")]
+    V11,
+    #[serde(rename = "12")]
+    V12,
+    #[serde(rename = "13")]
+    V13,
+    #[serde(rename = "14")]
+    V14,
+    #[serde(rename = "15")]
+    V15,
+    #[serde(rename = "16")]
+    V16,
+    #[serde(rename = "17")]
+    V17,
+    #[serde(rename = "18")]
+    V18,
+    #[serde(rename = "19")]
+    V19,
+    #[serde(rename = "20")]
+    V20,
+    #[serde(rename = "22")]
+    V22,
+    #[serde(rename = "24")]
+    V24,
+    #[serde(rename = "28")]
+    V28,
+    #[serde(rename = "30")]
+    V30,
+    #[serde(rename = "31")]
+    V31,
+    /// Unknown or new value not yet in the schema.
+    #[serde(untagged)]
+    Unknown(i64),
+}
+
+impl std::fmt::Display for CategoryId {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            CategoryId::V1 => write!(f, "1"),
+            CategoryId::V3 => write!(f, "3"),
+            CategoryId::V4 => write!(f, "4"),
+            CategoryId::V5 => write!(f, "5"),
+            CategoryId::V6 => write!(f, "6"),
+            CategoryId::V7 => write!(f, "7"),
+            CategoryId::V8 => write!(f, "8"),
+            CategoryId::V9 => write!(f, "9"),
+            CategoryId::V10 => write!(f, "10"),
+            CategoryId::V11 => write!(f, "11"),
+            CategoryId::V12 => write!(f, "12"),
+            CategoryId::V13 => write!(f, "13"),
+            CategoryId::V14 => write!(f, "14"),
+            CategoryId::V15 => write!(f, "15"),
+            CategoryId::V16 => write!(f, "16"),
+            CategoryId::V17 => write!(f, "17"),
+            CategoryId::V18 => write!(f, "18"),
+            CategoryId::V19 => write!(f, "19"),
+            CategoryId::V20 => write!(f, "20"),
+            CategoryId::V22 => write!(f, "22"),
+            CategoryId::V24 => write!(f, "24"),
+            CategoryId::V28 => write!(f, "28"),
+            CategoryId::V30 => write!(f, "30"),
+            CategoryId::V31 => write!(f, "31"),
+            CategoryId::Unknown(n) => write!(f, "{}", n),
+        }
+    }
+}
+
+impl Default for CategoryId {
+    fn default() -> Self {
+        CategoryId::V1
+    }
+}
+
+/// Auto-generated enum for `Currency`.
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum Currency {
+    #[serde(rename = "rub")]
+    Rub,
+    #[serde(rename = "uah")]
+    Uah,
+    #[serde(rename = "kzt")]
+    Kzt,
+    #[serde(rename = "byn")]
+    Byn,
+    #[serde(rename = "usd")]
+    Usd,
+    #[serde(rename = "eur")]
+    Eur,
+    #[serde(rename = "gbp")]
+    Gbp,
+    #[serde(rename = "cny")]
+    Cny,
+    #[serde(rename = "try")]
+    Try,
+    #[serde(rename = "jpy")]
+    Jpy,
+    #[serde(rename = "brl")]
+    Brl,
+    /// Unknown or new value not yet in the schema.
+    #[serde(untagged)]
+    Unknown(String),
+}
+
+impl std::fmt::Display for Currency {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Currency::Rub => write!(f, "rub"),
+            Currency::Uah => write!(f, "uah"),
+            Currency::Kzt => write!(f, "kzt"),
+            Currency::Byn => write!(f, "byn"),
+            Currency::Usd => write!(f, "usd"),
+            Currency::Eur => write!(f, "eur"),
+            Currency::Gbp => write!(f, "gbp"),
+            Currency::Cny => write!(f, "cny"),
+            Currency::Try => write!(f, "try"),
+            Currency::Jpy => write!(f, "jpy"),
+            Currency::Brl => write!(f, "brl"),
+            Currency::Unknown(s) => write!(f, "{}", s),
+        }
+    }
+}
+
+impl Default for Currency {
+    fn default() -> Self {
+        Currency::Rub
+    }
+}
+
+/// Auto-generated enum for `DatePeriod`.
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum DatePeriod {
+    #[serde(rename = "day")]
+    Day,
+    #[serde(rename = "month")]
+    Month,
+    #[serde(rename = "year")]
+    Year,
+    /// Unknown or new value not yet in the schema.
+    #[serde(untagged)]
+    Unknown(String),
+}
+
+impl std::fmt::Display for DatePeriod {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            DatePeriod::Day => write!(f, "day"),
+            DatePeriod::Month => write!(f, "month"),
+            DatePeriod::Year => write!(f, "year"),
+            DatePeriod::Unknown(s) => write!(f, "{}", s),
+        }
+    }
+}
+
+impl Default for DatePeriod {
+    fn default() -> Self {
+        DatePeriod::Day
+    }
+}
+
+/// Auto-generated enum for `YesNoNoMatterScheme`.
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum YesNoNoMatterScheme {
+    #[serde(rename = "yes")]
+    Yes,
+    #[serde(rename = "no")]
+    No,
+    #[serde(rename = "nomatter")]
+    Nomatter,
+    /// Unknown or new value not yet in the schema.
+    #[serde(untagged)]
+    Unknown(String),
+}
+
+impl std::fmt::Display for YesNoNoMatterScheme {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            YesNoNoMatterScheme::Yes => write!(f, "yes"),
+            YesNoNoMatterScheme::No => write!(f, "no"),
+            YesNoNoMatterScheme::Nomatter => write!(f, "nomatter"),
+            YesNoNoMatterScheme::Unknown(s) => write!(f, "{}", s),
+        }
+    }
+}
+
+impl Default for YesNoNoMatterScheme {
+    fn default() -> Self {
+        YesNoNoMatterScheme::Yes
+    }
+}
+
+/// Auto-generated enum for `AppId`.
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum AppId {
+    #[serde(rename = "730")]
+    V730,
+    #[serde(rename = "578080")]
+    V578080,
+    #[serde(rename = "753")]
+    V753,
+    #[serde(rename = "570")]
+    V570,
+    #[serde(rename = "440")]
+    V440,
+    #[serde(rename = "252490")]
+    V252490,
+    #[serde(rename = "304930")]
+    V304930,
+    #[serde(rename = "232090")]
+    V232090,
+    #[serde(rename = "322330")]
+    V322330,
+    /// Unknown or new value not yet in the schema.
+    #[serde(untagged)]
+    Unknown(i64),
+}
+
+impl std::fmt::Display for AppId {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            AppId::V730 => write!(f, "730"),
+            AppId::V578080 => write!(f, "578080"),
+            AppId::V753 => write!(f, "753"),
+            AppId::V570 => write!(f, "570"),
+            AppId::V440 => write!(f, "440"),
+            AppId::V252490 => write!(f, "252490"),
+            AppId::V304930 => write!(f, "304930"),
+            AppId::V232090 => write!(f, "232090"),
+            AppId::V322330 => write!(f, "322330"),
+            AppId::Unknown(n) => write!(f, "{}", n),
+        }
+    }
+}
+
+impl Default for AppId {
+    fn default() -> Self {
+        AppId::V730
+    }
+}
+
+/// Auto-generated enum for `Autorenewal`.
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum Autorenewal {
+    #[serde(rename = "yes")]
+    Yes,
+    #[serde(rename = "no")]
+    No,
+    #[serde(rename = "nomatter")]
+    Nomatter,
+    /// Unknown or new value not yet in the schema.
+    #[serde(untagged)]
+    Unknown(String),
+}
+
+impl std::fmt::Display for Autorenewal {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Autorenewal::Yes => write!(f, "yes"),
+            Autorenewal::No => write!(f, "no"),
+            Autorenewal::Nomatter => write!(f, "nomatter"),
+            Autorenewal::Unknown(s) => write!(f, "{}", s),
+        }
+    }
+}
+
+impl Default for Autorenewal {
+    fn default() -> Self {
+        Autorenewal::Yes
+    }
+}
+
+/// Auto-generated enum for `CategoryName`.
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CategoryName {
+    #[serde(rename = "steam")]
+    Steam,
+    #[serde(rename = "fortnite")]
+    Fortnite,
+    #[serde(rename = "mihoyo")]
+    Mihoyo,
+    #[serde(rename = "riot")]
+    Riot,
+    #[serde(rename = "telegram")]
+    Telegram,
+    #[serde(rename = "supercell")]
+    Supercell,
+    #[serde(rename = "ea")]
+    Ea,
+    #[serde(rename = "world-of-tanks")]
+    WorldOfTanks,
+    #[serde(rename = "wot-blitz")]
+    WotBlitz,
+    #[serde(rename = "epicgames")]
+    Epicgames,
+    #[serde(rename = "gifts")]
+    Gifts,
+    #[serde(rename = "minecraft")]
+    Minecraft,
+    #[serde(rename = "escape-from-tarkov")]
+    EscapeFromTarkov,
+    #[serde(rename = "socialclub")]
+    Socialclub,
+    #[serde(rename = "uplay")]
+    Uplay,
+    #[serde(rename = "discord")]
+    Discord,
+    #[serde(rename = "tiktok")]
+    Tiktok,
+    #[serde(rename = "instagram")]
+    Instagram,
+    #[serde(rename = "chatgpt")]
+    Chatgpt,
+    #[serde(rename = "battlenet")]
+    Battlenet,
+    #[serde(rename = "vpn")]
+    Vpn,
+    #[serde(rename = "roblox")]
+    Roblox,
+    #[serde(rename = "warface")]
+    Warface,
+    #[serde(rename = "hytale")]
+    Hytale,
+    /// Unknown or new value not yet in the schema.
+    #[serde(untagged)]
+    Unknown(String),
+}
+
+impl std::fmt::Display for CategoryName {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            CategoryName::Steam => write!(f, "steam"),
+            CategoryName::Fortnite => write!(f, "fortnite"),
+            CategoryName::Mihoyo => write!(f, "mihoyo"),
+            CategoryName::Riot => write!(f, "riot"),
+            CategoryName::Telegram => write!(f, "telegram"),
+            CategoryName::Supercell => write!(f, "supercell"),
+            CategoryName::Ea => write!(f, "ea"),
+            CategoryName::WorldOfTanks => write!(f, "world-of-tanks"),
+            CategoryName::WotBlitz => write!(f, "wot-blitz"),
+            CategoryName::Epicgames => write!(f, "epicgames"),
+            CategoryName::Gifts => write!(f, "gifts"),
+            CategoryName::Minecraft => write!(f, "minecraft"),
+            CategoryName::EscapeFromTarkov => write!(f, "escape-from-tarkov"),
+            CategoryName::Socialclub => write!(f, "socialclub"),
+            CategoryName::Uplay => write!(f, "uplay"),
+            CategoryName::Discord => write!(f, "discord"),
+            CategoryName::Tiktok => write!(f, "tiktok"),
+            CategoryName::Instagram => write!(f, "instagram"),
+            CategoryName::Chatgpt => write!(f, "chatgpt"),
+            CategoryName::Battlenet => write!(f, "battlenet"),
+            CategoryName::Vpn => write!(f, "vpn"),
+            CategoryName::Roblox => write!(f, "roblox"),
+            CategoryName::Warface => write!(f, "warface"),
+            CategoryName::Hytale => write!(f, "hytale"),
+            CategoryName::Unknown(s) => write!(f, "{}", s),
+        }
+    }
+}
+
+impl Default for CategoryName {
+    fn default() -> Self {
+        CategoryName::Steam
+    }
+}
+
+/// Auto-generated enum for `ChangeEmail`.
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum ChangeEmail {
+    #[serde(rename = "yes")]
+    Yes,
+    #[serde(rename = "no")]
+    No,
+    #[serde(rename = "nomatter")]
+    Nomatter,
+    /// Unknown or new value not yet in the schema.
+    #[serde(untagged)]
+    Unknown(String),
+}
+
+impl std::fmt::Display for ChangeEmail {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            ChangeEmail::Yes => write!(f, "yes"),
+            ChangeEmail::No => write!(f, "no"),
+            ChangeEmail::Nomatter => write!(f, "nomatter"),
+            ChangeEmail::Unknown(s) => write!(f, "{}", s),
+        }
+    }
+}
+
+impl Default for ChangeEmail {
+    fn default() -> Self {
+        ChangeEmail::Yes
+    }
+}
+
+/// Auto-generated enum for `Cookies`.
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum Cookies {
+    #[serde(rename = "yes")]
+    Yes,
+    #[serde(rename = "no")]
+    No,
+    #[serde(rename = "nomatter")]
+    Nomatter,
+    /// Unknown or new value not yet in the schema.
+    #[serde(untagged)]
+    Unknown(String),
+}
+
+impl std::fmt::Display for Cookies {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Cookies::Yes => write!(f, "yes"),
+            Cookies::No => write!(f, "no"),
+            Cookies::Nomatter => write!(f, "nomatter"),
+            Cookies::Unknown(s) => write!(f, "{}", s),
+        }
+    }
+}
+
+impl Default for Cookies {
+    fn default() -> Self {
+        Cookies::Yes
+    }
+}
+
+/// Auto-generated enum for `Email`.
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum Email {
+    #[serde(rename = "yes")]
+    Yes,
+    #[serde(rename = "no")]
+    No,
+    #[serde(rename = "nomatter")]
+    Nomatter,
+    /// Unknown or new value not yet in the schema.
+    #[serde(untagged)]
+    Unknown(String),
+}
+
+impl std::fmt::Display for Email {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Email::Yes => write!(f, "yes"),
+            Email::No => write!(f, "no"),
+            Email::Nomatter => write!(f, "nomatter"),
+            Email::Unknown(s) => write!(f, "{}", s),
+        }
+    }
+}
+
+impl Default for Email {
+    fn default() -> Self {
+        Email::Yes
+    }
+}
+
+/// Auto-generated enum for `LastTransDatePeriod`.
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum LastTransDatePeriod {
+    #[serde(rename = "day")]
+    Day,
+    #[serde(rename = "month")]
+    Month,
+    #[serde(rename = "year")]
+    Year,
+    /// Unknown or new value not yet in the schema.
+    #[serde(untagged)]
+    Unknown(String),
+}
+
+impl std::fmt::Display for LastTransDatePeriod {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            LastTransDatePeriod::Day => write!(f, "day"),
+            LastTransDatePeriod::Month => write!(f, "month"),
+            LastTransDatePeriod::Year => write!(f, "year"),
+            LastTransDatePeriod::Unknown(s) => write!(f, "{}", s),
+        }
+    }
+}
+
+impl Default for LastTransDatePeriod {
+    fn default() -> Self {
+        LastTransDatePeriod::Day
+    }
+}
+
+/// Auto-generated enum for `NotEmailProvider`.
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum NotEmailProvider {
+    #[serde(rename = "other")]
+    Other,
+    #[serde(rename = "rambler")]
+    Rambler,
+    #[serde(rename = "outlook")]
+    Outlook,
+    #[serde(rename = "firstmail")]
+    Firstmail,
+    #[serde(rename = "notletters")]
+    Notletters,
+    #[serde(rename = "mail_ru")]
+    MailRu,
+    /// Unknown or new value not yet in the schema.
+    #[serde(untagged)]
+    Unknown(String),
+}
+
+impl std::fmt::Display for NotEmailProvider {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            NotEmailProvider::Other => write!(f, "other"),
+            NotEmailProvider::Rambler => write!(f, "rambler"),
+            NotEmailProvider::Outlook => write!(f, "outlook"),
+            NotEmailProvider::Firstmail => write!(f, "firstmail"),
+            NotEmailProvider::Notletters => write!(f, "notletters"),
+            NotEmailProvider::MailRu => write!(f, "mail_ru"),
+            NotEmailProvider::Unknown(s) => write!(f, "{}", s),
+        }
+    }
+}
+
+impl Default for NotEmailProvider {
+    fn default() -> Self {
+        NotEmailProvider::Other
+    }
+}
+
+/// Auto-generated enum for `OrderBy`.
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum OrderBy {
+    #[serde(rename = "price_to_up")]
+    PriceToUp,
+    #[serde(rename = "price_to_down")]
+    PriceToDown,
+    #[serde(rename = "pdate_to_down")]
+    PdateToDown,
+    #[serde(rename = "pdate_to_up")]
+    PdateToUp,
+    #[serde(rename = "pdate_to_down_upload")]
+    PdateToDownUpload,
+    #[serde(rename = "pdate_to_up_upload")]
+    PdateToUpUpload,
+    #[serde(rename = "edate_to_up")]
+    EdateToUp,
+    #[serde(rename = "edate_to_down")]
+    EdateToDown,
+    #[serde(rename = "ddate_to_up")]
+    DdateToUp,
+    #[serde(rename = "ddate_to_down")]
+    DdateToDown,
+    /// Unknown or new value not yet in the schema.
+    #[serde(untagged)]
+    Unknown(String),
+}
+
+impl std::fmt::Display for OrderBy {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            OrderBy::PriceToUp => write!(f, "price_to_up"),
+            OrderBy::PriceToDown => write!(f, "price_to_down"),
+            OrderBy::PdateToDown => write!(f, "pdate_to_down"),
+            OrderBy::PdateToUp => write!(f, "pdate_to_up"),
+            OrderBy::PdateToDownUpload => write!(f, "pdate_to_down_upload"),
+            OrderBy::PdateToUpUpload => write!(f, "pdate_to_up_upload"),
+            OrderBy::EdateToUp => write!(f, "edate_to_up"),
+            OrderBy::EdateToDown => write!(f, "edate_to_down"),
+            OrderBy::DdateToUp => write!(f, "ddate_to_up"),
+            OrderBy::DdateToDown => write!(f, "ddate_to_down"),
+            OrderBy::Unknown(s) => write!(f, "{}", s),
+        }
+    }
+}
+
+impl Default for OrderBy {
+    fn default() -> Self {
+        OrderBy::PriceToUp
+    }
+}
+
+/// Auto-generated enum for `Premium`.
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum Premium {
+    #[serde(rename = "yes")]
+    Yes,
+    #[serde(rename = "no")]
+    No,
+    #[serde(rename = "nomatter")]
+    Nomatter,
+    /// Unknown or new value not yet in the schema.
+    #[serde(untagged)]
+    Unknown(String),
+}
+
+impl std::fmt::Display for Premium {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Premium::Yes => write!(f, "yes"),
+            Premium::No => write!(f, "no"),
+            Premium::Nomatter => write!(f, "nomatter"),
+            Premium::Unknown(s) => write!(f, "{}", s),
+        }
+    }
+}
+
+impl Default for Premium {
+    fn default() -> Self {
+        Premium::Yes
+    }
+}
+
+/// Auto-generated enum for `PremiumExpirationPeriod`.
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum PremiumExpirationPeriod {
+    #[serde(rename = "day")]
+    Day,
+    #[serde(rename = "month")]
+    Month,
+    #[serde(rename = "year")]
+    Year,
+    /// Unknown or new value not yet in the schema.
+    #[serde(untagged)]
+    Unknown(String),
+}
+
+impl std::fmt::Display for PremiumExpirationPeriod {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            PremiumExpirationPeriod::Day => write!(f, "day"),
+            PremiumExpirationPeriod::Month => write!(f, "month"),
+            PremiumExpirationPeriod::Year => write!(f, "year"),
+            PremiumExpirationPeriod::Unknown(s) => write!(f, "{}", s),
+        }
+    }
+}
+
+impl Default for PremiumExpirationPeriod {
+    fn default() -> Self {
+        PremiumExpirationPeriod::Day
+    }
+}
+
+/// Auto-generated enum for `RegPeriod`.
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum RegPeriod {
+    #[serde(rename = "day")]
+    Day,
+    #[serde(rename = "month")]
+    Month,
+    #[serde(rename = "year")]
+    Year,
+    /// Unknown or new value not yet in the schema.
+    #[serde(untagged)]
+    Unknown(String),
+}
+
+impl std::fmt::Display for RegPeriod {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            RegPeriod::Day => write!(f, "day"),
+            RegPeriod::Month => write!(f, "month"),
+            RegPeriod::Year => write!(f, "year"),
+            RegPeriod::Unknown(s) => write!(f, "{}", s),
+        }
+    }
+}
+
+impl Default for RegPeriod {
+    fn default() -> Self {
+        RegPeriod::Day
+    }
+}
+
+/// Auto-generated enum for `Show`.
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum Show {
+    #[serde(rename = "active")]
+    Active,
+    #[serde(rename = "paid")]
+    Paid,
+    #[serde(rename = "deleted")]
+    Deleted,
+    #[serde(rename = "awaiting")]
+    Awaiting,
+    #[serde(rename = "closed")]
+    Closed,
+    #[serde(rename = "discount_request")]
+    DiscountRequest,
+    #[serde(rename = "stickied")]
+    Stickied,
+    #[serde(rename = "pre_active")]
+    PreActive,
+    /// Unknown or new value not yet in the schema.
+    #[serde(untagged)]
+    Unknown(String),
+}
+
+impl std::fmt::Display for Show {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Show::Active => write!(f, "active"),
+            Show::Paid => write!(f, "paid"),
+            Show::Deleted => write!(f, "deleted"),
+            Show::Awaiting => write!(f, "awaiting"),
+            Show::Closed => write!(f, "closed"),
+            Show::DiscountRequest => write!(f, "discount_request"),
+            Show::Stickied => write!(f, "stickied"),
+            Show::PreActive => write!(f, "pre_active"),
+            Show::Unknown(s) => write!(f, "{}", s),
+        }
+    }
+}
+
+impl Default for Show {
+    fn default() -> Self {
+        Show::Active
+    }
+}
+
+/// Auto-generated enum for `SubscriptionPeriod`.
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum SubscriptionPeriod {
+    #[serde(rename = "day")]
+    Day,
+    #[serde(rename = "month")]
+    Month,
+    #[serde(rename = "year")]
+    Year,
+    /// Unknown or new value not yet in the schema.
+    #[serde(untagged)]
+    Unknown(String),
+}
+
+impl std::fmt::Display for SubscriptionPeriod {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            SubscriptionPeriod::Day => write!(f, "day"),
+            SubscriptionPeriod::Month => write!(f, "month"),
+            SubscriptionPeriod::Year => write!(f, "year"),
+            SubscriptionPeriod::Unknown(s) => write!(f, "{}", s),
+        }
+    }
+}
+
+impl Default for SubscriptionPeriod {
+    fn default() -> Self {
+        SubscriptionPeriod::Day
+    }
+}
+
+/// Auto-generated enum for `Tel`.
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum Tel {
+    #[serde(rename = "yes")]
+    Yes,
+    #[serde(rename = "no")]
+    No,
+    #[serde(rename = "nomatter")]
+    Nomatter,
+    /// Unknown or new value not yet in the schema.
+    #[serde(untagged)]
+    Unknown(String),
+}
+
+impl std::fmt::Display for Tel {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Tel::Yes => write!(f, "yes"),
+            Tel::No => write!(f, "no"),
+            Tel::Nomatter => write!(f, "nomatter"),
+            Tel::Unknown(s) => write!(f, "{}", s),
+        }
+    }
+}
+
+impl Default for Tel {
+    fn default() -> Self {
+        Tel::Yes
+    }
+}
+
+/// Auto-generated enum for `TempEmail`.
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum TempEmail {
+    #[serde(rename = "yes")]
+    Yes,
+    #[serde(rename = "no")]
+    No,
+    #[serde(rename = "nomatter")]
+    Nomatter,
+    /// Unknown or new value not yet in the schema.
+    #[serde(untagged)]
+    Unknown(String),
+}
+
+impl std::fmt::Display for TempEmail {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            TempEmail::Yes => write!(f, "yes"),
+            TempEmail::No => write!(f, "no"),
+            TempEmail::Nomatter => write!(f, "nomatter"),
+            TempEmail::Unknown(s) => write!(f, "{}", s),
+        }
+    }
+}
+
+impl Default for TempEmail {
+    fn default() -> Self {
+        TempEmail::Yes
+    }
+}
+
+/// Auto-generated enum for `Verified`.
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum Verified {
+    #[serde(rename = "yes")]
+    Yes,
+    #[serde(rename = "no")]
+    No,
+    #[serde(rename = "nomatter")]
+    Nomatter,
+    /// Unknown or new value not yet in the schema.
+    #[serde(untagged)]
+    Unknown(String),
+}
+
+impl std::fmt::Display for Verified {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Verified::Yes => write!(f, "yes"),
+            Verified::No => write!(f, "no"),
+            Verified::Nomatter => write!(f, "nomatter"),
+            Verified::Unknown(s) => write!(f, "{}", s),
+        }
+    }
+}
+
+impl Default for Verified {
+    fn default() -> Self {
+        Verified::Yes
+    }
+}
+
+/// Auto-generated enum for `WargamingClan`.
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum WargamingClan {
+    #[serde(rename = "yes")]
+    Yes,
+    #[serde(rename = "no")]
+    No,
+    #[serde(rename = "nomatter")]
+    Nomatter,
+    /// Unknown or new value not yet in the schema.
+    #[serde(untagged)]
+    Unknown(String),
+}
+
+impl std::fmt::Display for WargamingClan {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            WargamingClan::Yes => write!(f, "yes"),
+            WargamingClan::No => write!(f, "no"),
+            WargamingClan::Nomatter => write!(f, "nomatter"),
+            WargamingClan::Unknown(s) => write!(f, "{}", s),
+        }
+    }
+}
+
+impl Default for WargamingClan {
+    fn default() -> Self {
+        WargamingClan::Yes
+    }
+}
+
 /// Deserialize a field that may be `null` or have a mismatched type.
 /// Falls back to `T::default()` on any type mismatch (e.g. `false` for i64, `null` for String).
 fn null_default<'de, D, T>(deserializer: D) -> std::result::Result<T, D::Error>

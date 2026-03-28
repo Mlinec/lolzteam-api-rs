@@ -2,17 +2,19 @@
 name = "lolzteam"
 version = "0.1.0"
 edition = "2021"
-description = "Rust client for LOLZTEAM Forum & Market API"
+description = "Rust client for LOLZTEAM Forum & Market API — codegen from OpenAPI, rate limiting, retry, proxy"
 license = "MIT"
 readme = "README.md"
 keywords = ["lolzteam", "lolz", "api", "market"]
 categories = ["api-bindings"]
+repository = "https://github.com/YOUR_USERNAME/lolzteam-api-rs"
+homepage = "https://github.com/YOUR_USERNAME/lolzteam-api-rs"
 
 [dependencies]
 reqwest = { version = "0.12", features = ["json", "multipart", "rustls-tls", "socks"], default-features = false }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-tokio = { version = "1", features = ["time"] }
+tokio = { version = "1", features = ["time", "sync"] }
 thiserror = "2"
 tracing = "0.1"
 httpdate = "1"
@@ -20,6 +22,10 @@ futures = "0.3"
 
 [dev-dependencies]
 tokio = { version = "1", features = ["full"] }
+hyper = { version = "1", features = ["server", "http1"] }
+hyper-util = { version = "0.1", features = ["server", "tokio"] }
+http-body-util = "0.1"
+bytes = "1"
 
 [[example]]
 name = "basic"

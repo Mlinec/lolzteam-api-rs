@@ -22,6 +22,15 @@ pub enum Error {
 
     #[error("rate limited after {attempts} attempts")]
     RateLimited { attempts: u32 },
+
+    #[error("retry exhausted after {attempts} attempts")]
+    RetryExhausted {
+        attempts: u32,
+        last_error: Box<Error>,
+    },
+
+    #[error("configuration error: {0}")]
+    Config(String),
 }
 
 impl Error {
@@ -32,7 +41,36 @@ impl Error {
             Error::NotFound { .. } => Some(404),
             Error::RateLimited { .. } => Some(429),
             Error::Api { status, .. } => Some(*status),
+            Error::RetryExhausted { last_error, .. } => last_error.status_code(),
             _ => None,
         }
+    }
+
+    /// Returns `true` if this is a retryable error (429/502/503/504 or transient network).
+    pub fn is_retryable(&self) -> bool {
+        match self {
+            Error::Api { status, .. } => matches!(*status, 429 | 502 | 503 | 504),
+            Error::RateLimited { .. } => true,
+            Error::Http(e) => e.is_timeout() || e.is_connect(),
+            _ => false,
+        }
+    }
+
+    /// Returns `true` if this is a rate limit error (429).
+    pub fn is_rate_limit(&self) -> bool {
+        matches!(
+            self,
+            Error::RateLimited { .. } | Error::Api { status: 429, .. }
+        )
+    }
+
+    /// Returns `true` if this is an authentication error (401).
+    pub fn is_auth(&self) -> bool {
+        matches!(self, Error::Auth { .. })
+    }
+
+    /// Returns `true` if this is a not found error (404).
+    pub fn is_not_found(&self) -> bool {
+        matches!(self, Error::NotFound { .. })
     }
 }

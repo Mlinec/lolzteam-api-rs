@@ -57,6 +57,17 @@ struct RequestBodySpec {
     is_form: bool,
 }
 
+/// A named enum extracted from the OpenAPI schema.
+#[derive(Debug, Clone)]
+struct EnumDef {
+    /// Rust type name (e.g. `Currency`, `DatePeriod`, `OrderBy`)
+    name: String,
+    /// Whether the underlying values are strings or integers
+    is_string: bool,
+    /// The enum variant values from the schema
+    values: Vec<String>,
+}
+
 // ── JSON helpers ──
 
 fn resolve_ref<'a>(root: &'a Value, reference: &str) -> &'a Value {
@@ -1259,11 +1270,18 @@ fn generate_method(out: &mut String, ep: &Endpoint, prefix: &str) {
 
     // request
     let method_lower = ep.method.to_lowercase();
+    // Use request_search for search endpoints to apply the search rate limiter
+    let is_search = ep.tag == "Category Search" || ep.tag == "Searching";
+    let request_fn = if is_search {
+        "request_search"
+    } else {
+        "request"
+    };
     out.push_str(&format!(
-        "        self.client.request(\n\
+        "        self.client.{}(\n\
          \x20           \"{}\",\n\
          \x20           {},\n",
-        method_lower, url_expr
+        request_fn, method_lower, url_expr
     ));
 
     if !ep.query_params.is_empty() {
@@ -1307,6 +1325,205 @@ fn simplify_path_param_type(t: &str) -> &str {
     }
 }
 
+// ── Enum extraction ──
+
+/// Max values to consider for generating a Rust enum.
+/// Enums with more values (e.g. 2000 Fortnite skins) stay as String.
+const MAX_ENUM_VALUES: usize = 50;
+
+/// Extract named enums from component schemas and component parameters.
+fn extract_enums(root: &Value) -> Vec<EnumDef> {
+    let mut enums = Vec::new();
+    let mut seen = BTreeSet::new();
+
+    // 1) Component schemas that are themselves enums (e.g. CurrencyModel, DatePeriodModel)
+    if let Some(schemas) = root
+        .get("components")
+        .and_then(|c| c.get("schemas"))
+        .and_then(|s| s.as_object())
+    {
+        for (name, schema) in schemas {
+            if let Some(vals) = schema.get("enum").and_then(|v| v.as_array()) {
+                if vals.len() > MAX_ENUM_VALUES {
+                    continue;
+                }
+                let is_string = schema
+                    .get("type")
+                    .and_then(|t| t.as_str())
+                    .map_or(true, |t| t == "string");
+                let rust_name = sanitize_type_name(name);
+                if seen.insert(rust_name.clone()) {
+                    enums.push(EnumDef {
+                        name: rust_name,
+                        is_string,
+                        values: vals
+                            .iter()
+                            .filter_map(|v| {
+                                v.as_str()
+                                    .map(|s| s.to_string())
+                                    .or_else(|| v.as_i64().map(|n| n.to_string()))
+                            })
+                            .collect(),
+                    });
+                }
+            }
+        }
+    }
+
+    // 2) Component parameters with enum schemas (e.g. order_by, show, currency)
+    if let Some(params) = root
+        .get("components")
+        .and_then(|c| c.get("parameters"))
+        .and_then(|p| p.as_object())
+    {
+        for (name, param) in params {
+            let schema = match param.get("schema") {
+                Some(s) => s,
+                None => continue,
+            };
+            if let Some(vals) = schema.get("enum").and_then(|v| v.as_array()) {
+                if vals.len() > MAX_ENUM_VALUES {
+                    continue;
+                }
+                let is_string = schema
+                    .get("type")
+                    .and_then(|t| t.as_str())
+                    .map_or(true, |t| t == "string");
+                let rust_name = name.to_upper_camel_case();
+                if seen.insert(rust_name.clone()) {
+                    enums.push(EnumDef {
+                        name: rust_name,
+                        is_string,
+                        values: vals
+                            .iter()
+                            .filter_map(|v| {
+                                v.as_str()
+                                    .map(|s| s.to_string())
+                                    .or_else(|| v.as_i64().map(|n| n.to_string()))
+                            })
+                            .collect(),
+                    });
+                }
+            }
+        }
+    }
+
+    enums
+}
+
+/// Convert a raw enum value string to a valid Rust variant name.
+fn enum_variant_name(value: &str) -> String {
+    if value.is_empty() {
+        return "Empty".to_string();
+    }
+    // If it's an integer (possibly negative), prefix with "N" or "Neg"
+    if value.starts_with('-') {
+        if let Ok(_) = value.parse::<i64>() {
+            return format!("Neg{}", &value[1..]);
+        }
+    }
+    if value.chars().next().map_or(false, |c| c.is_ascii_digit()) {
+        return format!("V{}", value.to_upper_camel_case());
+    }
+    let name = value.to_upper_camel_case();
+    if name.is_empty() {
+        format!("Value{}", value.len())
+    } else {
+        name
+    }
+}
+
+/// Generate the Rust code for all enum definitions.
+fn generate_enums(enums: &[EnumDef]) -> String {
+    let mut out = String::new();
+
+    for def in enums {
+        out.push_str(&format!(
+            "/// Auto-generated enum for `{}`.\n\
+             #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]\n\
+             pub enum {} {{\n",
+            def.name, def.name
+        ));
+        for val in &def.values {
+            let variant = enum_variant_name(val);
+            if def.is_string {
+                out.push_str(&format!(
+                    "    #[serde(rename = \"{}\")]\n    {},\n",
+                    val, variant
+                ));
+            } else {
+                // integer enum
+                out.push_str(&format!(
+                    "    #[serde(rename = \"{}\")]\n    {},\n",
+                    val, variant
+                ));
+            }
+        }
+        // Unknown fallback variant for forward compatibility
+        out.push_str("    /// Unknown or new value not yet in the schema.\n");
+        if def.is_string {
+            out.push_str("    #[serde(untagged)]\n    Unknown(String),\n");
+        } else {
+            out.push_str("    #[serde(untagged)]\n    Unknown(i64),\n");
+        }
+        out.push_str("}\n\n");
+
+        // impl Display for string enums
+        if def.is_string {
+            out.push_str(&format!(
+                "impl std::fmt::Display for {} {{\n\
+                 \x20   fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {{\n\
+                 \x20       match self {{\n",
+                def.name
+            ));
+            for val in &def.values {
+                let variant = enum_variant_name(val);
+                out.push_str(&format!(
+                    "            {}::{} => write!(f, \"{}\"),\n",
+                    def.name, variant, val
+                ));
+            }
+            out.push_str(&format!(
+                "            {}::Unknown(s) => write!(f, \"{{}}\", s),\n",
+                def.name
+            ));
+            out.push_str("        }\n    }\n}\n\n");
+        } else {
+            out.push_str(&format!(
+                "impl std::fmt::Display for {} {{\n\
+                 \x20   fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {{\n\
+                 \x20       match self {{\n",
+                def.name
+            ));
+            for val in &def.values {
+                let variant = enum_variant_name(val);
+                out.push_str(&format!(
+                    "            {}::{} => write!(f, \"{}\"),\n",
+                    def.name, variant, val
+                ));
+            }
+            out.push_str(&format!(
+                "            {}::Unknown(n) => write!(f, \"{{}}\", n),\n",
+                def.name
+            ));
+            out.push_str("        }\n    }\n}\n\n");
+        }
+
+        // Default impl → first value
+        if !def.values.is_empty() {
+            let first_variant = enum_variant_name(&def.values[0]);
+            out.push_str(&format!(
+                "impl Default for {} {{\n\
+                 \x20   fn default() -> Self {{ {}::{} }}\n\
+                 }}\n\n",
+                def.name, def.name, first_variant
+            ));
+        }
+    }
+
+    out
+}
+
 // ── Main ──
 
 fn main() {
@@ -1325,6 +1542,17 @@ fn main() {
 
     let market_raw = fs::read_to_string(market_path).expect("Failed to read market.json");
     let market: Value = serde_json::from_str(&market_raw).expect("Failed to parse market.json");
+
+    // Extract enums from both schemas
+    let mut all_enums = extract_enums(&forum);
+    let market_enums = extract_enums(&market);
+    let mut enum_names: BTreeSet<String> = all_enums.iter().map(|e| e.name.clone()).collect();
+    for e in market_enums {
+        if !enum_names.contains(&e.name) {
+            enum_names.insert(e.name.clone());
+            all_enums.push(e);
+        }
+    }
 
     // Extract component schema models
     let mut all_models = extract_schemas(&forum);
@@ -1359,14 +1587,25 @@ fn main() {
     fs::create_dir_all(out.join("forum")).unwrap();
     fs::create_dir_all(out.join("market")).unwrap();
 
-    // models.rs
-    let models_code = generate_models(&all_models, &all_response_models);
+    // models.rs (includes enums)
+    let mut models_code = generate_models(&all_models, &all_response_models);
+    let enums_code = generate_enums(&all_enums);
+    // Prepend enums right after the header/helper section
+    // We insert enums before the component schema models
+    let enum_marker = "// ── Enums ──\n\n";
+    // Find the first struct definition and insert before it
+    if let Some(pos) = models_code.find("/// ") {
+        models_code.insert_str(pos, &format!("{}{}", enum_marker, enums_code));
+    } else {
+        models_code.push_str(&format!("{}{}", enum_marker, enums_code));
+    }
     fs::write(out.join("models.rs"), &models_code).unwrap();
     eprintln!(
-        "  ✓ models.rs ({} component + {} response = {} types)",
+        "  ✓ models.rs ({} enums + {} component + {} response = {} types)",
+        all_enums.len(),
         all_models.len(),
         all_response_models.len(),
-        all_models.len() + all_response_models.len()
+        all_enums.len() + all_models.len() + all_response_models.len()
     );
 
     // forum

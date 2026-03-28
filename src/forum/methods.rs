@@ -2164,7 +2164,7 @@ impl crate::forum::ForumApi {
             );
         }
         self.client
-            .request(
+            .request_search(
                 "post",
                 "/search",
                 None::<&[(&str, String)]>,
@@ -2213,7 +2213,7 @@ impl crate::forum::ForumApi {
             );
         }
         self.client
-            .request(
+            .request_search(
                 "post",
                 "/search/posts",
                 None::<&[(&str, String)]>,
@@ -2247,7 +2247,7 @@ impl crate::forum::ForumApi {
             );
         }
         self.client
-            .request(
+            .request_search(
                 "post",
                 "/search/profile-posts",
                 None::<&[(&str, String)]>,
@@ -2267,7 +2267,7 @@ impl crate::forum::ForumApi {
         page: Option<i64>,
     ) -> Result<SearchResultsResponse> {
         self.client
-            .request(
+            .request_search(
                 "get",
                 &format!("/search/{search_id}/results"),
                 None::<&[(&str, String)]>,
@@ -2296,7 +2296,7 @@ impl crate::forum::ForumApi {
             body.insert("tags".into(), serde_json::to_value(v).unwrap_or_default());
         }
         self.client
-            .request(
+            .request_search(
                 "post",
                 "/search/tagged",
                 None::<&[(&str, String)]>,
@@ -2345,7 +2345,7 @@ impl crate::forum::ForumApi {
             );
         }
         self.client
-            .request(
+            .request_search(
                 "post",
                 "/search/threads",
                 None::<&[(&str, String)]>,
@@ -2364,7 +2364,7 @@ impl crate::forum::ForumApi {
             body.insert("q".into(), serde_json::to_value(v).unwrap_or_default());
         }
         self.client
-            .request(
+            .request_search(
                 "post",
                 "/search/users",
                 None::<&[(&str, String)]>,

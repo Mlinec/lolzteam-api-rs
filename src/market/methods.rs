@@ -1980,7 +1980,7 @@ impl crate::market::MarketApi {
             query.push(("parse_same_item_ids", v.to_string()));
         }
         self.client
-            .request("get", "/", Some(&query), None::<crate::client::RequestBody>)
+            .request_search("get", "/", Some(&query), None::<crate::client::RequestBody>)
             .await
     }
 
@@ -2122,7 +2122,7 @@ impl crate::market::MarketApi {
             query.push(("balance_max", v.to_string()));
         }
         self.client
-            .request(
+            .request_search(
                 "get",
                 "/battlenet",
                 Some(&query),
@@ -2261,7 +2261,7 @@ impl crate::market::MarketApi {
             query.push(("openai_balance_max", v.to_string()));
         }
         self.client
-            .request(
+            .request_search(
                 "get",
                 "/chatgpt",
                 Some(&query),
@@ -2491,7 +2491,7 @@ impl crate::market::MarketApi {
             query.push(("max_orbs", v.to_string()));
         }
         self.client
-            .request(
+            .request_search(
                 "get",
                 "/discord",
                 Some(&query),
@@ -2653,7 +2653,7 @@ impl crate::market::MarketApi {
             query.push(("transactions", v.to_string()));
         }
         self.client
-            .request(
+            .request_search(
                 "get",
                 "/ea",
                 Some(&query),
@@ -2806,7 +2806,7 @@ impl crate::market::MarketApi {
             query.push(("hours_played_max", v.to_string()));
         }
         self.client
-            .request(
+            .request_search(
                 "get",
                 "/epicgames",
                 Some(&query),
@@ -2934,7 +2934,7 @@ impl crate::market::MarketApi {
             query.push(("side", v.to_string()));
         }
         self.client
-            .request(
+            .request_search(
                 "get",
                 "/escape-from-tarkov",
                 Some(&query),
@@ -3206,7 +3206,7 @@ impl crate::market::MarketApi {
             }
         }
         self.client
-            .request(
+            .request_search(
                 "get",
                 "/fortnite",
                 Some(&query),
@@ -3309,7 +3309,7 @@ impl crate::market::MarketApi {
             query.push(("subscription_period", v.to_string()));
         }
         self.client
-            .request(
+            .request_search(
                 "get",
                 "/gifts",
                 Some(&query),
@@ -3414,7 +3414,7 @@ impl crate::market::MarketApi {
             query.push(("profiles_max", v.to_string()));
         }
         self.client
-            .request(
+            .request_search(
                 "get",
                 "/hytale",
                 Some(&query),
@@ -3553,7 +3553,7 @@ impl crate::market::MarketApi {
             query.push(("reg_period", v.to_string()));
         }
         self.client
-            .request(
+            .request_search(
                 "get",
                 "/instagram",
                 Some(&query),
@@ -3848,7 +3848,7 @@ impl crate::market::MarketApi {
             query.push(("daybreak", v.to_string()));
         }
         self.client
-            .request(
+            .request_search(
                 "get",
                 "/mihoyo",
                 Some(&query),
@@ -4055,7 +4055,7 @@ impl crate::market::MarketApi {
             query.push(("minecoins_max", v.to_string()));
         }
         self.client
-            .request(
+            .request_search(
                 "get",
                 "/minecraft",
                 Some(&query),
@@ -4348,7 +4348,7 @@ impl crate::market::MarketApi {
             }
         }
         self.client
-            .request(
+            .request_search(
                 "get",
                 "/riot",
                 Some(&query),
@@ -4561,7 +4561,7 @@ impl crate::market::MarketApi {
             }
         }
         self.client
-            .request(
+            .request_search(
                 "get",
                 "/roblox",
                 Some(&query),
@@ -4681,7 +4681,7 @@ impl crate::market::MarketApi {
             }
         }
         self.client
-            .request(
+            .request_search(
                 "get",
                 "/socialclub",
                 Some(&query),
@@ -5083,7 +5083,7 @@ impl crate::market::MarketApi {
             query.push(("skip_vac_inv", v.to_string()));
         }
         self.client
-            .request(
+            .request_search(
                 "get",
                 "/steam",
                 Some(&query),
@@ -5334,7 +5334,7 @@ impl crate::market::MarketApi {
             query.push(("creation_year_max", v.to_string()));
         }
         self.client
-            .request(
+            .request_search(
                 "get",
                 "/supercell",
                 Some(&query),
@@ -5574,7 +5574,7 @@ impl crate::market::MarketApi {
             query.push(("max_bot_active_users", v.to_string()));
         }
         self.client
-            .request(
+            .request_search(
                 "get",
                 "/telegram",
                 Some(&query),
@@ -5718,7 +5718,7 @@ impl crate::market::MarketApi {
             query.push(("email", v.to_string()));
         }
         self.client
-            .request(
+            .request_search(
                 "get",
                 "/tiktok",
                 Some(&query),
@@ -5914,7 +5914,7 @@ impl crate::market::MarketApi {
             query.push(("reg_period", v.to_string()));
         }
         self.client
-            .request(
+            .request_search(
                 "get",
                 "/uplay",
                 Some(&query),
@@ -6022,7 +6022,7 @@ impl crate::market::MarketApi {
             query.push(("autorenewal", v.to_string()));
         }
         self.client
-            .request(
+            .request_search(
                 "get",
                 "/vpn",
                 Some(&query),
@@ -6146,7 +6146,7 @@ impl crate::market::MarketApi {
             query.push(("total_kredits_max", v.to_string()));
         }
         self.client
-            .request(
+            .request_search(
                 "get",
                 "/warface",
                 Some(&query),
@@ -6361,7 +6361,7 @@ impl crate::market::MarketApi {
             }
         }
         self.client
-            .request(
+            .request_search(
                 "get",
                 "/world-of-tanks",
                 Some(&query),
@@ -6576,7 +6576,7 @@ impl crate::market::MarketApi {
             }
         }
         self.client
-            .request(
+            .request_search(
                 "get",
                 "/wot-blitz",
                 Some(&query),

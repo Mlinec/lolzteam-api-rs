@@ -72,6 +72,16 @@ fn handle_error(err: &Error) {
             println!("[RATE LIMIT] Лимит после {attempts} попыток.");
             println!("  Клиент уже сделал ретрай с backoff.");
         }
+        Error::RetryExhausted {
+            attempts,
+            last_error,
+        } => {
+            println!("[RETRY EXHAUSTED] Все {attempts} попыток исчерпаны.");
+            println!("  Последняя ошибка: {last_error}");
+        }
+        Error::Config(msg) => {
+            println!("[CONFIG] Ошибка конфигурации: {msg}");
+        }
         Error::Api { status, body } => {
             println!("[API] HTTP {status}: {body}");
         }
