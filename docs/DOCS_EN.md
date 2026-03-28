@@ -402,3 +402,5 @@ make generate
 | Method | Description |
 |---|---|
 | `batch()` | Batch request |
+
+

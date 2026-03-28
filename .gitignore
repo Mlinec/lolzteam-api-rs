@@ -2,3 +2,9 @@
 src/generated/
 .idea/
 .claude/
+AGENTS.md
+CLAUDE.md
+PROJECT_LOG.md
+docs/architecture.md
+docs/overview.md
+local_notes.md

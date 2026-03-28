@@ -44,6 +44,50 @@ make generate
 
 ---
 
+
+## Тела запросов
+
+- `RequestBody::Json(...)` — JSON-полезная нагрузка
+- `RequestBody::Form(...)` — `application/x-www-form-urlencoded`
+- `RequestBody::Multipart(...)` — multipart upload через `MultipartForm` и `MultipartFile`
+
+Пример загрузки аватара:
+
+```rust
+use lolzteam::{MultipartFile, MultipartForm, RequestBody};
+use lolzteam::forum::types::ForumUsersAvatarUploadParams;
+
+let mut form = MultipartForm::new();
+form.file("avatar", MultipartFile::new(std::fs::read("avatar.png")?)
+    .with_filename("avatar.png")
+    .with_mime_type("image/png"));
+form.text("crop", "256");
+
+let params = ForumUsersAvatarUploadParams {
+    avatar: form,
+    crop: Some(256),
+    x: Some(0),
+    y: Some(0),
+};
+
+client.forum().users_avatar_upload(1, params).await?;
+```
+
+## Параметры эндпоинтов
+
+Эндпоинты с более чем тремя необязательными параметрами принимают структуру `*Params`.
+
+```rust
+use lolzteam::market::types::MarketCategorySteamParams;
+
+let params = MarketCategorySteamParams {
+    pmin: Some(10),
+    pmax: Some(100),
+    ..Default::default()
+};
+let results = client.market().category_steam(params).await?;
+```
+
 ## Forum API
 
 ### Categories
@@ -402,3 +446,5 @@ make generate
 | Метод | Описание |
 |---|---|
 | `batch()` | Batch-запрос |
+
+

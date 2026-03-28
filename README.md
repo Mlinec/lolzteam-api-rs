@@ -114,6 +114,50 @@ client.forum().users_avatar_upload(
 ).await?;
 ```
 
+
+## Request bodies
+
+- `RequestBody::Json(...)` — JSON payloads
+- `RequestBody::Form(...)` — x-www-form-urlencoded payloads
+- `RequestBody::Multipart(...)` — multipart uploads with `MultipartForm`, `MultipartFile`
+
+Example multipart upload:
+
+```rust
+use lolzteam::{MultipartFile, MultipartForm, RequestBody};
+use lolzteam::forum::types::ForumUsersAvatarUploadParams;
+
+let mut form = MultipartForm::new();
+form.file("avatar", MultipartFile::new(std::fs::read("avatar.png")?)
+    .with_filename("avatar.png")
+    .with_mime_type("image/png"));
+form.text("crop", "256");
+
+let params = ForumUsersAvatarUploadParams {
+    avatar: form,
+    crop: Some(256),
+    x: Some(0),
+    y: Some(0),
+};
+
+client.forum().users_avatar_upload(1, params).await?;
+```
+
+## Endpoint parameters
+
+Endpoints with more than three optional parameters accept a `*Params` struct.
+
+```rust
+use lolzteam::market::types::MarketCategorySteamParams;
+
+let params = MarketCategorySteamParams {
+    pmin: Some(10),
+    pmax: Some(100),
+    ..Default::default()
+};
+let results = client.market().category_steam(params).await?;
+```
+
 ## Параметры эндпоинтов
 
 Эндпоинты с >3 опциональными параметрами принимают `*Params` структуру:
@@ -155,3 +199,5 @@ make generate
 ## Лицензия
 
 MIT
+
+
