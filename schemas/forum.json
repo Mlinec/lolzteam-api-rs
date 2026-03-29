@@ -436,79 +436,7 @@
                       "title": "Categories",
                       "type": "array",
                       "items": {
-                        "type": "object",
-                        "properties": {
-                          "category_id": {
-                            "title": "Category",
-                            "type": "integer"
-                          },
-                          "category_title": {
-                            "title": "Category",
-                            "type": "string"
-                          },
-                          "category_description": {
-                            "title": "Category",
-                            "type": "string"
-                          },
-                          "links": {
-                            "title": "Links",
-                            "type": "object",
-                            "properties": {
-                              "permalink": {
-                                "title": "Permalink",
-                                "type": "string"
-                              },
-                              "detail": {
-                                "title": "Detail",
-                                "type": "string"
-                              },
-                              "sub-categories": {
-                                "title": "Sub",
-                                "type": "string"
-                              },
-                              "sub-forums": {
-                                "title": "Sub",
-                                "type": "string"
-                              }
-                            },
-                            "required": [
-                              "permalink",
-                              "detail",
-                              "sub-categories",
-                              "sub-forums"
-                            ]
-                          },
-                          "permissions": {
-                            "title": "Permissions",
-                            "type": "object",
-                            "properties": {
-                              "view": {
-                                "title": "View",
-                                "type": "boolean"
-                              },
-                              "edit": {
-                                "title": "Edit",
-                                "type": "boolean"
-                              },
-                              "delete": {
-                                "title": "Delete",
-                                "type": "boolean"
-                              }
-                            },
-                            "required": [
-                              "view",
-                              "edit",
-                              "delete"
-                            ]
-                          }
-                        },
-                        "required": [
-                          "category_id",
-                          "category_title",
-                          "category_description",
-                          "links",
-                          "permissions"
-                        ]
+                        "$ref": "#/components/schemas/Resp_CategoryModel"
                       }
                     },
                     "categories_total": {
@@ -578,80 +506,7 @@
                 "schema": {
                   "properties": {
                     "category": {
-                      "title": "Category",
-                      "type": "object",
-                      "properties": {
-                        "category_id": {
-                          "title": "Category",
-                          "type": "integer"
-                        },
-                        "category_title": {
-                          "title": "Category",
-                          "type": "string"
-                        },
-                        "category_description": {
-                          "title": "Category",
-                          "type": "string"
-                        },
-                        "links": {
-                          "title": "Links",
-                          "type": "object",
-                          "properties": {
-                            "permalink": {
-                              "title": "Permalink",
-                              "type": "string"
-                            },
-                            "detail": {
-                              "title": "Detail",
-                              "type": "string"
-                            },
-                            "sub-categories": {
-                              "title": "Sub",
-                              "type": "string"
-                            },
-                            "sub-forums": {
-                              "title": "Sub",
-                              "type": "string"
-                            }
-                          },
-                          "required": [
-                            "permalink",
-                            "detail",
-                            "sub-categories",
-                            "sub-forums"
-                          ]
-                        },
-                        "permissions": {
-                          "title": "Permissions",
-                          "type": "object",
-                          "properties": {
-                            "view": {
-                              "title": "View",
-                              "type": "boolean"
-                            },
-                            "edit": {
-                              "title": "Edit",
-                              "type": "boolean"
-                            },
-                            "delete": {
-                              "title": "Delete",
-                              "type": "boolean"
-                            }
-                          },
-                          "required": [
-                            "view",
-                            "edit",
-                            "delete"
-                          ]
-                        }
-                      },
-                      "required": [
-                        "category_id",
-                        "category_title",
-                        "category_description",
-                        "links",
-                        "permissions"
-                      ]
+                      "$ref": "#/components/schemas/Resp_CategoryModel"
                     },
                     "system_info": {
                       "$ref": "#/components/schemas/Resp_SystemInfo"
@@ -755,168 +610,7 @@
                       "title": "Forums",
                       "type": "array",
                       "items": {
-                        "type": "object",
-                        "properties": {
-                          "forum_id": {
-                            "title": "Forum",
-                            "type": "integer"
-                          },
-                          "forum_title": {
-                            "title": "Forum",
-                            "type": "string"
-                          },
-                          "forum_description": {
-                            "title": "Forum",
-                            "type": "string"
-                          },
-                          "forum_thread_count": {
-                            "title": "Forum",
-                            "type": "integer"
-                          },
-                          "forum_post_count": {
-                            "title": "Forum",
-                            "type": "integer"
-                          },
-                          "forum_prefixes": {
-                            "title": "Forum",
-                            "type": "array",
-                            "items": {
-                              "type": "object",
-                              "properties": {
-                                "group_title": {
-                                  "title": "Group",
-                                  "type": "string"
-                                },
-                                "group_prefixes": {
-                                  "title": "Group",
-                                  "type": "array",
-                                  "items": {
-                                    "type": "object",
-                                    "properties": {
-                                      "prefix_id": {
-                                        "title": "Prefix",
-                                        "type": "integer"
-                                      },
-                                      "prefix_title": {
-                                        "title": "Prefix",
-                                        "type": "string"
-                                      }
-                                    },
-                                    "required": [
-                                      "prefix_id",
-                                      "prefix_title"
-                                    ]
-                                  }
-                                }
-                              },
-                              "required": [
-                                "group_title",
-                                "group_prefixes"
-                              ]
-                            }
-                          },
-                          "thread_default_prefix_id": {
-                            "title": "Thread",
-                            "type": "integer"
-                          },
-                          "thread_prefix_is_required": {
-                            "title": "Thread",
-                            "type": "boolean"
-                          },
-                          "links": {
-                            "title": "Links",
-                            "type": "object",
-                            "properties": {
-                              "permalink": {
-                                "title": "Permalink",
-                                "type": "string"
-                              },
-                              "detail": {
-                                "title": "Detail",
-                                "type": "string"
-                              },
-                              "sub-categories": {
-                                "title": "Sub",
-                                "type": "string"
-                              },
-                              "sub-forums": {
-                                "title": "Sub",
-                                "type": "string"
-                              },
-                              "threads": {
-                                "title": "Threads",
-                                "type": "string"
-                              },
-                              "followers": {
-                                "title": "Followers",
-                                "type": "string"
-                              }
-                            },
-                            "required": [
-                              "permalink",
-                              "detail",
-                              "sub-categories",
-                              "sub-forums",
-                              "threads",
-                              "followers"
-                            ]
-                          },
-                          "permissions": {
-                            "title": "Permissions",
-                            "type": "object",
-                            "properties": {
-                              "view": {
-                                "title": "View",
-                                "type": "boolean"
-                              },
-                              "edit": {
-                                "title": "Edit",
-                                "type": "boolean"
-                              },
-                              "delete": {
-                                "title": "Delete",
-                                "type": "boolean"
-                              },
-                              "create_thread": {
-                                "title": "Create",
-                                "type": "boolean"
-                              },
-                              "tag_thread": {
-                                "title": "Tag",
-                                "type": "boolean"
-                              },
-                              "follow": {
-                                "title": "Follow",
-                                "type": "boolean"
-                              }
-                            },
-                            "required": [
-                              "view",
-                              "edit",
-                              "delete",
-                              "create_thread",
-                              "tag_thread",
-                              "follow"
-                            ]
-                          },
-                          "forum_is_followed": {
-                            "title": "Forum",
-                            "type": "boolean"
-                          }
-                        },
-                        "required": [
-                          "forum_id",
-                          "forum_title",
-                          "forum_description",
-                          "forum_thread_count",
-                          "forum_post_count",
-                          "forum_prefixes",
-                          "thread_default_prefix_id",
-                          "thread_prefix_is_required",
-                          "links",
-                          "permissions",
-                          "forum_is_followed"
-                        ]
+                        "$ref": "#/components/schemas/Resp_ForumModel"
                       }
                     },
                     "forums_total": {
@@ -1224,174 +918,7 @@
                 "schema": {
                   "properties": {
                     "forum": {
-                      "title": "Forum",
-                      "type": "object",
-                      "properties": {
-                        "forum_id": {
-                          "title": "Forum",
-                          "type": "integer"
-                        },
-                        "forum_title": {
-                          "title": "Forum",
-                          "type": "string"
-                        },
-                        "forum_description": {
-                          "title": "Forum",
-                          "type": "string"
-                        },
-                        "forum_thread_count": {
-                          "title": "Forum",
-                          "type": "integer"
-                        },
-                        "forum_post_count": {
-                          "title": "Forum",
-                          "type": "integer"
-                        },
-                        "forum_prefixes": {
-                          "title": "Forum",
-                          "type": "array",
-                          "items": {
-                            "type": "object",
-                            "properties": {
-                              "group_title": {
-                                "title": "Group",
-                                "type": "string"
-                              },
-                              "group_prefixes": {
-                                "title": "Group",
-                                "type": "array",
-                                "items": {
-                                  "type": "object",
-                                  "properties": {
-                                    "prefix_id": {
-                                      "title": "Prefix",
-                                      "type": "integer"
-                                    },
-                                    "prefix_title": {
-                                      "title": "Prefix",
-                                      "type": "string"
-                                    }
-                                  },
-                                  "required": [
-                                    "prefix_id",
-                                    "prefix_title"
-                                  ]
-                                }
-                              }
-                            },
-                            "required": [
-                              "group_title",
-                              "group_prefixes"
-                            ]
-                          }
-                        },
-                        "thread_default_prefix_id": {
-                          "title": "Thread",
-                          "type": "integer"
-                        },
-                        "thread_prefix_is_required": {
-                          "title": "Thread",
-                          "type": "boolean"
-                        },
-                        "links": {
-                          "title": "Links",
-                          "type": "object",
-                          "properties": {
-                            "permalink": {
-                              "title": "Permalink",
-                              "type": "string"
-                            },
-                            "detail": {
-                              "title": "Detail",
-                              "type": "string"
-                            },
-                            "sub-categories": {
-                              "title": "Sub",
-                              "type": "string"
-                            },
-                            "sub-forums": {
-                              "title": "Sub",
-                              "type": "string"
-                            },
-                            "threads": {
-                              "title": "Threads",
-                              "type": "string"
-                            },
-                            "followers": {
-                              "title": "Followers",
-                              "type": "string"
-                            }
-                          },
-                          "required": [
-                            "permalink",
-                            "detail",
-                            "sub-categories",
-                            "sub-forums",
-                            "threads",
-                            "followers"
-                          ]
-                        },
-                        "permissions": {
-                          "title": "Permissions",
-                          "type": "object",
-                          "properties": {
-                            "view": {
-                              "title": "View",
-                              "type": "boolean"
-                            },
-                            "edit": {
-                              "title": "Edit",
-                              "type": "boolean"
-                            },
-                            "delete": {
-                              "title": "Delete",
-                              "type": "boolean"
-                            },
-                            "create_thread": {
-                              "title": "Create",
-                              "type": "boolean"
-                            },
-                            "upload_attachment": {
-                              "title": "Upload",
-                              "type": "boolean"
-                            },
-                            "tag_thread": {
-                              "title": "Tag",
-                              "type": "boolean"
-                            },
-                            "follow": {
-                              "title": "Follow",
-                              "type": "boolean"
-                            }
-                          },
-                          "required": [
-                            "view",
-                            "edit",
-                            "delete",
-                            "create_thread",
-                            "upload_attachment",
-                            "tag_thread",
-                            "follow"
-                          ]
-                        },
-                        "forum_is_followed": {
-                          "title": "Forum",
-                          "type": "boolean"
-                        }
-                      },
-                      "required": [
-                        "forum_id",
-                        "forum_title",
-                        "forum_description",
-                        "forum_thread_count",
-                        "forum_post_count",
-                        "forum_prefixes",
-                        "thread_default_prefix_id",
-                        "thread_prefix_is_required",
-                        "links",
-                        "permissions",
-                        "forum_is_followed"
-                      ]
+                      "$ref": "#/components/schemas/Resp_ForumModel"
                     },
                     "system_info": {
                       "$ref": "#/components/schemas/Resp_SystemInfo"
@@ -1692,197 +1219,7 @@
                       "title": "Forums",
                       "type": "array",
                       "items": {
-                        "type": "object",
-                        "properties": {
-                          "forum_id": {
-                            "title": "Forum",
-                            "type": "integer"
-                          },
-                          "forum_title": {
-                            "title": "Forum",
-                            "type": "string"
-                          },
-                          "forum_description": {
-                            "title": "Forum",
-                            "type": "string"
-                          },
-                          "forum_thread_count": {
-                            "title": "Forum",
-                            "type": "integer"
-                          },
-                          "forum_post_count": {
-                            "title": "Forum",
-                            "type": "integer"
-                          },
-                          "forum_prefixes": {
-                            "title": "Forum",
-                            "type": "array",
-                            "items": {
-                              "type": "object",
-                              "properties": {
-                                "group_title": {
-                                  "title": "Group",
-                                  "type": "string"
-                                },
-                                "group_prefixes": {
-                                  "title": "Group",
-                                  "type": "array",
-                                  "items": {
-                                    "type": "object",
-                                    "properties": {
-                                      "prefix_id": {
-                                        "title": "Prefix",
-                                        "type": "integer"
-                                      },
-                                      "prefix_title": {
-                                        "title": "Prefix",
-                                        "type": "string"
-                                      }
-                                    },
-                                    "required": [
-                                      "prefix_id",
-                                      "prefix_title"
-                                    ]
-                                  }
-                                }
-                              },
-                              "required": [
-                                "group_title",
-                                "group_prefixes"
-                              ]
-                            }
-                          },
-                          "thread_default_prefix_id": {
-                            "title": "Thread",
-                            "type": "integer"
-                          },
-                          "thread_prefix_is_required": {
-                            "title": "Thread",
-                            "type": "boolean"
-                          },
-                          "links": {
-                            "title": "Links",
-                            "type": "object",
-                            "properties": {
-                              "permalink": {
-                                "title": "Permalink",
-                                "type": "string"
-                              },
-                              "detail": {
-                                "title": "Detail",
-                                "type": "string"
-                              },
-                              "sub-categories": {
-                                "title": "Sub",
-                                "type": "string"
-                              },
-                              "sub-forums": {
-                                "title": "Sub",
-                                "type": "string"
-                              },
-                              "threads": {
-                                "title": "Threads",
-                                "type": "string"
-                              },
-                              "followers": {
-                                "title": "Followers",
-                                "type": "string"
-                              }
-                            },
-                            "required": [
-                              "permalink",
-                              "detail",
-                              "sub-categories",
-                              "sub-forums",
-                              "threads",
-                              "followers"
-                            ]
-                          },
-                          "permissions": {
-                            "title": "Permissions",
-                            "type": "object",
-                            "properties": {
-                              "view": {
-                                "title": "View",
-                                "type": "boolean"
-                              },
-                              "edit": {
-                                "title": "Edit",
-                                "type": "boolean"
-                              },
-                              "delete": {
-                                "title": "Delete",
-                                "type": "boolean"
-                              },
-                              "create_thread": {
-                                "title": "Create",
-                                "type": "boolean"
-                              },
-                              "upload_attachment": {
-                                "title": "Upload",
-                                "type": "boolean"
-                              },
-                              "tag_thread": {
-                                "title": "Tag",
-                                "type": "boolean"
-                              },
-                              "follow": {
-                                "title": "Follow",
-                                "type": "boolean"
-                              }
-                            },
-                            "required": [
-                              "view",
-                              "edit",
-                              "delete",
-                              "create_thread",
-                              "upload_attachment",
-                              "tag_thread",
-                              "follow"
-                            ]
-                          },
-                          "forum_is_followed": {
-                            "title": "Forum",
-                            "type": "boolean"
-                          },
-                          "follow": {
-                            "title": "Follow",
-                            "type": "object",
-                            "properties": {
-                              "post": {
-                                "title": "Post",
-                                "type": "boolean"
-                              },
-                              "alert": {
-                                "title": "Alert",
-                                "type": "boolean"
-                              },
-                              "email": {
-                                "title": "Email",
-                                "type": "boolean"
-                              }
-                            },
-                            "required": [
-                              "post",
-                              "alert",
-                              "email"
-                            ]
-                          }
-                        },
-                        "required": [
-                          "forum_id",
-                          "forum_title",
-                          "forum_description",
-                          "forum_thread_count",
-                          "forum_post_count",
-                          "forum_prefixes",
-                          "thread_default_prefix_id",
-                          "thread_prefix_is_required",
-                          "links",
-                          "permissions",
-                          "forum_is_followed",
-                          "follow"
-                        ]
+                        "$ref": "#/components/schemas/Resp_ForumModel"
                       }
                     },
                     "system_info": {
@@ -1940,119 +1277,7 @@
                       "title": "Forums",
                       "type": "array",
                       "items": {
-                        "type": "object",
-                        "properties": {
-                          "forum_id": {
-                            "title": "Forum",
-                            "type": "integer"
-                          },
-                          "forum_title": {
-                            "title": "Forum",
-                            "type": "string"
-                          },
-                          "forum_description": {
-                            "title": "Forum",
-                            "type": "string"
-                          },
-                          "parent_node_id": {
-                            "title": "Parent",
-                            "type": "integer"
-                          },
-                          "links": {
-                            "title": "Links",
-                            "type": "object",
-                            "properties": {
-                              "permalink": {
-                                "title": "Permalink",
-                                "type": "string"
-                              },
-                              "detail": {
-                                "title": "Detail",
-                                "type": "string"
-                              },
-                              "sub-categories": {
-                                "title": "Sub",
-                                "type": "string"
-                              },
-                              "sub-forums": {
-                                "title": "Sub",
-                                "type": "string"
-                              },
-                              "threads": {
-                                "title": "Threads",
-                                "type": "string"
-                              },
-                              "followers": {
-                                "title": "Followers",
-                                "type": "string"
-                              }
-                            },
-                            "required": [
-                              "permalink",
-                              "detail",
-                              "sub-categories",
-                              "sub-forums",
-                              "threads",
-                              "followers"
-                            ]
-                          },
-                          "permissions": {
-                            "title": "Permissions",
-                            "type": "object",
-                            "properties": {
-                              "view": {
-                                "title": "View",
-                                "type": "boolean"
-                              },
-                              "edit": {
-                                "title": "Edit",
-                                "type": "boolean"
-                              },
-                              "delete": {
-                                "title": "Delete",
-                                "type": "boolean"
-                              },
-                              "create_thread": {
-                                "title": "Create",
-                                "type": "boolean"
-                              },
-                              "tag_thread": {
-                                "title": "Tag",
-                                "type": "boolean"
-                              },
-                              "follow": {
-                                "title": "Follow",
-                                "type": "boolean"
-                              }
-                            },
-                            "required": [
-                              "view",
-                              "edit",
-                              "delete",
-                              "create_thread",
-                              "tag_thread",
-                              "follow"
-                            ]
-                          },
-                          "forum_is_followed": {
-                            "title": "Forum",
-                            "type": "boolean"
-                          },
-                          "has_children": {
-                            "title": "Has",
-                            "type": "boolean"
-                          }
-                        },
-                        "required": [
-                          "forum_id",
-                          "forum_title",
-                          "forum_description",
-                          "parent_node_id",
-                          "links",
-                          "permissions",
-                          "forum_is_followed",
-                          "has_children"
-                        ]
+                        "$ref": "#/components/schemas/Resp_ForumModel"
                       }
                     },
                     "excluded_forums_ids": {
@@ -2593,104 +1818,7 @@
                       "title": "Elements",
                       "type": "array",
                       "items": {
-                        "type": "object",
-                        "properties": {
-                          "category_id": {
-                            "title": "Category",
-                            "type": "integer"
-                          },
-                          "category_title": {
-                            "title": "Category",
-                            "type": "string"
-                          },
-                          "category_description": {
-                            "title": "Category",
-                            "type": "string"
-                          },
-                          "links": {
-                            "title": "Links",
-                            "type": "object",
-                            "properties": {
-                              "permalink": {
-                                "title": "Permalink",
-                                "type": "string"
-                              },
-                              "detail": {
-                                "title": "Detail",
-                                "type": "string"
-                              },
-                              "sub-categories": {
-                                "title": "Sub",
-                                "type": "string"
-                              },
-                              "sub-forums": {
-                                "title": "Sub",
-                                "type": "string"
-                              },
-                              "sub-elements": {
-                                "title": "Sub",
-                                "type": "string"
-                              }
-                            },
-                            "required": [
-                              "permalink",
-                              "detail",
-                              "sub-categories",
-                              "sub-forums",
-                              "sub-elements"
-                            ]
-                          },
-                          "permissions": {
-                            "title": "Permissions",
-                            "type": "object",
-                            "properties": {
-                              "view": {
-                                "title": "View",
-                                "type": "boolean"
-                              },
-                              "edit": {
-                                "title": "Edit",
-                                "type": "boolean"
-                              },
-                              "delete": {
-                                "title": "Delete",
-                                "type": "boolean"
-                              }
-                            },
-                            "required": [
-                              "view",
-                              "edit",
-                              "delete"
-                            ]
-                          },
-                          "navigation_type": {
-                            "title": "Navigation",
-                            "type": "string"
-                          },
-                          "navigation_id": {
-                            "title": "Navigation",
-                            "type": "integer"
-                          },
-                          "navigation_parent_id": {
-                            "title": "Navigation",
-                            "type": "integer"
-                          },
-                          "has_sub_elements": {
-                            "title": "Has",
-                            "type": "boolean"
-                          }
-                        },
-                        "required": [
-                          "category_id",
-                          "category_title",
-                          "category_description",
-                          "links",
-                          "permissions",
-                          "navigation_type",
-                          "navigation_id",
-                          "navigation_parent_id",
-                          "has_sub_elements"
-                        ]
+                        "$ref": "#/components/schemas/Resp_CategoryModel"
                       }
                     },
                     "elements_count": {
@@ -3006,7 +2134,10 @@
               "type": "array",
               "items": {
                 "type": "string",
-                "enum": ["*", "latest_posts"]
+                "enum": [
+                  "*",
+                  "latest_posts"
+                ]
               }
             }
           }
@@ -3026,141 +2157,7 @@
                       }
                     },
                     "forum": {
-                      "title": "Forum",
-                      "type": "object",
-                      "properties": {
-                        "forum_id": {
-                          "title": "Forum",
-                          "type": "integer"
-                        },
-                        "forum_title": {
-                          "title": "Forum",
-                          "type": "string"
-                        },
-                        "forum_description": {
-                          "title": "Forum",
-                          "type": "string"
-                        },
-                        "forum_thread_count": {
-                          "title": "Forum",
-                          "type": "integer"
-                        },
-                        "forum_post_count": {
-                          "title": "Forum",
-                          "type": "integer"
-                        },
-                        "forum_prefixes": {
-                          "title": "Forum",
-                          "type": "array",
-                          "items": {}
-                        },
-                        "thread_default_prefix_id": {
-                          "title": "Thread",
-                          "type": "integer"
-                        },
-                        "thread_prefix_is_required": {
-                          "title": "Thread",
-                          "type": "boolean"
-                        },
-                        "links": {
-                          "title": "Links",
-                          "type": "object",
-                          "properties": {
-                            "permalink": {
-                              "title": "Permalink",
-                              "type": "string"
-                            },
-                            "detail": {
-                              "title": "Detail",
-                              "type": "string"
-                            },
-                            "sub-categories": {
-                              "title": "Sub",
-                              "type": "string"
-                            },
-                            "sub-forums": {
-                              "title": "Sub",
-                              "type": "string"
-                            },
-                            "threads": {
-                              "title": "Threads",
-                              "type": "string"
-                            },
-                            "followers": {
-                              "title": "Followers",
-                              "type": "string"
-                            }
-                          },
-                          "required": [
-                            "permalink",
-                            "detail",
-                            "sub-categories",
-                            "sub-forums",
-                            "threads",
-                            "followers"
-                          ]
-                        },
-                        "permissions": {
-                          "title": "Permissions",
-                          "type": "object",
-                          "properties": {
-                            "view": {
-                              "title": "View",
-                              "type": "boolean"
-                            },
-                            "edit": {
-                              "title": "Edit",
-                              "type": "boolean"
-                            },
-                            "delete": {
-                              "title": "Delete",
-                              "type": "boolean"
-                            },
-                            "create_thread": {
-                              "title": "Create",
-                              "type": "boolean"
-                            },
-                            "upload_attachment": {
-                              "title": "Upload",
-                              "type": "boolean"
-                            },
-                            "tag_thread": {
-                              "title": "Tag",
-                              "type": "boolean"
-                            },
-                            "follow": {
-                              "title": "Follow",
-                              "type": "boolean"
-                            }
-                          },
-                          "required": [
-                            "view",
-                            "edit",
-                            "delete",
-                            "create_thread",
-                            "upload_attachment",
-                            "tag_thread",
-                            "follow"
-                          ]
-                        },
-                        "forum_is_followed": {
-                          "title": "Forum",
-                          "type": "boolean"
-                        }
-                      },
-                      "required": [
-                        "forum_id",
-                        "forum_title",
-                        "forum_description",
-                        "forum_thread_count",
-                        "forum_post_count",
-                        "forum_prefixes",
-                        "thread_default_prefix_id",
-                        "thread_prefix_is_required",
-                        "links",
-                        "permissions",
-                        "forum_is_followed"
-                      ]
+                      "$ref": "#/components/schemas/Resp_ForumModel"
                     },
                     "threads_total": {
                       "title": "Threads",
@@ -3862,7 +2859,10 @@
               "type": "array",
               "items": {
                 "type": "string",
-                "enum": ["*", "latest_posts"]
+                "enum": [
+                  "*",
+                  "latest_posts"
+                ]
               }
             }
           }
@@ -4572,7 +3572,10 @@
               "type": "array",
               "items": {
                 "type": "string",
-                "enum": ["*", "latest_posts"]
+                "enum": [
+                  "*",
+                  "latest_posts"
+                ]
               }
             }
           }
@@ -5261,109 +4264,7 @@
                       "title": "Elements",
                       "type": "array",
                       "items": {
-                        "type": "object",
-                        "properties": {
-                          "category_id": {
-                            "title": "Category",
-                            "type": "integer"
-                          },
-                          "category_title": {
-                            "title": "Category",
-                            "type": "string"
-                          },
-                          "category_description": {
-                            "title": "Category",
-                            "type": "string"
-                          },
-                          "links": {
-                            "title": "Links",
-                            "type": "object",
-                            "properties": {
-                              "permalink": {
-                                "title": "Permalink",
-                                "type": "string"
-                              },
-                              "detail": {
-                                "title": "Detail",
-                                "type": "string"
-                              },
-                              "sub-categories": {
-                                "title": "Sub",
-                                "type": "string"
-                              },
-                              "sub-forums": {
-                                "title": "Sub",
-                                "type": "string"
-                              },
-                              "sub-elements": {
-                                "title": "Sub",
-                                "type": "string"
-                              }
-                            },
-                            "required": [
-                              "permalink",
-                              "detail",
-                              "sub-categories",
-                              "sub-forums",
-                              "sub-elements"
-                            ]
-                          },
-                          "permissions": {
-                            "title": "Permissions",
-                            "type": "object",
-                            "properties": {
-                              "view": {
-                                "title": "View",
-                                "type": "boolean"
-                              },
-                              "edit": {
-                                "title": "Edit",
-                                "type": "boolean"
-                              },
-                              "delete": {
-                                "title": "Delete",
-                                "type": "boolean"
-                              }
-                            },
-                            "required": [
-                              "view",
-                              "edit",
-                              "delete"
-                            ]
-                          },
-                          "navigation_type": {
-                            "title": "Navigation",
-                            "type": "string"
-                          },
-                          "navigation_id": {
-                            "title": "Navigation",
-                            "type": "integer"
-                          },
-                          "navigation_depth": {
-                            "title": "Navigation",
-                            "type": "integer"
-                          },
-                          "navigation_parent_id": {
-                            "title": "Navigation",
-                            "type": "integer"
-                          },
-                          "has_sub_elements": {
-                            "title": "Has",
-                            "type": "boolean"
-                          }
-                        },
-                        "required": [
-                          "category_id",
-                          "category_title",
-                          "category_description",
-                          "links",
-                          "permissions",
-                          "navigation_type",
-                          "navigation_id",
-                          "navigation_depth",
-                          "navigation_parent_id",
-                          "has_sub_elements"
-                        ]
+                        "$ref": "#/components/schemas/Resp_CategoryModel"
                       }
                     },
                     "elements_count": {
@@ -8405,7 +7306,10 @@
               "type": "array",
               "items": {
                 "type": "string",
-                "enum": ["*", "alerts"]
+                "enum": [
+                  "*",
+                  "alerts"
+                ]
               }
             }
           }
@@ -8610,7 +7514,10 @@
               "type": "array",
               "items": {
                 "type": "string",
-                "enum": ["*", "alerts"]
+                "enum": [
+                  "*",
+                  "alerts"
+                ]
               }
             }
           }
@@ -8680,7 +7587,10 @@
               "type": "array",
               "items": {
                 "type": "string",
-                "enum": ["*", "alerts"]
+                "enum": [
+                  "*",
+                  "alerts"
+                ]
               }
             }
           }
@@ -8698,7 +7608,7 @@
                   ],
                   "properties": {
                     "user": {
-                       "$ref": "#/components/schemas/Resp_UserModel"
+                      "$ref": "#/components/schemas/Resp_UserModel"
                     },
                     "system_info": {
                       "$ref": "#/components/schemas/Resp_SystemInfo"
@@ -12114,7 +11024,10 @@
               "type": "array",
               "items": {
                 "type": "string",
-                "enum": ["*", "latest_comments"]
+                "enum": [
+                  "*",
+                  "latest_comments"
+                ]
               }
             }
           }
@@ -26505,6 +25418,252 @@
             "type": "integer"
           }
         }
+      },
+      "Resp_ForumModel": {
+        "title": "Forum",
+        "type": "object",
+        "properties": {
+          "forum_id": {
+            "title": "Forum",
+            "type": "integer"
+          },
+          "forum_title": {
+            "title": "Forum",
+            "type": "string"
+          },
+          "forum_description": {
+            "title": "Forum",
+            "type": "string"
+          },
+          "forum_thread_count": {
+            "title": "Forum",
+            "type": "integer"
+          },
+          "forum_post_count": {
+            "title": "Forum",
+            "type": "integer"
+          },
+          "forum_prefixes": {
+            "title": "Forum",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "group_title": {
+                  "title": "Group",
+                  "type": "string"
+                },
+                "group_prefixes": {
+                  "title": "Group",
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "prefix_id": {
+                        "title": "Prefix",
+                        "type": "integer"
+                      },
+                      "prefix_title": {
+                        "title": "Prefix",
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "prefix_id",
+                      "prefix_title"
+                    ]
+                  }
+                }
+              },
+              "required": [
+                "group_title",
+                "group_prefixes"
+              ]
+            }
+          },
+          "thread_default_prefix_id": {
+            "title": "Thread",
+            "type": "integer"
+          },
+          "thread_prefix_is_required": {
+            "title": "Thread",
+            "type": "boolean"
+          },
+          "links": {
+            "title": "Links",
+            "type": "object",
+            "properties": {
+              "permalink": {
+                "title": "Permalink",
+                "type": "string"
+              },
+              "detail": {
+                "title": "Detail",
+                "type": "string"
+              },
+              "sub-categories": {
+                "title": "Sub",
+                "type": "string"
+              },
+              "sub-forums": {
+                "title": "Sub",
+                "type": "string"
+              },
+              "threads": {
+                "title": "Threads",
+                "type": "string"
+              },
+              "followers": {
+                "title": "Followers",
+                "type": "string"
+              }
+            },
+            "required": [
+              "permalink",
+              "detail",
+              "sub-categories",
+              "sub-forums",
+              "threads",
+              "followers"
+            ]
+          },
+          "permissions": {
+            "title": "Permissions",
+            "type": "object",
+            "properties": {
+              "view": {
+                "title": "View",
+                "type": "boolean"
+              },
+              "edit": {
+                "title": "Edit",
+                "type": "boolean"
+              },
+              "delete": {
+                "title": "Delete",
+                "type": "boolean"
+              },
+              "create_thread": {
+                "title": "Create",
+                "type": "boolean"
+              },
+              "upload_attachment": {
+                "title": "Upload",
+                "type": "boolean"
+              },
+              "tag_thread": {
+                "title": "Tag",
+                "type": "boolean"
+              },
+              "follow": {
+                "title": "Follow",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "view",
+              "edit",
+              "delete",
+              "create_thread",
+              "upload_attachment",
+              "tag_thread",
+              "follow"
+            ]
+          },
+          "forum_is_followed": {
+            "title": "Forum",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "forum_id",
+          "forum_title",
+          "forum_description",
+          "forum_thread_count",
+          "forum_post_count",
+          "forum_prefixes",
+          "thread_default_prefix_id",
+          "thread_prefix_is_required",
+          "links",
+          "permissions",
+          "forum_is_followed"
+        ]
+      },
+      "Resp_CategoryModel": {
+        "title": "Category",
+        "type": "object",
+        "properties": {
+          "category_id": {
+            "title": "Category",
+            "type": "integer"
+          },
+          "category_title": {
+            "title": "Category",
+            "type": "string"
+          },
+          "category_description": {
+            "title": "Category",
+            "type": "string"
+          },
+          "links": {
+            "title": "Links",
+            "type": "object",
+            "properties": {
+              "permalink": {
+                "title": "Permalink",
+                "type": "string"
+              },
+              "detail": {
+                "title": "Detail",
+                "type": "string"
+              },
+              "sub-categories": {
+                "title": "Sub",
+                "type": "string"
+              },
+              "sub-forums": {
+                "title": "Sub",
+                "type": "string"
+              }
+            },
+            "required": [
+              "permalink",
+              "detail",
+              "sub-categories",
+              "sub-forums"
+            ]
+          },
+          "permissions": {
+            "title": "Permissions",
+            "type": "object",
+            "properties": {
+              "view": {
+                "title": "View",
+                "type": "boolean"
+              },
+              "edit": {
+                "title": "Edit",
+                "type": "boolean"
+              },
+              "delete": {
+                "title": "Delete",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "view",
+              "edit",
+              "delete"
+            ]
+          }
+        },
+        "required": [
+          "category_id",
+          "category_title",
+          "category_description",
+          "links",
+          "permissions"
+        ]
       }
     },
     "securitySchemes": {

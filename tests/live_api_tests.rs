@@ -123,7 +123,7 @@ async fn forum_categories_get_by_id() {
     require_token!();
     // category 1 may not exist; handle NotFound gracefully
     match client().forum().categories_get(1).await {
-        Ok(resp) => assert!(resp.category.is_object()),
+        Ok(resp) => assert!(resp.category.category_id > 0),
         Err(Error::NotFound { .. }) => {} // expected if id doesn't exist
         Err(e) => panic!("unexpected: {e}"),
     }
@@ -156,10 +156,9 @@ async fn forum_forums_get_by_id() {
         .await
         .unwrap();
     if let Some(first) = list.forums.first() {
-        // forums are Vec<serde_json::Value>, extract forum_id
-        let fid = first["forum_id"].as_i64().unwrap();
+        let fid = first.forum_id;
         let resp = client().forum().forums_get(fid).await.unwrap();
-        assert!(resp.forum.is_object());
+        assert!(resp.forum.forum_id > 0);
     }
 }
 

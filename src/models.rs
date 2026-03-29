@@ -980,6 +980,22 @@ where
     }
 }
 
+/// Category model from the LOLZTEAM API.
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[serde(default)]
+pub struct Category {
+    #[serde(deserialize_with = "null_default", default)]
+    pub category_description: String,
+    #[serde(deserialize_with = "null_default", default)]
+    pub category_id: i64,
+    #[serde(deserialize_with = "null_default", default)]
+    pub category_title: String,
+    #[serde(deserialize_with = "null_default", default)]
+    pub links: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
+    pub permissions: serde_json::Value,
+}
+
 /// ChatboxMessage model from the LOLZTEAM API.
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default)]
@@ -1092,6 +1108,34 @@ pub struct Conversation {
     pub recipient: serde_json::Value,
     #[serde(deserialize_with = "null_or_vec", default)]
     pub recipients: Vec<serde_json::Value>,
+}
+
+/// Forum model from the LOLZTEAM API.
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[serde(default)]
+pub struct Forum {
+    #[serde(deserialize_with = "null_default", default)]
+    pub forum_description: String,
+    #[serde(deserialize_with = "null_default", default)]
+    pub forum_id: i64,
+    #[serde(deserialize_with = "null_default", default)]
+    pub forum_is_followed: bool,
+    #[serde(deserialize_with = "null_default", default)]
+    pub forum_post_count: i64,
+    #[serde(deserialize_with = "null_or_vec", default)]
+    pub forum_prefixes: Vec<serde_json::Value>,
+    #[serde(deserialize_with = "null_default", default)]
+    pub forum_thread_count: i64,
+    #[serde(deserialize_with = "null_default", default)]
+    pub forum_title: String,
+    #[serde(deserialize_with = "null_default", default)]
+    pub links: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
+    pub permissions: serde_json::Value,
+    #[serde(deserialize_with = "null_default", default)]
+    pub thread_default_prefix_id: i64,
+    #[serde(deserialize_with = "null_default", default)]
+    pub thread_prefix_is_required: bool,
 }
 
 /// Link model from the LOLZTEAM API.
@@ -2038,7 +2082,7 @@ pub struct BatchExecuteResponse {
 #[serde(default)]
 pub struct CategoriesListResponse {
     #[serde(deserialize_with = "null_or_vec", default)]
-    pub categories: Vec<serde_json::Value>,
+    pub categories: Vec<Category>,
     #[serde(deserialize_with = "null_default", default)]
     pub categories_total: i64,
     #[serde(deserialize_with = "null_default", default)]
@@ -2050,7 +2094,7 @@ pub struct CategoriesListResponse {
 #[serde(default)]
 pub struct CategoriesGetResponse {
     #[serde(deserialize_with = "null_default", default)]
-    pub category: serde_json::Value,
+    pub category: Category,
     #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
@@ -2383,7 +2427,7 @@ pub struct FormsCreateResponse {
 #[serde(default)]
 pub struct ForumsListResponse {
     #[serde(deserialize_with = "null_or_vec", default)]
-    pub forums: Vec<serde_json::Value>,
+    pub forums: Vec<Forum>,
     #[serde(deserialize_with = "null_default", default)]
     pub forums_total: i64,
     #[serde(deserialize_with = "null_default", default)]
@@ -2401,7 +2445,7 @@ pub struct ForumsGetFeedOptionsResponse {
     #[serde(deserialize_with = "null_or_vec", default)]
     pub excluded_forums_ids: Vec<i64>,
     #[serde(deserialize_with = "null_or_vec", default)]
-    pub forums: Vec<serde_json::Value>,
+    pub forums: Vec<Forum>,
     #[serde(deserialize_with = "null_default", default)]
     pub keywords: String,
     #[serde(deserialize_with = "null_default", default)]
@@ -2413,7 +2457,7 @@ pub struct ForumsGetFeedOptionsResponse {
 #[serde(default)]
 pub struct ForumsFollowedResponse {
     #[serde(deserialize_with = "null_or_vec", default)]
-    pub forums: Vec<serde_json::Value>,
+    pub forums: Vec<Forum>,
     #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
@@ -2435,7 +2479,7 @@ pub struct ForumsGroupedResponse {
 #[serde(default)]
 pub struct ForumsGetResponse {
     #[serde(deserialize_with = "null_default", default)]
-    pub forum: serde_json::Value,
+    pub forum: Forum,
     #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
@@ -2480,7 +2524,7 @@ pub struct LinksGetResponse {
 #[serde(default)]
 pub struct NavigationListResponse {
     #[serde(deserialize_with = "null_or_vec", default)]
-    pub elements: Vec<serde_json::Value>,
+    pub elements: Vec<Category>,
     #[serde(deserialize_with = "null_default", default)]
     pub elements_count: i64,
     #[serde(deserialize_with = "null_default", default)]
@@ -2897,7 +2941,7 @@ pub struct TagsGetResponse {
 #[serde(default)]
 pub struct ThreadsListResponse {
     #[serde(deserialize_with = "null_default", default)]
-    pub forum: serde_json::Value,
+    pub forum: Forum,
     #[serde(deserialize_with = "null_default", default)]
     pub links: serde_json::Value,
     #[serde(deserialize_with = "null_default", default)]
@@ -3013,7 +3057,7 @@ pub struct ThreadsHideResponse {
 #[serde(default)]
 pub struct ThreadsNavigationResponse {
     #[serde(deserialize_with = "null_or_vec", default)]
-    pub elements: Vec<serde_json::Value>,
+    pub elements: Vec<Category>,
     #[serde(deserialize_with = "null_default", default)]
     pub elements_count: i64,
     #[serde(deserialize_with = "null_default", default)]

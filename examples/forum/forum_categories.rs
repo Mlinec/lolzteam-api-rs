@@ -30,11 +30,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         println!("  {:?}", f);
     }
 
-    let forum_id = forums
-        .forums
-        .first()
-        .and_then(|f| f["forum_id"].as_i64())
-        .unwrap_or(1);
+    let forum_id = forums.forums.first().map(|f| f.forum_id).unwrap_or(1);
 
     println!("\n--- forum #{forum_id} ---");
     match forum.forums_get(forum_id).await {
