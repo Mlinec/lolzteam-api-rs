@@ -142,7 +142,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // ── Categories ──
     println!("\n── Categories ──");
-    let cats = count!("forum.categories_list", forum.categories_list(None, None, None));
+    let cats = count!(
+        "forum.categories_list",
+        forum.categories_list(None, None, None)
+    );
     // Pick a real category_id from the list (first one), fallback to 103
     let first_cat_id = cats
         .as_ref()
@@ -165,7 +168,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         forum.forums_get(first_forum_id)
     );
     count!("forum.forums_grouped", forum.forums_grouped());
-    count!("forum.forums_get_feed_options", forum.forums_get_feed_options());
+    count!(
+        "forum.forums_get_feed_options",
+        forum.forums_get_feed_options()
+    );
     count!("forum.forums_followed", forum.forums_followed(None));
     count!(
         &format!("forum.forums_followers({})", first_forum_id),
@@ -186,7 +192,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // ── Notifications ──
     println!("\n── Notifications ──");
-    count!("forum.notifications_list", forum.notifications_list(None, None, None));
+    count!(
+        "forum.notifications_list",
+        forum.notifications_list(None, None, None)
+    );
 
     // ── Tags ──
     println!("\n── Tags ──");
@@ -197,14 +206,20 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // ── Chatbox ──
     println!("\n── Chatbox ──");
     count!("forum.chatbox_index", forum.chatbox_index(None));
-    count!("forum.chatbox_get_messages", forum.chatbox_get_messages(serde_json::Value::Null, None));
+    count!(
+        "forum.chatbox_get_messages",
+        forum.chatbox_get_messages(serde_json::Value::Null, None)
+    );
     count!("forum.chatbox_get_ignore", forum.chatbox_get_ignore());
     count!(
         "forum.chatbox_get_leaderboard",
         forum.chatbox_get_leaderboard(None)
     );
     // chatbox_online may require specific room permissions
-    count_tolerant!("forum.chatbox_online", forum.chatbox_online(serde_json::Value::Null));
+    count_tolerant!(
+        "forum.chatbox_online",
+        forum.chatbox_online(serde_json::Value::Null)
+    );
 
     // ── Threads ──
     println!("\n── Threads ──");
@@ -315,10 +330,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Get own user_id from users_get
     let own_user = forum.users_get(5285311, None).await;
-    let own_id = own_user
-        .ok()
-        .map(|u| u.user.user_id)
-        .unwrap_or(5285311);
+    let own_id = own_user.ok().map(|u| u.user.user_id).unwrap_or(5285311);
 
     count!(
         &format!("forum.users_get(self={})", own_id),
@@ -337,18 +349,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         "forum.users_followings(1)",
         forum.users_followings(1, None, None, None)
     );
-    count!(
-        "forum.users_trophies(1)",
-        forum.users_trophies(1)
-    );
+    count!("forum.users_trophies(1)", forum.users_trophies(1));
     count!(
         "forum.users_contents(1) timeline",
         forum.users_contents(1, None, None)
     );
-    count!(
-        "forum.users_ignored",
-        forum.users_ignored(None)
-    );
+    count!("forum.users_ignored", forum.users_ignored(None));
     count!(
         "forum.users_secret_answer_types",
         forum.users_secret_answer_types()
@@ -607,10 +613,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         "market.list_orders",
         market.list_orders(MarketListOrdersParams::default())
     );
-    count!(
-        "market.list_states",
-        market.list_states(None)
-    );
+    count!("market.list_states", market.list_states(None));
 
     // ── Payments ──
     println!("\n── Payments ──");
@@ -618,14 +621,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         "market.payments_history",
         market.payments_history(MarketPaymentsHistoryParams::default())
     );
-    count!(
-        "market.payments_currency",
-        market.payments_currency()
-    );
-    count!(
-        "market.payments_fee",
-        market.payments_fee(Some(100.0))
-    );
+    count!("market.payments_currency", market.payments_currency());
+    count!("market.payments_fee", market.payments_fee(Some(100.0)));
     count!(
         "market.payments_balance_list",
         market.payments_balance_list()
@@ -634,10 +631,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         "market.payments_payout_services",
         market.payments_payout_services()
     );
-    count!(
-        "market.auto_payments_list",
-        market.auto_payments_list()
-    );
+    count!("market.auto_payments_list", market.auto_payments_list());
 
     // ── Invoices ──
     println!("\n── Invoices ──");
@@ -659,10 +653,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // ── Custom discounts ──
     println!("\n── Custom discounts ──");
-    count!(
-        "market.custom_discounts_get",
-        market.custom_discounts_get()
-    );
+    count!("market.custom_discounts_get", market.custom_discounts_get());
 
     // ── Proxy ──
     println!("\n── Proxy ──");
@@ -670,10 +661,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // ── Profile claims ──
     println!("\n── Profile claims ──");
-    count!(
-        "market.profile_claims",
-        market.profile_claims(None, None)
-    );
+    count!("market.profile_claims", market.profile_claims(None, None));
 
     // ── Letters2 ──
     println!("\n── Letters2 ──");
@@ -700,10 +688,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             ..Default::default()
         })
         .await;
-    let steam_item_id = steam_items
-        .as_ref()
-        .ok()
-        .and_then(|r| r.items.first().and_then(|v| v.get("item_id").and_then(|id| id.as_i64())));
+    let steam_item_id = steam_items.as_ref().ok().and_then(|r| {
+        r.items
+            .first()
+            .and_then(|v| v.get("item_id").and_then(|id| id.as_i64()))
+    });
 
     if let Some(item_id) = steam_item_id {
         count!(
@@ -755,9 +744,18 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("\n╔══════════════════════════════════════════════════════╗");
     println!("║                    TEST SUMMARY                     ║");
     println!("╠══════════════════════════════════════════════════════╣");
-    println!("║  Total : {:<5}                                     ║", total);
-    println!("║  ✅ OK  : {:<5}  (of which ⚠️  expected: {:<5})     ║", ok, warned);
-    println!("║  ❌ Fail: {:<5}                                     ║", fail);
+    println!(
+        "║  Total : {:<5}                                     ║",
+        total
+    );
+    println!(
+        "║  ✅ OK  : {:<5}  (of which ⚠️  expected: {:<5})     ║",
+        ok, warned
+    );
+    println!(
+        "║  ❌ Fail: {:<5}                                     ║",
+        fail
+    );
     println!(
         "║  Rate  : {:.1}%                                      ║",
         if total > 0 {
