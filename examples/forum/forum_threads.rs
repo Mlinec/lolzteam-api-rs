@@ -82,7 +82,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         Ok(resp) => {
             println!("{} posts", resp.posts.len());
             for p in resp.posts.iter().take(3) {
-                println!("  thread #{} by {}", p.thread_id, p.creator_username);
+                println!("  post #{} by {}", p.post_id, p.poster_username);
             }
         }
         Err(e) => eprintln!("  skip: {e}"),

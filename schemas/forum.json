@@ -7053,7 +7053,7 @@
                       "title": "Posts",
                       "type": "array",
                       "items": {
-                        "$ref": "#/components/schemas/Resp_ThreadModel"
+                        "$ref": "#/components/schemas/Resp_PostModel"
                       }
                     },
                     "thread": {

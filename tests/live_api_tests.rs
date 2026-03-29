@@ -280,15 +280,9 @@ async fn forum_posts_get_by_id() {
         })
         .await
         .unwrap();
-    // posts.posts is Vec<Thread> due to codegen; extract post_id from first_post or thread_id
     if let Some(post) = posts.posts.first() {
-        // Thread struct has thread_id; the API actually returns post objects here
-        // but codegen maps them to Thread. Use serde_json round-trip to get post_id.
-        let val = serde_json::to_value(post).unwrap();
-        if let Some(pid) = val.get("post_id").and_then(|v| v.as_i64()) {
-            let resp = c.forum().posts_get(pid).await.unwrap();
-            assert_eq!(resp.post.post_id, pid);
-        }
+        let resp = c.forum().posts_get(post.post_id).await.unwrap();
+        assert_eq!(resp.post.post_id, post.post_id);
     }
 }
 

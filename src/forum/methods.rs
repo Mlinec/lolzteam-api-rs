@@ -6,74 +6,57 @@
 
 use crate::client::ApiClient;
 use crate::error::Result;
-use crate::forum::types::*;
 use crate::models::*;
+use crate::forum::types::*;
 
 /// Forum API methods.
 impl crate::forum::ForumApi {
+
     // ── Assets ──
 
     /// Get CSS
     /// `GET /css`
-    pub async fn assets_css(&self, css: Option<Vec<String>>) -> Result<AssetsCssResponse> {
+    pub async fn assets_css(
+        &self,
+        css: Option<Vec<String>>,
+    ) -> Result<AssetsCssResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
-        if let Some(v) = &css {
-            query.push((
-                "css",
-                v.iter()
-                    .map(|x| x.to_string())
-                    .collect::<Vec<_>>()
-                    .join(","),
-            ));
-        }
-        self.client
-            .request(
-                "get",
-                "/css",
-                Some(&query),
-                None::<crate::client::RequestBody>,
-            )
-            .await
+        if let Some(v) = &css { query.push(("css", v.iter().map(|x| x.to_string()).collect::<Vec<_>>().join(","))); }
+        self.client.request(
+            "get",
+            "/css",
+            Some(&query),
+            None::<crate::client::RequestBody>,
+        ).await
     }
+
 
     // ── Authentication ──
 
     /// Get Access Token
     /// `POST /oauth/token`
-    pub async fn o_auth_token(&self, params: ForumOAuthTokenParams) -> Result<OAuthTokenResponse> {
+    pub async fn o_auth_token(
+        &self,
+        params: ForumOAuthTokenParams,
+    ) -> Result<OAuthTokenResponse> {
         let mut body = crate::client::MultipartForm::new();
         body.text("client_id", params.client_id.to_string());
         body.text("client_secret", params.client_secret.to_string());
-        if let Some(v) = &params.code {
-            body.text("code", v.to_string());
-        }
+        if let Some(v) = &params.code { body.text("code", v.to_string()); }
         body.text("grant_type", params.grant_type.to_string());
-        if let Some(v) = &params.password {
-            body.text("password", v.to_string());
-        }
-        if let Some(v) = &params.redirect_uri {
-            body.text("redirect_uri", v.to_string());
-        }
-        if let Some(v) = &params.refresh_token {
-            body.text("refresh_token", v.to_string());
-        }
-        if let Some(v) = &params.scope {
-            for item in v {
-                body.text("scope", item.to_string());
-            }
-        }
-        if let Some(v) = &params.username {
-            body.text("username", v.to_string());
-        }
-        self.client
-            .request(
-                "post",
-                "/oauth/token",
-                None::<&[(&str, String)]>,
-                Some(crate::client::RequestBody::Multipart(body)),
-            )
-            .await
+        if let Some(v) = &params.password { body.text("password", v.to_string()); }
+        if let Some(v) = &params.redirect_uri { body.text("redirect_uri", v.to_string()); }
+        if let Some(v) = &params.refresh_token { body.text("refresh_token", v.to_string()); }
+        if let Some(v) = &params.scope { for item in v { body.text("scope", item.to_string()); } }
+        if let Some(v) = &params.username { body.text("username", v.to_string()); }
+        self.client.request(
+            "post",
+            "/oauth/token",
+            None::<&[(&str, String)]>,
+            Some(crate::client::RequestBody::Multipart(body)),
+        ).await
     }
+
 
     // ── Batch requests ──
 
@@ -84,29 +67,29 @@ impl crate::forum::ForumApi {
         body: Vec<serde_json::Value>,
     ) -> Result<BatchExecuteResponse> {
         let body = serde_json::to_value(&body).unwrap_or_default();
-        self.client
-            .request(
-                "post",
-                "/batch",
-                None::<&[(&str, String)]>,
-                Some(crate::client::RequestBody::Json(body)),
-            )
-            .await
+        self.client.request(
+            "post",
+            "/batch",
+            None::<&[(&str, String)]>,
+            Some(crate::client::RequestBody::Json(body)),
+        ).await
     }
+
 
     // ── Categories ──
 
     /// Get Category
     /// `GET /categories/{category_id}`
-    pub async fn categories_get(&self, category_id: i64) -> Result<CategoriesGetResponse> {
-        self.client
-            .request(
-                "get",
-                &format!("/categories/{category_id}"),
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+    pub async fn categories_get(
+        &self,
+        category_id: i64,
+    ) -> Result<CategoriesGetResponse> {
+        self.client.request(
+            "get",
+            &format!("/categories/{category_id}"),
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Get Categories
@@ -118,51 +101,46 @@ impl crate::forum::ForumApi {
         order: Option<String>,
     ) -> Result<CategoriesListResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
-        if let Some(v) = &parent_category_id {
-            query.push(("parent_category_id", v.to_string()));
-        }
-        if let Some(v) = &parent_forum_id {
-            query.push(("parent_forum_id", v.to_string()));
-        }
-        if let Some(v) = &order {
-            query.push(("order", v.to_string()));
-        }
-        self.client
-            .request(
-                "get",
-                "/categories",
-                Some(&query),
-                None::<crate::client::RequestBody>,
-            )
-            .await
+        if let Some(v) = &parent_category_id { query.push(("parent_category_id", v.to_string())); }
+        if let Some(v) = &parent_forum_id { query.push(("parent_forum_id", v.to_string())); }
+        if let Some(v) = &order { query.push(("order", v.to_string())); }
+        self.client.request(
+            "get",
+            "/categories",
+            Some(&query),
+            None::<crate::client::RequestBody>,
+        ).await
     }
+
 
     // ── Chatbox ──
 
     /// Unignore Chat User
     /// `DELETE /chatbox/ignore`
-    pub async fn chatbox_delete_ignore(&self, user_id: String) -> Result<serde_json::Value> {
-        self.client
-            .request(
-                "delete",
-                "/chatbox/ignore",
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+    pub async fn chatbox_delete_ignore(
+        &self,
+        user_id: String,
+    ) -> Result<serde_json::Value> {
+        self.client.request(
+            "delete",
+            "/chatbox/ignore",
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Delete Chat Message
     /// `DELETE /chatbox/messages`
-    pub async fn chatbox_delete_message(&self, message_id: i64) -> Result<serde_json::Value> {
-        self.client
-            .request(
-                "delete",
-                "/chatbox/messages",
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+    pub async fn chatbox_delete_message(
+        &self,
+        message_id: i64,
+    ) -> Result<serde_json::Value> {
+        self.client.request(
+            "delete",
+            "/chatbox/messages",
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Edit Chat Message
@@ -173,37 +151,27 @@ impl crate::forum::ForumApi {
         message_id: i64,
     ) -> Result<ChatboxEditMessageResponse> {
         let mut body = serde_json::Map::new();
-        body.insert(
-            "message".into(),
-            serde_json::to_value(&message).unwrap_or_default(),
-        );
-        body.insert(
-            "message_id".into(),
-            serde_json::to_value(&message_id).unwrap_or_default(),
-        );
-        self.client
-            .request(
-                "put",
-                "/chatbox/messages",
-                None::<&[(&str, String)]>,
-                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
-                    body,
-                ))),
-            )
-            .await
+        body.insert("message".into(), serde_json::to_value(&message).unwrap_or_default());
+        body.insert("message_id".into(), serde_json::to_value(&message_id).unwrap_or_default());
+        self.client.request(
+            "put",
+            "/chatbox/messages",
+            None::<&[(&str, String)]>,
+            Some(crate::client::RequestBody::Json(serde_json::Value::Object(body))),
+        ).await
     }
 
     /// Get Ignored Chat Users
     /// `GET /chatbox/ignore`
-    pub async fn chatbox_get_ignore(&self) -> Result<ChatboxGetIgnoreResponse> {
-        self.client
-            .request(
-                "get",
-                "/chatbox/ignore",
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+    pub async fn chatbox_get_ignore(
+        &self,
+    ) -> Result<ChatboxGetIgnoreResponse> {
+        self.client.request(
+            "get",
+            "/chatbox/ignore",
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Get Chat Leaderboard
@@ -213,17 +181,13 @@ impl crate::forum::ForumApi {
         duration: Option<String>,
     ) -> Result<ChatboxGetLeaderboardResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
-        if let Some(v) = &duration {
-            query.push(("duration", v.to_string()));
-        }
-        self.client
-            .request(
-                "get",
-                "/chatbox/messages/leaderboard",
-                Some(&query),
-                None::<crate::client::RequestBody>,
-            )
-            .await
+        if let Some(v) = &duration { query.push(("duration", v.to_string())); }
+        self.client.request(
+            "get",
+            "/chatbox/messages/leaderboard",
+            Some(&query),
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Get Chat Messages
@@ -235,17 +199,13 @@ impl crate::forum::ForumApi {
     ) -> Result<ChatboxGetMessagesResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         query.push(("room_id", room_id.to_string()));
-        if let Some(v) = &before_message_id {
-            query.push(("before_message_id", v.to_string()));
-        }
-        self.client
-            .request(
-                "get",
-                "/chatbox/messages",
-                Some(&query),
-                None::<crate::client::RequestBody>,
-            )
-            .await
+        if let Some(v) = &before_message_id { query.push(("before_message_id", v.to_string())); }
+        self.client.request(
+            "get",
+            "/chatbox/messages",
+            Some(&query),
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Get Chats
@@ -255,17 +215,13 @@ impl crate::forum::ForumApi {
         room_id: Option<serde_json::Value>,
     ) -> Result<ChatboxIndexResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
-        if let Some(v) = &room_id {
-            query.push(("room_id", v.to_string()));
-        }
-        self.client
-            .request(
-                "get",
-                "/chatbox",
-                Some(&query),
-                None::<crate::client::RequestBody>,
-            )
-            .await
+        if let Some(v) = &room_id { query.push(("room_id", v.to_string())); }
+        self.client.request(
+            "get",
+            "/chatbox",
+            Some(&query),
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Get Chat Online
@@ -276,34 +232,28 @@ impl crate::forum::ForumApi {
     ) -> Result<ChatboxOnlineResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         query.push(("room_id", room_id.to_string()));
-        self.client
-            .request(
-                "get",
-                "/chatbox/messages/online",
-                Some(&query),
-                None::<crate::client::RequestBody>,
-            )
-            .await
+        self.client.request(
+            "get",
+            "/chatbox/messages/online",
+            Some(&query),
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Ignore Chat User
     /// `POST /chatbox/ignore`
-    pub async fn chatbox_post_ignore(&self, user_id: String) -> Result<serde_json::Value> {
+    pub async fn chatbox_post_ignore(
+        &self,
+        user_id: String,
+    ) -> Result<serde_json::Value> {
         let mut body = serde_json::Map::new();
-        body.insert(
-            "user_id".into(),
-            serde_json::to_value(&user_id).unwrap_or_default(),
-        );
-        self.client
-            .request(
-                "post",
-                "/chatbox/ignore",
-                None::<&[(&str, String)]>,
-                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
-                    body,
-                ))),
-            )
-            .await
+        body.insert("user_id".into(), serde_json::to_value(&user_id).unwrap_or_default());
+        self.client.request(
+            "post",
+            "/chatbox/ignore",
+            None::<&[(&str, String)]>,
+            Some(crate::client::RequestBody::Json(serde_json::Value::Object(body))),
+        ).await
     }
 
     /// Create Chat Message
@@ -315,30 +265,15 @@ impl crate::forum::ForumApi {
         reply_message_id: Option<i64>,
     ) -> Result<ChatboxPostMessageResponse> {
         let mut body = serde_json::Map::new();
-        body.insert(
-            "message".into(),
-            serde_json::to_value(&message).unwrap_or_default(),
-        );
-        if let Some(v) = &reply_message_id {
-            body.insert(
-                "reply_message_id".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        body.insert(
-            "room_id".into(),
-            serde_json::to_value(&room_id).unwrap_or_default(),
-        );
-        self.client
-            .request(
-                "post",
-                "/chatbox/messages",
-                None::<&[(&str, String)]>,
-                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
-                    body,
-                ))),
-            )
-            .await
+        body.insert("message".into(), serde_json::to_value(&message).unwrap_or_default());
+        if let Some(v) = &reply_message_id { body.insert("reply_message_id".into(), serde_json::to_value(v).unwrap_or_default()); }
+        body.insert("room_id".into(), serde_json::to_value(&room_id).unwrap_or_default());
+        self.client.request(
+            "post",
+            "/chatbox/messages",
+            None::<&[(&str, String)]>,
+            Some(crate::client::RequestBody::Json(serde_json::Value::Object(body))),
+        ).await
     }
 
     /// Report Chat Message
@@ -349,24 +284,14 @@ impl crate::forum::ForumApi {
         reason: String,
     ) -> Result<serde_json::Value> {
         let mut body = serde_json::Map::new();
-        body.insert(
-            "message_id".into(),
-            serde_json::to_value(&message_id).unwrap_or_default(),
-        );
-        body.insert(
-            "reason".into(),
-            serde_json::to_value(&reason).unwrap_or_default(),
-        );
-        self.client
-            .request(
-                "post",
-                "/chatbox/messages/report",
-                None::<&[(&str, String)]>,
-                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
-                    body,
-                ))),
-            )
-            .await
+        body.insert("message_id".into(), serde_json::to_value(&message_id).unwrap_or_default());
+        body.insert("reason".into(), serde_json::to_value(&reason).unwrap_or_default());
+        self.client.request(
+            "post",
+            "/chatbox/messages/report",
+            None::<&[(&str, String)]>,
+            Some(crate::client::RequestBody::Json(serde_json::Value::Object(body))),
+        ).await
     }
 
     /// Get Chat Message Report Reasons
@@ -377,31 +302,31 @@ impl crate::forum::ForumApi {
     ) -> Result<ChatboxReportReasonsResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         query.push(("message_id", message_id.to_string()));
-        self.client
-            .request(
-                "get",
-                "/chatbox/messages/report",
-                Some(&query),
-                None::<crate::client::RequestBody>,
-            )
-            .await
+        self.client.request(
+            "get",
+            "/chatbox/messages/report",
+            Some(&query),
+            None::<crate::client::RequestBody>,
+        ).await
     }
+
 
     // ── Content Tagging ──
 
     /// Get Filtered Content
     /// `GET /tags/find`
-    pub async fn tags_find(&self, tag: String) -> Result<TagsFindResponse> {
+    pub async fn tags_find(
+        &self,
+        tag: String,
+    ) -> Result<TagsFindResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         query.push(("tag", tag.to_string()));
-        self.client
-            .request(
-                "get",
-                "/tags/find",
-                Some(&query),
-                None::<crate::client::RequestBody>,
-            )
-            .await
+        self.client.request(
+            "get",
+            "/tags/find",
+            Some(&query),
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Get Tagged Content
@@ -413,20 +338,14 @@ impl crate::forum::ForumApi {
         limit: Option<i64>,
     ) -> Result<TagsGetResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
-        if let Some(v) = &page {
-            query.push(("page", v.to_string()));
-        }
-        if let Some(v) = &limit {
-            query.push(("limit", v.to_string()));
-        }
-        self.client
-            .request(
-                "get",
-                &format!("/tags/{tag_id}"),
-                Some(&query),
-                None::<crate::client::RequestBody>,
-            )
-            .await
+        if let Some(v) = &page { query.push(("page", v.to_string())); }
+        if let Some(v) = &limit { query.push(("limit", v.to_string())); }
+        self.client.request(
+            "get",
+            &format!("/tags/{tag_id}"),
+            Some(&query),
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Get Tags
@@ -437,34 +356,29 @@ impl crate::forum::ForumApi {
         limit: Option<i64>,
     ) -> Result<TagsListResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
-        if let Some(v) = &page {
-            query.push(("page", v.to_string()));
-        }
-        if let Some(v) = &limit {
-            query.push(("limit", v.to_string()));
-        }
-        self.client
-            .request(
-                "get",
-                "/tags/list",
-                Some(&query),
-                None::<crate::client::RequestBody>,
-            )
-            .await
+        if let Some(v) = &page { query.push(("page", v.to_string())); }
+        if let Some(v) = &limit { query.push(("limit", v.to_string())); }
+        self.client.request(
+            "get",
+            "/tags/list",
+            Some(&query),
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Get Popular Tags
     /// `GET /tags`
-    pub async fn tags_popular(&self) -> Result<TagsPopularResponse> {
-        self.client
-            .request(
-                "get",
-                "/tags",
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+    pub async fn tags_popular(
+        &self,
+    ) -> Result<TagsPopularResponse> {
+        self.client.request(
+            "get",
+            "/tags",
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
+
 
     // ── Conversations ──
 
@@ -474,14 +388,12 @@ impl crate::forum::ForumApi {
         &self,
         conversation_id: i64,
     ) -> Result<ConversationsAlertsDisableResponse> {
-        self.client
-            .request(
-                "delete",
-                &format!("/conversations/{conversation_id}/alerts"),
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+        self.client.request(
+            "delete",
+            &format!("/conversations/{conversation_id}/alerts"),
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Enable Conversation Alerts
@@ -490,14 +402,12 @@ impl crate::forum::ForumApi {
         &self,
         conversation_id: i64,
     ) -> Result<ConversationsAlertsEnableResponse> {
-        self.client
-            .request(
-                "post",
-                &format!("/conversations/{conversation_id}/alerts"),
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+        self.client.request(
+            "post",
+            &format!("/conversations/{conversation_id}/alerts"),
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Create Conversation
@@ -507,67 +417,21 @@ impl crate::forum::ForumApi {
         params: ForumConversationsCreateParams,
     ) -> Result<ConversationsCreateResponse> {
         let mut body = serde_json::Map::new();
-        if let Some(v) = &params.allow_delete_own_messages {
-            body.insert(
-                "allow_delete_own_messages".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.allow_edit_messages {
-            body.insert(
-                "allow_edit_messages".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.allow_sticky_messages {
-            body.insert(
-                "allow_sticky_messages".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.is_group {
-            body.insert(
-                "is_group".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.message_body {
-            body.insert(
-                "message_body".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.open_invite {
-            body.insert(
-                "open_invite".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.recipient_id {
-            body.insert(
-                "recipient_id".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.recipients {
-            body.insert(
-                "recipients".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.title {
-            body.insert("title".into(), serde_json::to_value(v).unwrap_or_default());
-        }
-        self.client
-            .request(
-                "post",
-                "/conversations",
-                None::<&[(&str, String)]>,
-                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
-                    body,
-                ))),
-            )
-            .await
+        if let Some(v) = &params.allow_delete_own_messages { body.insert("allow_delete_own_messages".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.allow_edit_messages { body.insert("allow_edit_messages".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.allow_sticky_messages { body.insert("allow_sticky_messages".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.is_group { body.insert("is_group".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.message_body { body.insert("message_body".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.open_invite { body.insert("open_invite".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.recipient_id { body.insert("recipient_id".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.recipients { body.insert("recipients".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.title { body.insert("title".into(), serde_json::to_value(v).unwrap_or_default()); }
+        self.client.request(
+            "post",
+            "/conversations",
+            None::<&[(&str, String)]>,
+            Some(crate::client::RequestBody::Json(serde_json::Value::Object(body))),
+        ).await
     }
 
     /// Leave Conversation
@@ -577,14 +441,12 @@ impl crate::forum::ForumApi {
         conversation_id: i64,
         delete_type: String,
     ) -> Result<serde_json::Value> {
-        self.client
-            .request(
-                "delete",
-                "/conversations",
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+        self.client.request(
+            "delete",
+            "/conversations",
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Get Conversation
@@ -593,14 +455,12 @@ impl crate::forum::ForumApi {
         &self,
         conversation_id: i64,
     ) -> Result<ConversationsGetResponse> {
-        self.client
-            .request(
-                "get",
-                &format!("/conversations/{conversation_id}"),
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+        self.client.request(
+            "get",
+            &format!("/conversations/{conversation_id}"),
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Invite Users to Conversation
@@ -611,20 +471,13 @@ impl crate::forum::ForumApi {
         recipients: Vec<String>,
     ) -> Result<serde_json::Value> {
         let mut body = serde_json::Map::new();
-        body.insert(
-            "recipients".into(),
-            serde_json::to_value(&recipients).unwrap_or_default(),
-        );
-        self.client
-            .request(
-                "post",
-                &format!("/conversations/{conversation_id}/invite"),
-                None::<&[(&str, String)]>,
-                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
-                    body,
-                ))),
-            )
-            .await
+        body.insert("recipients".into(), serde_json::to_value(&recipients).unwrap_or_default());
+        self.client.request(
+            "post",
+            &format!("/conversations/{conversation_id}/invite"),
+            None::<&[(&str, String)]>,
+            Some(crate::client::RequestBody::Json(serde_json::Value::Object(body))),
+        ).await
     }
 
     /// Kick User from Conversation
@@ -635,20 +488,13 @@ impl crate::forum::ForumApi {
         user_id: i64,
     ) -> Result<serde_json::Value> {
         let mut body = serde_json::Map::new();
-        body.insert(
-            "user_id".into(),
-            serde_json::to_value(&user_id).unwrap_or_default(),
-        );
-        self.client
-            .request(
-                "post",
-                &format!("/conversations/{conversation_id}/kick"),
-                None::<&[(&str, String)]>,
-                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
-                    body,
-                ))),
-            )
-            .await
+        body.insert("user_id".into(), serde_json::to_value(&user_id).unwrap_or_default());
+        self.client.request(
+            "post",
+            &format!("/conversations/{conversation_id}/kick"),
+            None::<&[(&str, String)]>,
+            Some(crate::client::RequestBody::Json(serde_json::Value::Object(body))),
+        ).await
     }
 
     /// Get Conversations
@@ -660,23 +506,15 @@ impl crate::forum::ForumApi {
         limit: Option<i64>,
     ) -> Result<ConversationsListResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
-        if let Some(v) = &folder {
-            query.push(("folder", v.to_string()));
-        }
-        if let Some(v) = &page {
-            query.push(("page", v.to_string()));
-        }
-        if let Some(v) = &limit {
-            query.push(("limit", v.to_string()));
-        }
-        self.client
-            .request(
-                "get",
-                "/conversations",
-                Some(&query),
-                None::<crate::client::RequestBody>,
-            )
-            .await
+        if let Some(v) = &folder { query.push(("folder", v.to_string())); }
+        if let Some(v) = &page { query.push(("page", v.to_string())); }
+        if let Some(v) = &limit { query.push(("limit", v.to_string())); }
+        self.client.request(
+            "get",
+            "/conversations",
+            Some(&query),
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Create Conversation Message
@@ -688,26 +526,14 @@ impl crate::forum::ForumApi {
         reply_message_id: Option<i64>,
     ) -> Result<ConversationsMessagesCreateResponse> {
         let mut body = serde_json::Map::new();
-        body.insert(
-            "message_body".into(),
-            serde_json::to_value(&message_body).unwrap_or_default(),
-        );
-        if let Some(v) = &reply_message_id {
-            body.insert(
-                "reply_message_id".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        self.client
-            .request(
-                "post",
-                &format!("/conversations/{conversation_id}/messages"),
-                None::<&[(&str, String)]>,
-                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
-                    body,
-                ))),
-            )
-            .await
+        body.insert("message_body".into(), serde_json::to_value(&message_body).unwrap_or_default());
+        if let Some(v) = &reply_message_id { body.insert("reply_message_id".into(), serde_json::to_value(v).unwrap_or_default()); }
+        self.client.request(
+            "post",
+            &format!("/conversations/{conversation_id}/messages"),
+            None::<&[(&str, String)]>,
+            Some(crate::client::RequestBody::Json(serde_json::Value::Object(body))),
+        ).await
     }
 
     /// Delete Conversation Message
@@ -717,14 +543,12 @@ impl crate::forum::ForumApi {
         conversation_id: i64,
         message_id: i64,
     ) -> Result<serde_json::Value> {
-        self.client
-            .request(
-                "delete",
-                &format!("/conversations/{conversation_id}/messages/{message_id}"),
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+        self.client.request(
+            "delete",
+            &format!("/conversations/{conversation_id}/messages/{message_id}"),
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Edit Conversation Message
@@ -736,20 +560,13 @@ impl crate::forum::ForumApi {
         message_body: String,
     ) -> Result<ConversationsMessagesEditResponse> {
         let mut body = serde_json::Map::new();
-        body.insert(
-            "message_body".into(),
-            serde_json::to_value(&message_body).unwrap_or_default(),
-        );
-        self.client
-            .request(
-                "put",
-                &format!("/conversations/{conversation_id}/messages/{message_id}"),
-                None::<&[(&str, String)]>,
-                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
-                    body,
-                ))),
-            )
-            .await
+        body.insert("message_body".into(), serde_json::to_value(&message_body).unwrap_or_default());
+        self.client.request(
+            "put",
+            &format!("/conversations/{conversation_id}/messages/{message_id}"),
+            None::<&[(&str, String)]>,
+            Some(crate::client::RequestBody::Json(serde_json::Value::Object(body))),
+        ).await
     }
 
     /// Get Conversation Message
@@ -758,14 +575,12 @@ impl crate::forum::ForumApi {
         &self,
         message_id: i64,
     ) -> Result<ConversationsMessagesGetResponse> {
-        self.client
-            .request(
-                "get",
-                &format!("/conversations/messages/{message_id}"),
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+        self.client.request(
+            "get",
+            &format!("/conversations/messages/{message_id}"),
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Get Conversation Messages
@@ -776,29 +591,17 @@ impl crate::forum::ForumApi {
         params: ForumConversationsMessagesListParams,
     ) -> Result<ConversationsMessagesListResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
-        if let Some(v) = &params.page {
-            query.push(("page", v.to_string()));
-        }
-        if let Some(v) = &params.limit {
-            query.push(("limit", v.to_string()));
-        }
-        if let Some(v) = &params.order {
-            query.push(("order", v.to_string()));
-        }
-        if let Some(v) = &params.before {
-            query.push(("before", v.to_string()));
-        }
-        if let Some(v) = &params.after {
-            query.push(("after", v.to_string()));
-        }
-        self.client
-            .request(
-                "get",
-                &format!("/conversations/{conversation_id}/messages"),
-                Some(&query),
-                None::<crate::client::RequestBody>,
-            )
-            .await
+        if let Some(v) = &params.page { query.push(("page", v.to_string())); }
+        if let Some(v) = &params.limit { query.push(("limit", v.to_string())); }
+        if let Some(v) = &params.order { query.push(("order", v.to_string())); }
+        if let Some(v) = &params.before { query.push(("before", v.to_string())); }
+        if let Some(v) = &params.after { query.push(("after", v.to_string())); }
+        self.client.request(
+            "get",
+            &format!("/conversations/{conversation_id}/messages"),
+            Some(&query),
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Stick Conversation Message
@@ -808,14 +611,12 @@ impl crate::forum::ForumApi {
         conversation_id: i64,
         message_id: i64,
     ) -> Result<serde_json::Value> {
-        self.client
-            .request(
-                "post",
-                &format!("/conversations/{conversation_id}/messages/{message_id}/stick"),
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+        self.client.request(
+            "post",
+            &format!("/conversations/{conversation_id}/messages/{message_id}/stick"),
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Unstick Conversation Message
@@ -825,60 +626,55 @@ impl crate::forum::ForumApi {
         conversation_id: i64,
         message_id: i64,
     ) -> Result<serde_json::Value> {
-        self.client
-            .request(
-                "delete",
-                &format!("/conversations/{conversation_id}/messages/{message_id}/stick"),
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+        self.client.request(
+            "delete",
+            &format!("/conversations/{conversation_id}/messages/{message_id}/stick"),
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Read a Conversation
     /// `POST /conversations/{conversation_id}/read`
-    pub async fn conversations_read(&self, conversation_id: i64) -> Result<serde_json::Value> {
-        self.client
-            .request(
-                "post",
-                &format!("/conversations/{conversation_id}/read"),
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+    pub async fn conversations_read(
+        &self,
+        conversation_id: i64,
+    ) -> Result<serde_json::Value> {
+        self.client.request(
+            "post",
+            &format!("/conversations/{conversation_id}/read"),
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Read All Conversations
     /// `POST /conversations/read-all`
-    pub async fn conversations_read_all(&self) -> Result<ConversationsReadAllResponse> {
-        self.client
-            .request(
-                "post",
-                "/conversations/read-all",
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+    pub async fn conversations_read_all(
+        &self,
+    ) -> Result<ConversationsReadAllResponse> {
+        self.client.request(
+            "post",
+            "/conversations/read-all",
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Send Content To Saved Messages
     /// `POST /conversations/save`
-    pub async fn conversations_save(&self, link: String) -> Result<serde_json::Value> {
+    pub async fn conversations_save(
+        &self,
+        link: String,
+    ) -> Result<serde_json::Value> {
         let mut body = serde_json::Map::new();
-        body.insert(
-            "link".into(),
-            serde_json::to_value(&link).unwrap_or_default(),
-        );
-        self.client
-            .request(
-                "post",
-                "/conversations/save",
-                None::<&[(&str, String)]>,
-                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
-                    body,
-                ))),
-            )
-            .await
+        body.insert("link".into(), serde_json::to_value(&link).unwrap_or_default());
+        self.client.request(
+            "post",
+            "/conversations/save",
+            None::<&[(&str, String)]>,
+            Some(crate::client::RequestBody::Json(serde_json::Value::Object(body))),
+        ).await
     }
 
     /// Search Conversations Messages
@@ -890,31 +686,15 @@ impl crate::forum::ForumApi {
         search_recipients: Option<bool>,
     ) -> Result<ConversationsSearchResponse> {
         let mut body = serde_json::Map::new();
-        if let Some(v) = &conversation_id {
-            body.insert(
-                "conversation_id".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &q {
-            body.insert("q".into(), serde_json::to_value(v).unwrap_or_default());
-        }
-        if let Some(v) = &search_recipients {
-            body.insert(
-                "search_recipients".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        self.client
-            .request(
-                "post",
-                "/conversations/search",
-                None::<&[(&str, String)]>,
-                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
-                    body,
-                ))),
-            )
-            .await
+        if let Some(v) = &conversation_id { body.insert("conversation_id".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &q { body.insert("q".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &search_recipients { body.insert("search_recipients".into(), serde_json::to_value(v).unwrap_or_default()); }
+        self.client.request(
+            "post",
+            "/conversations/search",
+            None::<&[(&str, String)]>,
+            Some(crate::client::RequestBody::Json(serde_json::Value::Object(body))),
+        ).await
     }
 
     /// Star Conversation
@@ -923,34 +703,28 @@ impl crate::forum::ForumApi {
         &self,
         conversation_id: i64,
     ) -> Result<ConversationsStarResponse> {
-        self.client
-            .request(
-                "post",
-                &format!("/conversations/{conversation_id}/star"),
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+        self.client.request(
+            "post",
+            &format!("/conversations/{conversation_id}/star"),
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Start Conversation
     /// `POST /conversations/start`
-    pub async fn conversations_start(&self, user_id: String) -> Result<ConversationsStartResponse> {
+    pub async fn conversations_start(
+        &self,
+        user_id: String,
+    ) -> Result<ConversationsStartResponse> {
         let mut body = serde_json::Map::new();
-        body.insert(
-            "user_id".into(),
-            serde_json::to_value(&user_id).unwrap_or_default(),
-        );
-        self.client
-            .request(
-                "post",
-                "/conversations/start",
-                None::<&[(&str, String)]>,
-                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
-                    body,
-                ))),
-            )
-            .await
+        body.insert("user_id".into(), serde_json::to_value(&user_id).unwrap_or_default());
+        self.client.request(
+            "post",
+            "/conversations/start",
+            None::<&[(&str, String)]>,
+            Some(crate::client::RequestBody::Json(serde_json::Value::Object(body))),
+        ).await
     }
 
     /// Unstar Conversation
@@ -959,14 +733,12 @@ impl crate::forum::ForumApi {
         &self,
         conversation_id: i64,
     ) -> Result<ConversationsUnstarResponse> {
-        self.client
-            .request(
-                "delete",
-                &format!("/conversations/{conversation_id}/star"),
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+        self.client.request(
+            "delete",
+            &format!("/conversations/{conversation_id}/star"),
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Edit Conversation
@@ -976,54 +748,21 @@ impl crate::forum::ForumApi {
         params: ForumConversationsUpdateParams,
     ) -> Result<ConversationsUpdateResponse> {
         let mut body = serde_json::Map::new();
-        if let Some(v) = &params.allow_delete_own_messages {
-            body.insert(
-                "allow_delete_own_messages".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.allow_edit_messages {
-            body.insert(
-                "allow_edit_messages".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.allow_sticky_messages {
-            body.insert(
-                "allow_sticky_messages".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        body.insert(
-            "conversation_id".into(),
-            serde_json::to_value(&params.conversation_id).unwrap_or_default(),
-        );
-        if let Some(v) = &params.history_open {
-            body.insert(
-                "history_open".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.open_invite {
-            body.insert(
-                "open_invite".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.title {
-            body.insert("title".into(), serde_json::to_value(v).unwrap_or_default());
-        }
-        self.client
-            .request(
-                "put",
-                "/conversations",
-                None::<&[(&str, String)]>,
-                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
-                    body,
-                ))),
-            )
-            .await
+        if let Some(v) = &params.allow_delete_own_messages { body.insert("allow_delete_own_messages".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.allow_edit_messages { body.insert("allow_edit_messages".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.allow_sticky_messages { body.insert("allow_sticky_messages".into(), serde_json::to_value(v).unwrap_or_default()); }
+        body.insert("conversation_id".into(), serde_json::to_value(&params.conversation_id).unwrap_or_default());
+        if let Some(v) = &params.history_open { body.insert("history_open".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.open_invite { body.insert("open_invite".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.title { body.insert("title".into(), serde_json::to_value(v).unwrap_or_default()); }
+        self.client.request(
+            "put",
+            "/conversations",
+            None::<&[(&str, String)]>,
+            Some(crate::client::RequestBody::Json(serde_json::Value::Object(body))),
+        ).await
     }
+
 
     // ── Forms ──
 
@@ -1035,42 +774,32 @@ impl crate::forum::ForumApi {
         form_id: i64,
     ) -> Result<FormsCreateResponse> {
         let mut body = serde_json::Map::new();
-        body.insert(
-            "fields".into(),
-            serde_json::to_value(&fields).unwrap_or_default(),
-        );
-        body.insert(
-            "form_id".into(),
-            serde_json::to_value(&form_id).unwrap_or_default(),
-        );
-        self.client
-            .request(
-                "post",
-                "/forms/save",
-                None::<&[(&str, String)]>,
-                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
-                    body,
-                ))),
-            )
-            .await
+        body.insert("fields".into(), serde_json::to_value(&fields).unwrap_or_default());
+        body.insert("form_id".into(), serde_json::to_value(&form_id).unwrap_or_default());
+        self.client.request(
+            "post",
+            "/forms/save",
+            None::<&[(&str, String)]>,
+            Some(crate::client::RequestBody::Json(serde_json::Value::Object(body))),
+        ).await
     }
 
     /// Get Forms List
     /// `GET /forms`
-    pub async fn forms_list(&self, page: Option<i64>) -> Result<FormsListResponse> {
+    pub async fn forms_list(
+        &self,
+        page: Option<i64>,
+    ) -> Result<FormsListResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
-        if let Some(v) = &page {
-            query.push(("page", v.to_string()));
-        }
-        self.client
-            .request(
-                "get",
-                "/forms",
-                Some(&query),
-                None::<crate::client::RequestBody>,
-            )
-            .await
+        if let Some(v) = &page { query.push(("page", v.to_string())); }
+        self.client.request(
+            "get",
+            "/forms",
+            Some(&query),
+            None::<crate::client::RequestBody>,
+        ).await
     }
+
 
     // ── Forums ──
 
@@ -1082,28 +811,14 @@ impl crate::forum::ForumApi {
         node_ids: Option<Vec<i64>>,
     ) -> Result<serde_json::Value> {
         let mut body = serde_json::Map::new();
-        if let Some(v) = &keywords {
-            body.insert(
-                "keywords".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &node_ids {
-            body.insert(
-                "node_ids".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        self.client
-            .request(
-                "put",
-                "/forums/feed/options",
-                None::<&[(&str, String)]>,
-                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
-                    body,
-                ))),
-            )
-            .await
+        if let Some(v) = &keywords { body.insert("keywords".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &node_ids { body.insert("node_ids".into(), serde_json::to_value(v).unwrap_or_default()); }
+        self.client.request(
+            "put",
+            "/forums/feed/options",
+            None::<&[(&str, String)]>,
+            Some(crate::client::RequestBody::Json(serde_json::Value::Object(body))),
+        ).await
     }
 
     /// Follow Forum
@@ -1114,106 +829,87 @@ impl crate::forum::ForumApi {
         params: ForumForumsFollowParams,
     ) -> Result<serde_json::Value> {
         let mut body = serde_json::Map::new();
-        if let Some(v) = &params.alert {
-            body.insert("alert".into(), serde_json::to_value(v).unwrap_or_default());
-        }
-        if let Some(v) = &params.email {
-            body.insert("email".into(), serde_json::to_value(v).unwrap_or_default());
-        }
-        if let Some(v) = &params.minimal_contest_amount {
-            body.insert(
-                "minimal_contest_amount".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.post {
-            body.insert("post".into(), serde_json::to_value(v).unwrap_or_default());
-        }
-        if let Some(v) = &params.prefix_ids {
-            body.insert(
-                "prefix_ids".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        self.client
-            .request(
-                "post",
-                &format!("/forums/{forum_id}/followers"),
-                None::<&[(&str, String)]>,
-                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
-                    body,
-                ))),
-            )
-            .await
+        if let Some(v) = &params.alert { body.insert("alert".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.email { body.insert("email".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.minimal_contest_amount { body.insert("minimal_contest_amount".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.post { body.insert("post".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.prefix_ids { body.insert("prefix_ids".into(), serde_json::to_value(v).unwrap_or_default()); }
+        self.client.request(
+            "post",
+            &format!("/forums/{forum_id}/followers"),
+            None::<&[(&str, String)]>,
+            Some(crate::client::RequestBody::Json(serde_json::Value::Object(body))),
+        ).await
     }
 
     /// Get Followed Forums
     /// `GET /forums/followed`
-    pub async fn forums_followed(&self, total: Option<bool>) -> Result<ForumsFollowedResponse> {
+    pub async fn forums_followed(
+        &self,
+        total: Option<bool>,
+    ) -> Result<ForumsFollowedResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
-        if let Some(v) = &total {
-            query.push(("total", v.to_string()));
-        }
-        self.client
-            .request(
-                "get",
-                "/forums/followed",
-                Some(&query),
-                None::<crate::client::RequestBody>,
-            )
-            .await
+        if let Some(v) = &total { query.push(("total", v.to_string())); }
+        self.client.request(
+            "get",
+            "/forums/followed",
+            Some(&query),
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Get Followers
     /// `GET /forums/{forum_id}/followers`
-    pub async fn forums_followers(&self, forum_id: i64) -> Result<ForumsFollowersResponse> {
-        self.client
-            .request(
-                "get",
-                &format!("/forums/{forum_id}/followers"),
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+    pub async fn forums_followers(
+        &self,
+        forum_id: i64,
+    ) -> Result<ForumsFollowersResponse> {
+        self.client.request(
+            "get",
+            &format!("/forums/{forum_id}/followers"),
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Get Forum
     /// `GET /forums/{forum_id}`
-    pub async fn forums_get(&self, forum_id: i64) -> Result<ForumsGetResponse> {
-        self.client
-            .request(
-                "get",
-                &format!("/forums/{forum_id}"),
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+    pub async fn forums_get(
+        &self,
+        forum_id: i64,
+    ) -> Result<ForumsGetResponse> {
+        self.client.request(
+            "get",
+            &format!("/forums/{forum_id}"),
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Get Feed Options
     /// `GET /forums/feed/options`
-    pub async fn forums_get_feed_options(&self) -> Result<ForumsGetFeedOptionsResponse> {
-        self.client
-            .request(
-                "get",
-                "/forums/feed/options",
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+    pub async fn forums_get_feed_options(
+        &self,
+    ) -> Result<ForumsGetFeedOptionsResponse> {
+        self.client.request(
+            "get",
+            "/forums/feed/options",
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Get Forums Tree
     /// `GET /forums/grouped`
-    pub async fn forums_grouped(&self) -> Result<ForumsGroupedResponse> {
-        self.client
-            .request(
-                "get",
-                "/forums/grouped",
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+    pub async fn forums_grouped(
+        &self,
+    ) -> Result<ForumsGroupedResponse> {
+        self.client.request(
+            "get",
+            "/forums/grouped",
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Get Forums
@@ -1225,84 +921,80 @@ impl crate::forum::ForumApi {
         order: Option<String>,
     ) -> Result<ForumsListResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
-        if let Some(v) = &parent_category_id {
-            query.push(("parent_category_id", v.to_string()));
-        }
-        if let Some(v) = &parent_forum_id {
-            query.push(("parent_forum_id", v.to_string()));
-        }
-        if let Some(v) = &order {
-            query.push(("order", v.to_string()));
-        }
-        self.client
-            .request(
-                "get",
-                "/forums",
-                Some(&query),
-                None::<crate::client::RequestBody>,
-            )
-            .await
+        if let Some(v) = &parent_category_id { query.push(("parent_category_id", v.to_string())); }
+        if let Some(v) = &parent_forum_id { query.push(("parent_forum_id", v.to_string())); }
+        if let Some(v) = &order { query.push(("order", v.to_string())); }
+        self.client.request(
+            "get",
+            "/forums",
+            Some(&query),
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Unfollow Forum
     /// `DELETE /forums/{forum_id}/followers`
-    pub async fn forums_unfollow(&self, forum_id: i64) -> Result<serde_json::Value> {
-        self.client
-            .request(
-                "delete",
-                &format!("/forums/{forum_id}/followers"),
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+    pub async fn forums_unfollow(
+        &self,
+        forum_id: i64,
+    ) -> Result<serde_json::Value> {
+        self.client.request(
+            "delete",
+            &format!("/forums/{forum_id}/followers"),
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
+
 
     // ── Link Forums ──
 
     /// Get Link Forum
     /// `GET /link-forums/{link_id}`
-    pub async fn links_get(&self, link_id: i64) -> Result<LinksGetResponse> {
-        self.client
-            .request(
-                "get",
-                &format!("/link-forums/{link_id}"),
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+    pub async fn links_get(
+        &self,
+        link_id: i64,
+    ) -> Result<LinksGetResponse> {
+        self.client.request(
+            "get",
+            &format!("/link-forums/{link_id}"),
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Get Links Forum
     /// `GET /link-forums`
-    pub async fn links_list(&self) -> Result<LinksListResponse> {
-        self.client
-            .request(
-                "get",
-                "/link-forums",
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+    pub async fn links_list(
+        &self,
+    ) -> Result<LinksListResponse> {
+        self.client.request(
+            "get",
+            "/link-forums",
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
+
 
     // ── Navigation ──
 
     /// Get Navigation
     /// `GET /navigation`
-    pub async fn navigation_list(&self, parent: Option<i64>) -> Result<NavigationListResponse> {
+    pub async fn navigation_list(
+        &self,
+        parent: Option<i64>,
+    ) -> Result<NavigationListResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
-        if let Some(v) = &parent {
-            query.push(("parent", v.to_string()));
-        }
-        self.client
-            .request(
-                "get",
-                "/navigation",
-                Some(&query),
-                None::<crate::client::RequestBody>,
-            )
-            .await
+        if let Some(v) = &parent { query.push(("parent", v.to_string())); }
+        self.client.request(
+            "get",
+            "/navigation",
+            Some(&query),
+            None::<crate::client::RequestBody>,
+        ).await
     }
+
 
     // ── Notifications ──
 
@@ -1312,14 +1004,12 @@ impl crate::forum::ForumApi {
         &self,
         notification_id: i64,
     ) -> Result<NotificationsGetResponse> {
-        self.client
-            .request(
-                "get",
-                &format!("/notifications/{notification_id}/content"),
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+        self.client.request(
+            "get",
+            &format!("/notifications/{notification_id}/content"),
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Get Notifications
@@ -1331,23 +1021,15 @@ impl crate::forum::ForumApi {
         limit: Option<i64>,
     ) -> Result<NotificationsListResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
-        if let Some(v) = &r#type {
-            query.push(("type", v.to_string()));
-        }
-        if let Some(v) = &page {
-            query.push(("page", v.to_string()));
-        }
-        if let Some(v) = &limit {
-            query.push(("limit", v.to_string()));
-        }
-        self.client
-            .request(
-                "get",
-                "/notifications",
-                Some(&query),
-                None::<crate::client::RequestBody>,
-            )
-            .await
+        if let Some(v) = &r#type { query.push(("type", v.to_string())); }
+        if let Some(v) = &page { query.push(("page", v.to_string())); }
+        if let Some(v) = &limit { query.push(("limit", v.to_string())); }
+        self.client.request(
+            "get",
+            "/notifications",
+            Some(&query),
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Mark Notification Read
@@ -1357,37 +1039,30 @@ impl crate::forum::ForumApi {
         notification_id: Option<i64>,
     ) -> Result<serde_json::Value> {
         let mut body = serde_json::Map::new();
-        if let Some(v) = &notification_id {
-            body.insert(
-                "notification_id".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        self.client
-            .request(
-                "post",
-                "/notifications/read",
-                None::<&[(&str, String)]>,
-                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
-                    body,
-                ))),
-            )
-            .await
+        if let Some(v) = &notification_id { body.insert("notification_id".into(), serde_json::to_value(v).unwrap_or_default()); }
+        self.client.request(
+            "post",
+            "/notifications/read",
+            None::<&[(&str, String)]>,
+            Some(crate::client::RequestBody::Json(serde_json::Value::Object(body))),
+        ).await
     }
+
 
     // ── Pages ──
 
     /// Get Page
     /// `GET /pages/{page_id}`
-    pub async fn pages_get(&self, page_id: i64) -> Result<PagesGetResponse> {
-        self.client
-            .request(
-                "get",
-                &format!("/pages/{page_id}"),
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+    pub async fn pages_get(
+        &self,
+        page_id: i64,
+    ) -> Result<PagesGetResponse> {
+        self.client.request(
+            "get",
+            &format!("/pages/{page_id}"),
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Get Pages
@@ -1398,21 +1073,16 @@ impl crate::forum::ForumApi {
         order: Option<String>,
     ) -> Result<PagesListResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
-        if let Some(v) = &parent_page_id {
-            query.push(("parent_page_id", v.to_string()));
-        }
-        if let Some(v) = &order {
-            query.push(("order", v.to_string()));
-        }
-        self.client
-            .request(
-                "get",
-                "/pages",
-                Some(&query),
-                None::<crate::client::RequestBody>,
-            )
-            .await
+        if let Some(v) = &parent_page_id { query.push(("parent_page_id", v.to_string())); }
+        if let Some(v) = &order { query.push(("order", v.to_string())); }
+        self.client.request(
+            "get",
+            "/pages",
+            Some(&query),
+            None::<crate::client::RequestBody>,
+        ).await
     }
+
 
     // ── Post comments ──
 
@@ -1424,24 +1094,14 @@ impl crate::forum::ForumApi {
         post_id: i64,
     ) -> Result<PostsCommentsCreateResponse> {
         let mut body = serde_json::Map::new();
-        body.insert(
-            "comment_body".into(),
-            serde_json::to_value(&comment_body).unwrap_or_default(),
-        );
-        body.insert(
-            "post_id".into(),
-            serde_json::to_value(&post_id).unwrap_or_default(),
-        );
-        self.client
-            .request(
-                "post",
-                "/posts/comments",
-                None::<&[(&str, String)]>,
-                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
-                    body,
-                ))),
-            )
-            .await
+        body.insert("comment_body".into(), serde_json::to_value(&comment_body).unwrap_or_default());
+        body.insert("post_id".into(), serde_json::to_value(&post_id).unwrap_or_default());
+        self.client.request(
+            "post",
+            "/posts/comments",
+            None::<&[(&str, String)]>,
+            Some(crate::client::RequestBody::Json(serde_json::Value::Object(body))),
+        ).await
     }
 
     /// Delete Post Comment
@@ -1451,14 +1111,12 @@ impl crate::forum::ForumApi {
         post_comment_id: i64,
         reason: Option<String>,
     ) -> Result<serde_json::Value> {
-        self.client
-            .request(
-                "delete",
-                "/posts/comments",
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+        self.client.request(
+            "delete",
+            "/posts/comments",
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Edit Post Comment
@@ -1469,24 +1127,14 @@ impl crate::forum::ForumApi {
         post_comment_id: i64,
     ) -> Result<PostsCommentsEditResponse> {
         let mut body = serde_json::Map::new();
-        body.insert(
-            "comment_body".into(),
-            serde_json::to_value(&comment_body).unwrap_or_default(),
-        );
-        body.insert(
-            "post_comment_id".into(),
-            serde_json::to_value(&post_comment_id).unwrap_or_default(),
-        );
-        self.client
-            .request(
-                "put",
-                "/posts/comments",
-                None::<&[(&str, String)]>,
-                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
-                    body,
-                ))),
-            )
-            .await
+        body.insert("comment_body".into(), serde_json::to_value(&comment_body).unwrap_or_default());
+        body.insert("post_comment_id".into(), serde_json::to_value(&post_comment_id).unwrap_or_default());
+        self.client.request(
+            "put",
+            "/posts/comments",
+            None::<&[(&str, String)]>,
+            Some(crate::client::RequestBody::Json(serde_json::Value::Object(body))),
+        ).await
     }
 
     /// Get Post Comments
@@ -1499,21 +1147,16 @@ impl crate::forum::ForumApi {
     ) -> Result<PostsCommentsGetResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         query.push(("post_id", post_id.to_string()));
-        if let Some(v) = &before {
-            query.push(("before", v.to_string()));
-        }
-        if let Some(v) = &before_comment {
-            query.push(("before_comment", v.to_string()));
-        }
-        self.client
-            .request(
-                "get",
-                "/posts/comments",
-                Some(&query),
-                None::<crate::client::RequestBody>,
-            )
-            .await
+        if let Some(v) = &before { query.push(("before", v.to_string())); }
+        if let Some(v) = &before_comment { query.push(("before_comment", v.to_string())); }
+        self.client.request(
+            "get",
+            "/posts/comments",
+            Some(&query),
+            None::<crate::client::RequestBody>,
+        ).await
     }
+
 
     // ── Posts ──
 
@@ -1525,24 +1168,14 @@ impl crate::forum::ForumApi {
         post_comment_id: i64,
     ) -> Result<serde_json::Value> {
         let mut body = serde_json::Map::new();
-        body.insert(
-            "message".into(),
-            serde_json::to_value(&message).unwrap_or_default(),
-        );
-        body.insert(
-            "post_comment_id".into(),
-            serde_json::to_value(&post_comment_id).unwrap_or_default(),
-        );
-        self.client
-            .request(
-                "post",
-                "/posts/comments/report",
-                None::<&[(&str, String)]>,
-                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
-                    body,
-                ))),
-            )
-            .await
+        body.insert("message".into(), serde_json::to_value(&message).unwrap_or_default());
+        body.insert("post_comment_id".into(), serde_json::to_value(&post_comment_id).unwrap_or_default());
+        self.client.request(
+            "post",
+            "/posts/comments/report",
+            None::<&[(&str, String)]>,
+            Some(crate::client::RequestBody::Json(serde_json::Value::Object(body))),
+        ).await
     }
 
     /// Create Post
@@ -1554,32 +1187,15 @@ impl crate::forum::ForumApi {
         thread_id: Option<i64>,
     ) -> Result<PostsCreateResponse> {
         let mut body = serde_json::Map::new();
-        body.insert(
-            "post_body".into(),
-            serde_json::to_value(&post_body).unwrap_or_default(),
-        );
-        if let Some(v) = &quote_post_id {
-            body.insert(
-                "quote_post_id".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &thread_id {
-            body.insert(
-                "thread_id".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        self.client
-            .request(
-                "post",
-                "/posts",
-                None::<&[(&str, String)]>,
-                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
-                    body,
-                ))),
-            )
-            .await
+        body.insert("post_body".into(), serde_json::to_value(&post_body).unwrap_or_default());
+        if let Some(v) = &quote_post_id { body.insert("quote_post_id".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &thread_id { body.insert("thread_id".into(), serde_json::to_value(v).unwrap_or_default()); }
+        self.client.request(
+            "post",
+            "/posts",
+            None::<&[(&str, String)]>,
+            Some(crate::client::RequestBody::Json(serde_json::Value::Object(body))),
+        ).await
     }
 
     /// Delete Post
@@ -1589,14 +1205,12 @@ impl crate::forum::ForumApi {
         post_id: i64,
         reason: Option<String>,
     ) -> Result<serde_json::Value> {
-        self.client
-            .request(
-                "delete",
-                &format!("/posts/{post_id}"),
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+        self.client.request(
+            "delete",
+            &format!("/posts/{post_id}"),
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Edit Post
@@ -1607,48 +1221,41 @@ impl crate::forum::ForumApi {
         post_body: Option<String>,
     ) -> Result<PostsEditResponse> {
         let mut body = serde_json::Map::new();
-        if let Some(v) = &post_body {
-            body.insert(
-                "post_body".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        self.client
-            .request(
-                "put",
-                &format!("/posts/{post_id}"),
-                None::<&[(&str, String)]>,
-                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
-                    body,
-                ))),
-            )
-            .await
+        if let Some(v) = &post_body { body.insert("post_body".into(), serde_json::to_value(v).unwrap_or_default()); }
+        self.client.request(
+            "put",
+            &format!("/posts/{post_id}"),
+            None::<&[(&str, String)]>,
+            Some(crate::client::RequestBody::Json(serde_json::Value::Object(body))),
+        ).await
     }
 
     /// Get Post
     /// `GET /posts/{post_id}`
-    pub async fn posts_get(&self, post_id: i64) -> Result<PostsGetResponse> {
-        self.client
-            .request(
-                "get",
-                &format!("/posts/{post_id}"),
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+    pub async fn posts_get(
+        &self,
+        post_id: i64,
+    ) -> Result<PostsGetResponse> {
+        self.client.request(
+            "get",
+            &format!("/posts/{post_id}"),
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Like Post
     /// `POST /posts/{post_id}/likes`
-    pub async fn posts_like(&self, post_id: i64) -> Result<serde_json::Value> {
-        self.client
-            .request(
-                "post",
-                &format!("/posts/{post_id}/likes"),
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+    pub async fn posts_like(
+        &self,
+        post_id: i64,
+    ) -> Result<serde_json::Value> {
+        self.client.request(
+            "post",
+            &format!("/posts/{post_id}/likes"),
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Get Post Likes
@@ -1660,96 +1267,81 @@ impl crate::forum::ForumApi {
         limit: Option<i64>,
     ) -> Result<PostsLikesResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
-        if let Some(v) = &page {
-            query.push(("page", v.to_string()));
-        }
-        if let Some(v) = &limit {
-            query.push(("limit", v.to_string()));
-        }
-        self.client
-            .request(
-                "get",
-                &format!("/posts/{post_id}/likes"),
-                Some(&query),
-                None::<crate::client::RequestBody>,
-            )
-            .await
+        if let Some(v) = &page { query.push(("page", v.to_string())); }
+        if let Some(v) = &limit { query.push(("limit", v.to_string())); }
+        self.client.request(
+            "get",
+            &format!("/posts/{post_id}/likes"),
+            Some(&query),
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Get Posts
     /// `GET /posts`
-    pub async fn posts_list(&self, params: ForumPostsListParams) -> Result<PostsListResponse> {
+    pub async fn posts_list(
+        &self,
+        params: ForumPostsListParams,
+    ) -> Result<PostsListResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
-        if let Some(v) = &params.thread_id {
-            query.push(("thread_id", v.to_string()));
-        }
-        if let Some(v) = &params.page_of_post_id {
-            query.push(("page_of_post_id", v.to_string()));
-        }
-        if let Some(v) = &params.page {
-            query.push(("page", v.to_string()));
-        }
-        if let Some(v) = &params.limit {
-            query.push(("limit", v.to_string()));
-        }
-        if let Some(v) = &params.order {
-            query.push(("order", v.to_string()));
-        }
-        self.client
-            .request(
-                "get",
-                "/posts",
-                Some(&query),
-                None::<crate::client::RequestBody>,
-            )
-            .await
+        if let Some(v) = &params.thread_id { query.push(("thread_id", v.to_string())); }
+        if let Some(v) = &params.page_of_post_id { query.push(("page_of_post_id", v.to_string())); }
+        if let Some(v) = &params.page { query.push(("page", v.to_string())); }
+        if let Some(v) = &params.limit { query.push(("limit", v.to_string())); }
+        if let Some(v) = &params.order { query.push(("order", v.to_string())); }
+        self.client.request(
+            "get",
+            "/posts",
+            Some(&query),
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Report Post
     /// `POST /posts/{post_id}/report`
-    pub async fn posts_report(&self, post_id: i64, message: String) -> Result<serde_json::Value> {
+    pub async fn posts_report(
+        &self,
+        post_id: i64,
+        message: String,
+    ) -> Result<serde_json::Value> {
         let mut body = serde_json::Map::new();
-        body.insert(
-            "message".into(),
-            serde_json::to_value(&message).unwrap_or_default(),
-        );
-        self.client
-            .request(
-                "post",
-                &format!("/posts/{post_id}/report"),
-                None::<&[(&str, String)]>,
-                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
-                    body,
-                ))),
-            )
-            .await
+        body.insert("message".into(), serde_json::to_value(&message).unwrap_or_default());
+        self.client.request(
+            "post",
+            &format!("/posts/{post_id}/report"),
+            None::<&[(&str, String)]>,
+            Some(crate::client::RequestBody::Json(serde_json::Value::Object(body))),
+        ).await
     }
 
     /// Get Post Report Reasons
     /// `GET /posts/{post_id}/report`
-    pub async fn posts_report_reasons(&self, post_id: i64) -> Result<PostsReportReasonsResponse> {
-        self.client
-            .request(
-                "get",
-                &format!("/posts/{post_id}/report"),
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+    pub async fn posts_report_reasons(
+        &self,
+        post_id: i64,
+    ) -> Result<PostsReportReasonsResponse> {
+        self.client.request(
+            "get",
+            &format!("/posts/{post_id}/report"),
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Unlike Post
     /// `DELETE /posts/{post_id}/likes`
-    pub async fn posts_unlike(&self, post_id: i64) -> Result<serde_json::Value> {
-        self.client
-            .request(
-                "delete",
-                &format!("/posts/{post_id}/likes"),
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+    pub async fn posts_unlike(
+        &self,
+        post_id: i64,
+    ) -> Result<serde_json::Value> {
+        self.client.request(
+            "delete",
+            &format!("/posts/{post_id}/likes"),
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
+
 
     // ── Profile Post Comments ──
 
@@ -1761,24 +1353,14 @@ impl crate::forum::ForumApi {
         profile_post_id: i64,
     ) -> Result<ProfilePostsCommentsCreateResponse> {
         let mut body = serde_json::Map::new();
-        body.insert(
-            "comment_body".into(),
-            serde_json::to_value(&comment_body).unwrap_or_default(),
-        );
-        body.insert(
-            "profile_post_id".into(),
-            serde_json::to_value(&profile_post_id).unwrap_or_default(),
-        );
-        self.client
-            .request(
-                "post",
-                "/profile-posts/comments",
-                None::<&[(&str, String)]>,
-                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
-                    body,
-                ))),
-            )
-            .await
+        body.insert("comment_body".into(), serde_json::to_value(&comment_body).unwrap_or_default());
+        body.insert("profile_post_id".into(), serde_json::to_value(&profile_post_id).unwrap_or_default());
+        self.client.request(
+            "post",
+            "/profile-posts/comments",
+            None::<&[(&str, String)]>,
+            Some(crate::client::RequestBody::Json(serde_json::Value::Object(body))),
+        ).await
     }
 
     /// Delete Profile Post Comment
@@ -1787,14 +1369,12 @@ impl crate::forum::ForumApi {
         &self,
         comment_id: i64,
     ) -> Result<serde_json::Value> {
-        self.client
-            .request(
-                "delete",
-                "/profile-posts/comments",
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+        self.client.request(
+            "delete",
+            "/profile-posts/comments",
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Edit Profile Post Comment
@@ -1805,24 +1385,14 @@ impl crate::forum::ForumApi {
         comment_id: i64,
     ) -> Result<ProfilePostsCommentsEditResponse> {
         let mut body = serde_json::Map::new();
-        body.insert(
-            "comment_body".into(),
-            serde_json::to_value(&comment_body).unwrap_or_default(),
-        );
-        body.insert(
-            "comment_id".into(),
-            serde_json::to_value(&comment_id).unwrap_or_default(),
-        );
-        self.client
-            .request(
-                "put",
-                "/profile-posts/comments",
-                None::<&[(&str, String)]>,
-                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
-                    body,
-                ))),
-            )
-            .await
+        body.insert("comment_body".into(), serde_json::to_value(&comment_body).unwrap_or_default());
+        body.insert("comment_id".into(), serde_json::to_value(&comment_id).unwrap_or_default());
+        self.client.request(
+            "put",
+            "/profile-posts/comments",
+            None::<&[(&str, String)]>,
+            Some(crate::client::RequestBody::Json(serde_json::Value::Object(body))),
+        ).await
     }
 
     /// Get Profile Post Comment
@@ -1832,14 +1402,12 @@ impl crate::forum::ForumApi {
         profile_post_id: i64,
         comment_id: i64,
     ) -> Result<ProfilePostsCommentsGetResponse> {
-        self.client
-            .request(
-                "get",
-                &format!("/profile-posts/{profile_post_id}/comments/{comment_id}"),
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+        self.client.request(
+            "get",
+            &format!("/profile-posts/{profile_post_id}/comments/{comment_id}"),
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Get Profile Post Comments
@@ -1852,20 +1420,14 @@ impl crate::forum::ForumApi {
     ) -> Result<ProfilePostsCommentsListResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
         query.push(("profile_post_id", profile_post_id.to_string()));
-        if let Some(v) = &before {
-            query.push(("before", v.to_string()));
-        }
-        if let Some(v) = &limit {
-            query.push(("limit", v.to_string()));
-        }
-        self.client
-            .request(
-                "get",
-                "/profile-posts/comments",
-                Some(&query),
-                None::<crate::client::RequestBody>,
-            )
-            .await
+        if let Some(v) = &before { query.push(("before", v.to_string())); }
+        if let Some(v) = &limit { query.push(("limit", v.to_string())); }
+        self.client.request(
+            "get",
+            "/profile-posts/comments",
+            Some(&query),
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Report a Profile Post Comment
@@ -1876,21 +1438,15 @@ impl crate::forum::ForumApi {
         message: String,
     ) -> Result<serde_json::Value> {
         let mut body = serde_json::Map::new();
-        body.insert(
-            "message".into(),
-            serde_json::to_value(&message).unwrap_or_default(),
-        );
-        self.client
-            .request(
-                "post",
-                &format!("/profile-posts/comments/{comment_id}/report"),
-                None::<&[(&str, String)]>,
-                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
-                    body,
-                ))),
-            )
-            .await
+        body.insert("message".into(), serde_json::to_value(&message).unwrap_or_default());
+        self.client.request(
+            "post",
+            &format!("/profile-posts/comments/{comment_id}/report"),
+            None::<&[(&str, String)]>,
+            Some(crate::client::RequestBody::Json(serde_json::Value::Object(body))),
+        ).await
     }
+
 
     // ── Profile Posts ──
 
@@ -1902,24 +1458,14 @@ impl crate::forum::ForumApi {
         user_id: String,
     ) -> Result<ProfilePostsCreateResponse> {
         let mut body = serde_json::Map::new();
-        body.insert(
-            "post_body".into(),
-            serde_json::to_value(&post_body).unwrap_or_default(),
-        );
-        body.insert(
-            "user_id".into(),
-            serde_json::to_value(&user_id).unwrap_or_default(),
-        );
-        self.client
-            .request(
-                "post",
-                "/profile-posts",
-                None::<&[(&str, String)]>,
-                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
-                    body,
-                ))),
-            )
-            .await
+        body.insert("post_body".into(), serde_json::to_value(&post_body).unwrap_or_default());
+        body.insert("user_id".into(), serde_json::to_value(&user_id).unwrap_or_default());
+        self.client.request(
+            "post",
+            "/profile-posts",
+            None::<&[(&str, String)]>,
+            Some(crate::client::RequestBody::Json(serde_json::Value::Object(body))),
+        ).await
     }
 
     /// Delete Profile Post
@@ -1930,17 +1476,13 @@ impl crate::forum::ForumApi {
         reason: Option<String>,
     ) -> Result<serde_json::Value> {
         let mut query: Vec<(&str, String)> = Vec::new();
-        if let Some(v) = &reason {
-            query.push(("reason", v.to_string()));
-        }
-        self.client
-            .request(
-                "delete",
-                &format!("/profile-posts/{profile_post_id}"),
-                Some(&query),
-                None::<crate::client::RequestBody>,
-            )
-            .await
+        if let Some(v) = &reason { query.push(("reason", v.to_string())); }
+        self.client.request(
+            "delete",
+            &format!("/profile-posts/{profile_post_id}"),
+            Some(&query),
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Edit Profile Post
@@ -1952,54 +1494,42 @@ impl crate::forum::ForumApi {
         post_body: Option<String>,
     ) -> Result<ProfilePostsEditResponse> {
         let mut body = serde_json::Map::new();
-        if let Some(v) = &disable_comments {
-            body.insert(
-                "disable_comments".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &post_body {
-            body.insert(
-                "post_body".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        self.client
-            .request(
-                "put",
-                &format!("/profile-posts/{profile_post_id}"),
-                None::<&[(&str, String)]>,
-                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
-                    body,
-                ))),
-            )
-            .await
+        if let Some(v) = &disable_comments { body.insert("disable_comments".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &post_body { body.insert("post_body".into(), serde_json::to_value(v).unwrap_or_default()); }
+        self.client.request(
+            "put",
+            &format!("/profile-posts/{profile_post_id}"),
+            None::<&[(&str, String)]>,
+            Some(crate::client::RequestBody::Json(serde_json::Value::Object(body))),
+        ).await
     }
 
     /// Get Profile Post
     /// `GET /profile-posts/{profile_post_id}`
-    pub async fn profile_posts_get(&self, profile_post_id: i64) -> Result<ProfilePostsGetResponse> {
-        self.client
-            .request(
-                "get",
-                &format!("/profile-posts/{profile_post_id}"),
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+    pub async fn profile_posts_get(
+        &self,
+        profile_post_id: i64,
+    ) -> Result<ProfilePostsGetResponse> {
+        self.client.request(
+            "get",
+            &format!("/profile-posts/{profile_post_id}"),
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Like Profile Post
     /// `POST /profile-posts/{profile_post_id}/likes`
-    pub async fn profile_posts_like(&self, profile_post_id: i64) -> Result<serde_json::Value> {
-        self.client
-            .request(
-                "post",
-                &format!("/profile-posts/{profile_post_id}/likes"),
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+    pub async fn profile_posts_like(
+        &self,
+        profile_post_id: i64,
+    ) -> Result<serde_json::Value> {
+        self.client.request(
+            "post",
+            &format!("/profile-posts/{profile_post_id}/likes"),
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Get Profile Post Likes
@@ -2008,14 +1538,12 @@ impl crate::forum::ForumApi {
         &self,
         profile_post_id: i64,
     ) -> Result<ProfilePostsLikesResponse> {
-        self.client
-            .request(
-                "get",
-                &format!("/profile-posts/{profile_post_id}/likes"),
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+        self.client.request(
+            "get",
+            &format!("/profile-posts/{profile_post_id}/likes"),
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Get Profile Posts
@@ -2026,32 +1554,16 @@ impl crate::forum::ForumApi {
         params: ForumProfilePostsListParams,
     ) -> Result<ProfilePostsListResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
-        if let Some(v) = &params.posts_user_id {
-            query.push(("posts_user_id", v.to_string()));
-        }
-        if let Some(v) = &params.page {
-            query.push(("page", v.to_string()));
-        }
-        if let Some(v) = &params.limit {
-            query.push(("limit", v.to_string()));
-        }
-        if let Some(v) = &params.fields_include {
-            query.push((
-                "fields_include",
-                v.iter()
-                    .map(|x| x.to_string())
-                    .collect::<Vec<_>>()
-                    .join(","),
-            ));
-        }
-        self.client
-            .request(
-                "get",
-                &format!("/users/{user_id}/profile-posts"),
-                Some(&query),
-                None::<crate::client::RequestBody>,
-            )
-            .await
+        if let Some(v) = &params.posts_user_id { query.push(("posts_user_id", v.to_string())); }
+        if let Some(v) = &params.page { query.push(("page", v.to_string())); }
+        if let Some(v) = &params.limit { query.push(("limit", v.to_string())); }
+        if let Some(v) = &params.fields_include { query.push(("fields_include", v.iter().map(|x| x.to_string()).collect::<Vec<_>>().join(","))); }
+        self.client.request(
+            "get",
+            &format!("/users/{user_id}/profile-posts"),
+            Some(&query),
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Report a Profile Post
@@ -2062,20 +1574,13 @@ impl crate::forum::ForumApi {
         message: String,
     ) -> Result<serde_json::Value> {
         let mut body = serde_json::Map::new();
-        body.insert(
-            "message".into(),
-            serde_json::to_value(&message).unwrap_or_default(),
-        );
-        self.client
-            .request(
-                "post",
-                &format!("/profile-posts/{profile_post_id}/report"),
-                None::<&[(&str, String)]>,
-                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
-                    body,
-                ))),
-            )
-            .await
+        body.insert("message".into(), serde_json::to_value(&message).unwrap_or_default());
+        self.client.request(
+            "post",
+            &format!("/profile-posts/{profile_post_id}/report"),
+            None::<&[(&str, String)]>,
+            Some(crate::client::RequestBody::Json(serde_json::Value::Object(body))),
+        ).await
     }
 
     /// Get Profile Post Report Reasons
@@ -2084,95 +1589,78 @@ impl crate::forum::ForumApi {
         &self,
         profile_post_id: i64,
     ) -> Result<ProfilePostsReportReasonsResponse> {
-        self.client
-            .request(
-                "get",
-                &format!("/profile-posts/{profile_post_id}/report"),
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+        self.client.request(
+            "get",
+            &format!("/profile-posts/{profile_post_id}/report"),
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Stick Profile Post
     /// `POST /profile-posts/{profile_post_id}/stick`
-    pub async fn profile_posts_stick(&self, profile_post_id: i64) -> Result<serde_json::Value> {
-        self.client
-            .request(
-                "post",
-                &format!("/profile-posts/{profile_post_id}/stick"),
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+    pub async fn profile_posts_stick(
+        &self,
+        profile_post_id: i64,
+    ) -> Result<serde_json::Value> {
+        self.client.request(
+            "post",
+            &format!("/profile-posts/{profile_post_id}/stick"),
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Unlike Profile Post
     /// `DELETE /profile-posts/{profile_post_id}/likes`
-    pub async fn profile_posts_unlike(&self, profile_post_id: i64) -> Result<serde_json::Value> {
-        self.client
-            .request(
-                "delete",
-                &format!("/profile-posts/{profile_post_id}/likes"),
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+    pub async fn profile_posts_unlike(
+        &self,
+        profile_post_id: i64,
+    ) -> Result<serde_json::Value> {
+        self.client.request(
+            "delete",
+            &format!("/profile-posts/{profile_post_id}/likes"),
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Unstick Profile Post
     /// `DELETE /profile-posts/{profile_post_id}/stick`
-    pub async fn profile_posts_unstick(&self, profile_post_id: i64) -> Result<serde_json::Value> {
-        self.client
-            .request(
-                "delete",
-                &format!("/profile-posts/{profile_post_id}/stick"),
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+    pub async fn profile_posts_unstick(
+        &self,
+        profile_post_id: i64,
+    ) -> Result<serde_json::Value> {
+        self.client.request(
+            "delete",
+            &format!("/profile-posts/{profile_post_id}/stick"),
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
+
 
     // ── Searching ──
 
     /// Search
     /// `POST /search`
-    pub async fn search_all(&self, params: ForumSearchAllParams) -> Result<SearchAllResponse> {
+    pub async fn search_all(
+        &self,
+        params: ForumSearchAllParams,
+    ) -> Result<SearchAllResponse> {
         let mut body = serde_json::Map::new();
-        if let Some(v) = &params.forum_id {
-            body.insert(
-                "forum_id".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.limit {
-            body.insert("limit".into(), serde_json::to_value(v).unwrap_or_default());
-        }
-        if let Some(v) = &params.page {
-            body.insert("page".into(), serde_json::to_value(v).unwrap_or_default());
-        }
-        if let Some(v) = &params.q {
-            body.insert("q".into(), serde_json::to_value(v).unwrap_or_default());
-        }
-        if let Some(v) = &params.tag {
-            body.insert("tag".into(), serde_json::to_value(v).unwrap_or_default());
-        }
-        if let Some(v) = &params.user_id {
-            body.insert(
-                "user_id".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        self.client
-            .request_search(
-                "post",
-                "/search",
-                None::<&[(&str, String)]>,
-                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
-                    body,
-                ))),
-            )
-            .await
+        if let Some(v) = &params.forum_id { body.insert("forum_id".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.limit { body.insert("limit".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.page { body.insert("page".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.q { body.insert("q".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.tag { body.insert("tag".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.user_id { body.insert("user_id".into(), serde_json::to_value(v).unwrap_or_default()); }
+        self.client.request_search(
+            "post",
+            "/search",
+            None::<&[(&str, String)]>,
+            Some(crate::client::RequestBody::Json(serde_json::Value::Object(body))),
+        ).await
     }
 
     /// Search Post
@@ -2182,46 +1670,19 @@ impl crate::forum::ForumApi {
         params: ForumSearchPostsParams,
     ) -> Result<SearchPostsResponse> {
         let mut body = serde_json::Map::new();
-        if let Some(v) = &params.data_limit {
-            body.insert(
-                "data_limit".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.forum_id {
-            body.insert(
-                "forum_id".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.limit {
-            body.insert("limit".into(), serde_json::to_value(v).unwrap_or_default());
-        }
-        if let Some(v) = &params.page {
-            body.insert("page".into(), serde_json::to_value(v).unwrap_or_default());
-        }
-        if let Some(v) = &params.q {
-            body.insert("q".into(), serde_json::to_value(v).unwrap_or_default());
-        }
-        if let Some(v) = &params.tag {
-            body.insert("tag".into(), serde_json::to_value(v).unwrap_or_default());
-        }
-        if let Some(v) = &params.user_id {
-            body.insert(
-                "user_id".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        self.client
-            .request_search(
-                "post",
-                "/search/posts",
-                None::<&[(&str, String)]>,
-                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
-                    body,
-                ))),
-            )
-            .await
+        if let Some(v) = &params.data_limit { body.insert("data_limit".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.forum_id { body.insert("forum_id".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.limit { body.insert("limit".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.page { body.insert("page".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.q { body.insert("q".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.tag { body.insert("tag".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.user_id { body.insert("user_id".into(), serde_json::to_value(v).unwrap_or_default()); }
+        self.client.request_search(
+            "post",
+            "/search/posts",
+            None::<&[(&str, String)]>,
+            Some(crate::client::RequestBody::Json(serde_json::Value::Object(body))),
+        ).await
     }
 
     /// Search Profile Posts
@@ -2231,31 +1692,16 @@ impl crate::forum::ForumApi {
         params: ForumSearchProfilePostsParams,
     ) -> Result<SearchProfilePostsResponse> {
         let mut body = serde_json::Map::new();
-        if let Some(v) = &params.limit {
-            body.insert("limit".into(), serde_json::to_value(v).unwrap_or_default());
-        }
-        if let Some(v) = &params.page {
-            body.insert("page".into(), serde_json::to_value(v).unwrap_or_default());
-        }
-        if let Some(v) = &params.q {
-            body.insert("q".into(), serde_json::to_value(v).unwrap_or_default());
-        }
-        if let Some(v) = &params.user_id {
-            body.insert(
-                "user_id".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        self.client
-            .request_search(
-                "post",
-                "/search/profile-posts",
-                None::<&[(&str, String)]>,
-                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
-                    body,
-                ))),
-            )
-            .await
+        if let Some(v) = &params.limit { body.insert("limit".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.page { body.insert("page".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.q { body.insert("q".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.user_id { body.insert("user_id".into(), serde_json::to_value(v).unwrap_or_default()); }
+        self.client.request_search(
+            "post",
+            "/search/profile-posts",
+            None::<&[(&str, String)]>,
+            Some(crate::client::RequestBody::Json(serde_json::Value::Object(body))),
+        ).await
     }
 
     /// Get Search Results
@@ -2266,14 +1712,12 @@ impl crate::forum::ForumApi {
         limit: Option<i64>,
         page: Option<i64>,
     ) -> Result<SearchResultsResponse> {
-        self.client
-            .request_search(
-                "get",
-                &format!("/search/{search_id}/results"),
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+        self.client.request_search(
+            "get",
+            &format!("/search/{search_id}/results"),
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Search Tagged
@@ -2283,28 +1727,16 @@ impl crate::forum::ForumApi {
         params: ForumSearchTaggedParams,
     ) -> Result<SearchTaggedResponse> {
         let mut body = serde_json::Map::new();
-        if let Some(v) = &params.limit {
-            body.insert("limit".into(), serde_json::to_value(v).unwrap_or_default());
-        }
-        if let Some(v) = &params.page {
-            body.insert("page".into(), serde_json::to_value(v).unwrap_or_default());
-        }
-        if let Some(v) = &params.tag {
-            body.insert("tag".into(), serde_json::to_value(v).unwrap_or_default());
-        }
-        if let Some(v) = &params.tags {
-            body.insert("tags".into(), serde_json::to_value(v).unwrap_or_default());
-        }
-        self.client
-            .request_search(
-                "post",
-                "/search/tagged",
-                None::<&[(&str, String)]>,
-                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
-                    body,
-                ))),
-            )
-            .await
+        if let Some(v) = &params.limit { body.insert("limit".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.page { body.insert("page".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.tag { body.insert("tag".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.tags { body.insert("tags".into(), serde_json::to_value(v).unwrap_or_default()); }
+        self.client.request_search(
+            "post",
+            "/search/tagged",
+            None::<&[(&str, String)]>,
+            Some(crate::client::RequestBody::Json(serde_json::Value::Object(body))),
+        ).await
     }
 
     /// Search Thread
@@ -2314,80 +1746,52 @@ impl crate::forum::ForumApi {
         params: ForumSearchThreadsParams,
     ) -> Result<SearchThreadsResponse> {
         let mut body = serde_json::Map::new();
-        if let Some(v) = &params.data_limit {
-            body.insert(
-                "data_limit".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.forum_id {
-            body.insert(
-                "forum_id".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.limit {
-            body.insert("limit".into(), serde_json::to_value(v).unwrap_or_default());
-        }
-        if let Some(v) = &params.page {
-            body.insert("page".into(), serde_json::to_value(v).unwrap_or_default());
-        }
-        if let Some(v) = &params.q {
-            body.insert("q".into(), serde_json::to_value(v).unwrap_or_default());
-        }
-        if let Some(v) = &params.tag {
-            body.insert("tag".into(), serde_json::to_value(v).unwrap_or_default());
-        }
-        if let Some(v) = &params.user_id {
-            body.insert(
-                "user_id".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        self.client
-            .request_search(
-                "post",
-                "/search/threads",
-                None::<&[(&str, String)]>,
-                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
-                    body,
-                ))),
-            )
-            .await
+        if let Some(v) = &params.data_limit { body.insert("data_limit".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.forum_id { body.insert("forum_id".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.limit { body.insert("limit".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.page { body.insert("page".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.q { body.insert("q".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.tag { body.insert("tag".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.user_id { body.insert("user_id".into(), serde_json::to_value(v).unwrap_or_default()); }
+        self.client.request_search(
+            "post",
+            "/search/threads",
+            None::<&[(&str, String)]>,
+            Some(crate::client::RequestBody::Json(serde_json::Value::Object(body))),
+        ).await
     }
 
     /// Search Users
     /// `POST /search/users`
-    pub async fn search_users(&self, q: Option<String>) -> Result<SearchUsersResponse> {
+    pub async fn search_users(
+        &self,
+        q: Option<String>,
+    ) -> Result<SearchUsersResponse> {
         let mut body = serde_json::Map::new();
-        if let Some(v) = &q {
-            body.insert("q".into(), serde_json::to_value(v).unwrap_or_default());
-        }
-        self.client
-            .request_search(
-                "post",
-                "/search/users",
-                None::<&[(&str, String)]>,
-                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
-                    body,
-                ))),
-            )
-            .await
+        if let Some(v) = &q { body.insert("q".into(), serde_json::to_value(v).unwrap_or_default()); }
+        self.client.request_search(
+            "post",
+            "/search/users",
+            None::<&[(&str, String)]>,
+            Some(crate::client::RequestBody::Json(serde_json::Value::Object(body))),
+        ).await
     }
+
 
     // ── Threads ──
 
     /// Bump Thread
     /// `POST /threads/{thread_id}/bump`
-    pub async fn threads_bump(&self, thread_id: i64) -> Result<ThreadsBumpResponse> {
-        self.client
-            .request(
-                "post",
-                &format!("/threads/{thread_id}/bump"),
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+    pub async fn threads_bump(
+        &self,
+        thread_id: i64,
+    ) -> Result<ThreadsBumpResponse> {
+        self.client.request(
+            "post",
+            &format!("/threads/{thread_id}/bump"),
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Create Claim
@@ -2397,135 +1801,34 @@ impl crate::forum::ForumApi {
         params: ForumThreadsClaimParams,
     ) -> Result<ThreadsClaimResponse> {
         let mut body = serde_json::Map::new();
-        if let Some(v) = &params.allow_ask_hidden_content {
-            body.insert(
-                "allow_ask_hidden_content".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        body.insert(
-            "as_amount".into(),
-            serde_json::to_value(&params.as_amount).unwrap_or_default(),
-        );
-        if let Some(v) = &params.as_data {
-            body.insert(
-                "as_data".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.as_funds_receipt {
-            body.insert(
-                "as_funds_receipt".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        body.insert(
-            "as_is_market_deal".into(),
-            serde_json::to_value(&params.as_is_market_deal).unwrap_or_default(),
-        );
-        if let Some(v) = &params.as_market_item_id {
-            body.insert(
-                "as_market_item_id".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        body.insert(
-            "as_responder".into(),
-            serde_json::to_value(&params.as_responder).unwrap_or_default(),
-        );
-        if let Some(v) = &params.as_tg_login_screenshot {
-            body.insert(
-                "as_tg_login_screenshot".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.comment_ignore_group {
-            body.insert(
-                "comment_ignore_group".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.currency {
-            body.insert(
-                "currency".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.dont_alert_followers {
-            body.insert(
-                "dont_alert_followers".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.hide_contacts {
-            body.insert(
-                "hide_contacts".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.pay_claim {
-            body.insert(
-                "pay_claim".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        body.insert(
-            "post_body".into(),
-            serde_json::to_value(&params.post_body).unwrap_or_default(),
-        );
-        if let Some(v) = &params.reply_group {
-            body.insert(
-                "reply_group".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.schedule_date {
-            body.insert(
-                "schedule_date".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.schedule_time {
-            body.insert(
-                "schedule_time".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.tags {
-            body.insert("tags".into(), serde_json::to_value(v).unwrap_or_default());
-        }
-        body.insert(
-            "transfer_type".into(),
-            serde_json::to_value(&params.transfer_type).unwrap_or_default(),
-        );
-        if let Some(v) = &params.watch_thread {
-            body.insert(
-                "watch_thread".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.watch_thread_email {
-            body.insert(
-                "watch_thread_email".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.watch_thread_state {
-            body.insert(
-                "watch_thread_state".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        self.client
-            .request(
-                "post",
-                "/claims",
-                None::<&[(&str, String)]>,
-                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
-                    body,
-                ))),
-            )
-            .await
+        if let Some(v) = &params.allow_ask_hidden_content { body.insert("allow_ask_hidden_content".into(), serde_json::to_value(v).unwrap_or_default()); }
+        body.insert("as_amount".into(), serde_json::to_value(&params.as_amount).unwrap_or_default());
+        if let Some(v) = &params.as_data { body.insert("as_data".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.as_funds_receipt { body.insert("as_funds_receipt".into(), serde_json::to_value(v).unwrap_or_default()); }
+        body.insert("as_is_market_deal".into(), serde_json::to_value(&params.as_is_market_deal).unwrap_or_default());
+        if let Some(v) = &params.as_market_item_id { body.insert("as_market_item_id".into(), serde_json::to_value(v).unwrap_or_default()); }
+        body.insert("as_responder".into(), serde_json::to_value(&params.as_responder).unwrap_or_default());
+        if let Some(v) = &params.as_tg_login_screenshot { body.insert("as_tg_login_screenshot".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.comment_ignore_group { body.insert("comment_ignore_group".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.currency { body.insert("currency".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.dont_alert_followers { body.insert("dont_alert_followers".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.hide_contacts { body.insert("hide_contacts".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.pay_claim { body.insert("pay_claim".into(), serde_json::to_value(v).unwrap_or_default()); }
+        body.insert("post_body".into(), serde_json::to_value(&params.post_body).unwrap_or_default());
+        if let Some(v) = &params.reply_group { body.insert("reply_group".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.schedule_date { body.insert("schedule_date".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.schedule_time { body.insert("schedule_time".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.tags { body.insert("tags".into(), serde_json::to_value(v).unwrap_or_default()); }
+        body.insert("transfer_type".into(), serde_json::to_value(&params.transfer_type).unwrap_or_default());
+        if let Some(v) = &params.watch_thread { body.insert("watch_thread".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.watch_thread_email { body.insert("watch_thread_email".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.watch_thread_state { body.insert("watch_thread_state".into(), serde_json::to_value(v).unwrap_or_default()); }
+        self.client.request(
+            "post",
+            "/claims",
+            None::<&[(&str, String)]>,
+            Some(crate::client::RequestBody::Json(serde_json::Value::Object(body))),
+        ).await
     }
 
     /// Create Thread
@@ -2535,102 +1838,28 @@ impl crate::forum::ForumApi {
         params: ForumThreadsCreateParams,
     ) -> Result<ThreadsCreateResponse> {
         let mut body = serde_json::Map::new();
-        if let Some(v) = &params.allow_ask_hidden_content {
-            body.insert(
-                "allow_ask_hidden_content".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.comment_ignore_group {
-            body.insert(
-                "comment_ignore_group".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.dont_alert_followers {
-            body.insert(
-                "dont_alert_followers".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        body.insert(
-            "forum_id".into(),
-            serde_json::to_value(&params.forum_id).unwrap_or_default(),
-        );
-        if let Some(v) = &params.hide_contacts {
-            body.insert(
-                "hide_contacts".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        body.insert(
-            "post_body".into(),
-            serde_json::to_value(&params.post_body).unwrap_or_default(),
-        );
-        if let Some(v) = &params.prefix_id {
-            body.insert(
-                "prefix_id".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.reply_group {
-            body.insert(
-                "reply_group".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.schedule_date {
-            body.insert(
-                "schedule_date".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.schedule_time {
-            body.insert(
-                "schedule_time".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.tags {
-            body.insert("tags".into(), serde_json::to_value(v).unwrap_or_default());
-        }
-        if let Some(v) = &params.title {
-            body.insert("title".into(), serde_json::to_value(v).unwrap_or_default());
-        }
-        if let Some(v) = &params.title_en {
-            body.insert(
-                "title_en".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.watch_thread {
-            body.insert(
-                "watch_thread".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.watch_thread_email {
-            body.insert(
-                "watch_thread_email".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.watch_thread_state {
-            body.insert(
-                "watch_thread_state".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        self.client
-            .request(
-                "post",
-                "/threads",
-                None::<&[(&str, String)]>,
-                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
-                    body,
-                ))),
-            )
-            .await
+        if let Some(v) = &params.allow_ask_hidden_content { body.insert("allow_ask_hidden_content".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.comment_ignore_group { body.insert("comment_ignore_group".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.dont_alert_followers { body.insert("dont_alert_followers".into(), serde_json::to_value(v).unwrap_or_default()); }
+        body.insert("forum_id".into(), serde_json::to_value(&params.forum_id).unwrap_or_default());
+        if let Some(v) = &params.hide_contacts { body.insert("hide_contacts".into(), serde_json::to_value(v).unwrap_or_default()); }
+        body.insert("post_body".into(), serde_json::to_value(&params.post_body).unwrap_or_default());
+        if let Some(v) = &params.prefix_id { body.insert("prefix_id".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.reply_group { body.insert("reply_group".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.schedule_date { body.insert("schedule_date".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.schedule_time { body.insert("schedule_time".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.tags { body.insert("tags".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.title { body.insert("title".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.title_en { body.insert("title_en".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.watch_thread { body.insert("watch_thread".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.watch_thread_email { body.insert("watch_thread_email".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.watch_thread_state { body.insert("watch_thread_state".into(), serde_json::to_value(v).unwrap_or_default()); }
+        self.client.request(
+            "post",
+            "/threads",
+            None::<&[(&str, String)]>,
+            Some(crate::client::RequestBody::Json(serde_json::Value::Object(body))),
+        ).await
     }
 
     /// Create Contest
@@ -2640,156 +1869,38 @@ impl crate::forum::ForumApi {
         params: ForumThreadsCreateContestParams,
     ) -> Result<ThreadsCreateContestResponse> {
         let mut body = serde_json::Map::new();
-        if let Some(v) = &params.allow_ask_hidden_content {
-            body.insert(
-                "allow_ask_hidden_content".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.comment_ignore_group {
-            body.insert(
-                "comment_ignore_group".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        body.insert(
-            "contest_type".into(),
-            serde_json::to_value(&params.contest_type).unwrap_or_default(),
-        );
-        if let Some(v) = &params.count_winners {
-            body.insert(
-                "count_winners".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.dont_alert_followers {
-            body.insert(
-                "dont_alert_followers".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.hide_contacts {
-            body.insert(
-                "hide_contacts".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.is_money_places {
-            body.insert(
-                "is_money_places".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.length_option {
-            body.insert(
-                "length_option".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.length_value {
-            body.insert(
-                "length_value".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        body.insert(
-            "post_body".into(),
-            serde_json::to_value(&params.post_body).unwrap_or_default(),
-        );
-        if let Some(v) = &params.prize_data_money {
-            body.insert(
-                "prize_data_money".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.prize_data_places {
-            body.insert(
-                "prize_data_places".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.prize_data_upgrade {
-            body.insert(
-                "prize_data_upgrade".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        body.insert(
-            "prize_type".into(),
-            serde_json::to_value(&params.prize_type).unwrap_or_default(),
-        );
-        if let Some(v) = &params.reply_group {
-            body.insert(
-                "reply_group".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        body.insert(
-            "require_like_count".into(),
-            serde_json::to_value(&params.require_like_count).unwrap_or_default(),
-        );
-        body.insert(
-            "require_total_like_count".into(),
-            serde_json::to_value(&params.require_total_like_count).unwrap_or_default(),
-        );
-        if let Some(v) = &params.schedule_date {
-            body.insert(
-                "schedule_date".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.schedule_time {
-            body.insert(
-                "schedule_time".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.secret_answer {
-            body.insert(
-                "secret_answer".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.tags {
-            body.insert("tags".into(), serde_json::to_value(v).unwrap_or_default());
-        }
-        if let Some(v) = &params.title {
-            body.insert("title".into(), serde_json::to_value(v).unwrap_or_default());
-        }
-        if let Some(v) = &params.title_en {
-            body.insert(
-                "title_en".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.watch_thread {
-            body.insert(
-                "watch_thread".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.watch_thread_email {
-            body.insert(
-                "watch_thread_email".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.watch_thread_state {
-            body.insert(
-                "watch_thread_state".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        self.client
-            .request(
-                "post",
-                "/contests",
-                None::<&[(&str, String)]>,
-                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
-                    body,
-                ))),
-            )
-            .await
+        if let Some(v) = &params.allow_ask_hidden_content { body.insert("allow_ask_hidden_content".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.comment_ignore_group { body.insert("comment_ignore_group".into(), serde_json::to_value(v).unwrap_or_default()); }
+        body.insert("contest_type".into(), serde_json::to_value(&params.contest_type).unwrap_or_default());
+        if let Some(v) = &params.count_winners { body.insert("count_winners".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.dont_alert_followers { body.insert("dont_alert_followers".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.hide_contacts { body.insert("hide_contacts".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.is_money_places { body.insert("is_money_places".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.length_option { body.insert("length_option".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.length_value { body.insert("length_value".into(), serde_json::to_value(v).unwrap_or_default()); }
+        body.insert("post_body".into(), serde_json::to_value(&params.post_body).unwrap_or_default());
+        if let Some(v) = &params.prize_data_money { body.insert("prize_data_money".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.prize_data_places { body.insert("prize_data_places".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.prize_data_upgrade { body.insert("prize_data_upgrade".into(), serde_json::to_value(v).unwrap_or_default()); }
+        body.insert("prize_type".into(), serde_json::to_value(&params.prize_type).unwrap_or_default());
+        if let Some(v) = &params.reply_group { body.insert("reply_group".into(), serde_json::to_value(v).unwrap_or_default()); }
+        body.insert("require_like_count".into(), serde_json::to_value(&params.require_like_count).unwrap_or_default());
+        body.insert("require_total_like_count".into(), serde_json::to_value(&params.require_total_like_count).unwrap_or_default());
+        if let Some(v) = &params.schedule_date { body.insert("schedule_date".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.schedule_time { body.insert("schedule_time".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.secret_answer { body.insert("secret_answer".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.tags { body.insert("tags".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.title { body.insert("title".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.title_en { body.insert("title_en".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.watch_thread { body.insert("watch_thread".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.watch_thread_email { body.insert("watch_thread_email".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.watch_thread_state { body.insert("watch_thread_state".into(), serde_json::to_value(v).unwrap_or_default()); }
+        self.client.request(
+            "post",
+            "/contests",
+            None::<&[(&str, String)]>,
+            Some(crate::client::RequestBody::Json(serde_json::Value::Object(body))),
+        ).await
     }
 
     /// Delete Thread
@@ -2799,14 +1910,12 @@ impl crate::forum::ForumApi {
         thread_id: i64,
         reason: Option<String>,
     ) -> Result<serde_json::Value> {
-        self.client
-            .request(
-                "delete",
-                &format!("/threads/{thread_id}"),
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+        self.client.request(
+            "delete",
+            &format!("/threads/{thread_id}"),
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Edit thread
@@ -2817,77 +1926,35 @@ impl crate::forum::ForumApi {
         params: ForumThreadsEditParams,
     ) -> Result<ThreadsEditResponse> {
         let mut body = serde_json::Map::new();
-        if let Some(v) = &params.allow_ask_hidden_content {
-            body.insert(
-                "allow_ask_hidden_content".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.comment_ignore_group {
-            body.insert(
-                "comment_ignore_group".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.discussion_open {
-            body.insert(
-                "discussion_open".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.hide_contacts {
-            body.insert(
-                "hide_contacts".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.prefix_id {
-            body.insert(
-                "prefix_id".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.reply_group {
-            body.insert(
-                "reply_group".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.tags {
-            body.insert("tags".into(), serde_json::to_value(v).unwrap_or_default());
-        }
-        if let Some(v) = &params.title {
-            body.insert("title".into(), serde_json::to_value(v).unwrap_or_default());
-        }
-        if let Some(v) = &params.title_en {
-            body.insert(
-                "title_en".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        self.client
-            .request(
-                "put",
-                &format!("/threads/{thread_id}"),
-                None::<&[(&str, String)]>,
-                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
-                    body,
-                ))),
-            )
-            .await
+        if let Some(v) = &params.allow_ask_hidden_content { body.insert("allow_ask_hidden_content".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.comment_ignore_group { body.insert("comment_ignore_group".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.discussion_open { body.insert("discussion_open".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.hide_contacts { body.insert("hide_contacts".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.prefix_id { body.insert("prefix_id".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.reply_group { body.insert("reply_group".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.tags { body.insert("tags".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.title { body.insert("title".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.title_en { body.insert("title_en".into(), serde_json::to_value(v).unwrap_or_default()); }
+        self.client.request(
+            "put",
+            &format!("/threads/{thread_id}"),
+            None::<&[(&str, String)]>,
+            Some(crate::client::RequestBody::Json(serde_json::Value::Object(body))),
+        ).await
     }
 
     /// Finish Contest
     /// `POST /contests/{thread_id}/finish`
-    pub async fn threads_finish(&self, thread_id: i64) -> Result<serde_json::Value> {
-        self.client
-            .request(
-                "post",
-                &format!("/contests/{thread_id}/finish"),
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+    pub async fn threads_finish(
+        &self,
+        thread_id: i64,
+    ) -> Result<serde_json::Value> {
+        self.client.request(
+            "post",
+            &format!("/contests/{thread_id}/finish"),
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Follow Thread
@@ -2898,19 +1965,13 @@ impl crate::forum::ForumApi {
         email: Option<bool>,
     ) -> Result<serde_json::Value> {
         let mut body = serde_json::Map::new();
-        if let Some(v) = &email {
-            body.insert("email".into(), serde_json::to_value(v).unwrap_or_default());
-        }
-        self.client
-            .request(
-                "post",
-                &format!("/threads/{thread_id}/followers"),
-                None::<&[(&str, String)]>,
-                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
-                    body,
-                ))),
-            )
-            .await
+        if let Some(v) = &email { body.insert("email".into(), serde_json::to_value(v).unwrap_or_default()); }
+        self.client.request(
+            "post",
+            &format!("/threads/{thread_id}/followers"),
+            None::<&[(&str, String)]>,
+            Some(crate::client::RequestBody::Json(serde_json::Value::Object(body))),
+        ).await
     }
 
     /// Get Followed Threads
@@ -2921,39 +1982,28 @@ impl crate::forum::ForumApi {
         fields_include: Option<Vec<String>>,
     ) -> Result<ThreadsFollowedResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
-        if let Some(v) = &total {
-            query.push(("total", v.to_string()));
-        }
-        if let Some(v) = &fields_include {
-            query.push((
-                "fields_include",
-                v.iter()
-                    .map(|x| x.to_string())
-                    .collect::<Vec<_>>()
-                    .join(","),
-            ));
-        }
-        self.client
-            .request(
-                "get",
-                "/threads/followed",
-                Some(&query),
-                None::<crate::client::RequestBody>,
-            )
-            .await
+        if let Some(v) = &total { query.push(("total", v.to_string())); }
+        if let Some(v) = &fields_include { query.push(("fields_include", v.iter().map(|x| x.to_string()).collect::<Vec<_>>().join(","))); }
+        self.client.request(
+            "get",
+            "/threads/followed",
+            Some(&query),
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Get Thread Followers
     /// `GET /threads/{thread_id}/followers`
-    pub async fn threads_followers(&self, thread_id: i64) -> Result<ThreadsFollowersResponse> {
-        self.client
-            .request(
-                "get",
-                &format!("/threads/{thread_id}/followers"),
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+    pub async fn threads_followers(
+        &self,
+        thread_id: i64,
+    ) -> Result<ThreadsFollowersResponse> {
+        self.client.request(
+            "get",
+            &format!("/threads/{thread_id}/followers"),
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Get Thread
@@ -2964,36 +2014,27 @@ impl crate::forum::ForumApi {
         fields_include: Option<Vec<String>>,
     ) -> Result<ThreadsGetResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
-        if let Some(v) = &fields_include {
-            query.push((
-                "fields_include",
-                v.iter()
-                    .map(|x| x.to_string())
-                    .collect::<Vec<_>>()
-                    .join(","),
-            ));
-        }
-        self.client
-            .request(
-                "get",
-                &format!("/threads/{thread_id}"),
-                Some(&query),
-                None::<crate::client::RequestBody>,
-            )
-            .await
+        if let Some(v) = &fields_include { query.push(("fields_include", v.iter().map(|x| x.to_string()).collect::<Vec<_>>().join(","))); }
+        self.client.request(
+            "get",
+            &format!("/threads/{thread_id}"),
+            Some(&query),
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Hide Thread
     /// `POST /threads/{thread_id}/hide`
-    pub async fn threads_hide(&self, thread_id: i64) -> Result<ThreadsHideResponse> {
-        self.client
-            .request(
-                "post",
-                &format!("/threads/{thread_id}/hide"),
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+    pub async fn threads_hide(
+        &self,
+        thread_id: i64,
+    ) -> Result<ThreadsHideResponse> {
+        self.client.request(
+            "post",
+            &format!("/threads/{thread_id}/hide"),
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Get Threads
@@ -3003,78 +2044,30 @@ impl crate::forum::ForumApi {
         params: ForumThreadsListParams,
     ) -> Result<ThreadsListResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
-        if let Some(v) = &params.forum_id {
-            query.push(("forum_id", v.to_string()));
-        }
-        if let Some(v) = &params.tab {
-            query.push(("tab", v.to_string()));
-        }
-        if let Some(v) = &params.state {
-            query.push(("state", v.to_string()));
-        }
-        if let Some(v) = &params.period {
-            query.push(("period", v.to_string()));
-        }
-        if let Some(v) = &params.title {
-            query.push(("title", v.to_string()));
-        }
-        if let Some(v) = &params.title_only {
-            query.push(("title_only", v.to_string()));
-        }
-        if let Some(v) = &params.creator_user_id {
-            query.push(("creator_user_id", v.to_string()));
-        }
-        if let Some(v) = &params.sticky {
-            query.push(("sticky", v.to_string()));
-        }
-        if let Some(v) = &params.prefix_ids {
-            for item in v {
-                query.push(("prefix_ids[]", item.to_string()));
-            }
-        }
-        if let Some(v) = &params.prefix_ids_not {
-            for item in v {
-                query.push(("prefix_ids_not[]", item.to_string()));
-            }
-        }
-        if let Some(v) = &params.thread_tag_id {
-            query.push(("thread_tag_id", v.to_string()));
-        }
-        if let Some(v) = &params.page {
-            query.push(("page", v.to_string()));
-        }
-        if let Some(v) = &params.limit {
-            query.push(("limit", v.to_string()));
-        }
-        if let Some(v) = &params.order {
-            query.push(("order", v.to_string()));
-        }
-        if let Some(v) = &params.direction {
-            query.push(("direction", v.to_string()));
-        }
-        if let Some(v) = &params.thread_create_date {
-            query.push(("thread_create_date", v.to_string()));
-        }
-        if let Some(v) = &params.thread_update_date {
-            query.push(("thread_update_date", v.to_string()));
-        }
-        if let Some(v) = &params.fields_include {
-            query.push((
-                "fields_include",
-                v.iter()
-                    .map(|x| x.to_string())
-                    .collect::<Vec<_>>()
-                    .join(","),
-            ));
-        }
-        self.client
-            .request(
-                "get",
-                "/threads",
-                Some(&query),
-                None::<crate::client::RequestBody>,
-            )
-            .await
+        if let Some(v) = &params.forum_id { query.push(("forum_id", v.to_string())); }
+        if let Some(v) = &params.tab { query.push(("tab", v.to_string())); }
+        if let Some(v) = &params.state { query.push(("state", v.to_string())); }
+        if let Some(v) = &params.period { query.push(("period", v.to_string())); }
+        if let Some(v) = &params.title { query.push(("title", v.to_string())); }
+        if let Some(v) = &params.title_only { query.push(("title_only", v.to_string())); }
+        if let Some(v) = &params.creator_user_id { query.push(("creator_user_id", v.to_string())); }
+        if let Some(v) = &params.sticky { query.push(("sticky", v.to_string())); }
+        if let Some(v) = &params.prefix_ids { for item in v { query.push(("prefix_ids[]", item.to_string())); } }
+        if let Some(v) = &params.prefix_ids_not { for item in v { query.push(("prefix_ids_not[]", item.to_string())); } }
+        if let Some(v) = &params.thread_tag_id { query.push(("thread_tag_id", v.to_string())); }
+        if let Some(v) = &params.page { query.push(("page", v.to_string())); }
+        if let Some(v) = &params.limit { query.push(("limit", v.to_string())); }
+        if let Some(v) = &params.order { query.push(("order", v.to_string())); }
+        if let Some(v) = &params.direction { query.push(("direction", v.to_string())); }
+        if let Some(v) = &params.thread_create_date { query.push(("thread_create_date", v.to_string())); }
+        if let Some(v) = &params.thread_update_date { query.push(("thread_update_date", v.to_string())); }
+        if let Some(v) = &params.fields_include { query.push(("fields_include", v.iter().map(|x| x.to_string()).collect::<Vec<_>>().join(","))); }
+        self.client.request(
+            "get",
+            "/threads",
+            Some(&query),
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Move Thread
@@ -3085,73 +2078,46 @@ impl crate::forum::ForumApi {
         params: ForumThreadsMoveParams,
     ) -> Result<serde_json::Value> {
         let mut body = serde_json::Map::new();
-        if let Some(v) = &params.apply_thread_prefix {
-            body.insert(
-                "apply_thread_prefix".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        body.insert(
-            "node_id".into(),
-            serde_json::to_value(&params.node_id).unwrap_or_default(),
-        );
-        if let Some(v) = &params.prefix_id {
-            body.insert(
-                "prefix_id".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.send_alert {
-            body.insert(
-                "send_alert".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.title {
-            body.insert("title".into(), serde_json::to_value(v).unwrap_or_default());
-        }
-        if let Some(v) = &params.title_en {
-            body.insert(
-                "title_en".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        self.client
-            .request(
-                "post",
-                &format!("/threads/{thread_id}/move"),
-                None::<&[(&str, String)]>,
-                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
-                    body,
-                ))),
-            )
-            .await
+        if let Some(v) = &params.apply_thread_prefix { body.insert("apply_thread_prefix".into(), serde_json::to_value(v).unwrap_or_default()); }
+        body.insert("node_id".into(), serde_json::to_value(&params.node_id).unwrap_or_default());
+        if let Some(v) = &params.prefix_id { body.insert("prefix_id".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.send_alert { body.insert("send_alert".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.title { body.insert("title".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.title_en { body.insert("title_en".into(), serde_json::to_value(v).unwrap_or_default()); }
+        self.client.request(
+            "post",
+            &format!("/threads/{thread_id}/move"),
+            None::<&[(&str, String)]>,
+            Some(crate::client::RequestBody::Json(serde_json::Value::Object(body))),
+        ).await
     }
 
     /// Get Navigation Elements
     /// `GET /threads/{thread_id}/navigation`
-    pub async fn threads_navigation(&self, thread_id: i64) -> Result<ThreadsNavigationResponse> {
-        self.client
-            .request(
-                "get",
-                &format!("/threads/{thread_id}/navigation"),
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+    pub async fn threads_navigation(
+        &self,
+        thread_id: i64,
+    ) -> Result<ThreadsNavigationResponse> {
+        self.client.request(
+            "get",
+            &format!("/threads/{thread_id}/navigation"),
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Get Poll
     /// `GET /threads/{thread_id}/poll`
-    pub async fn threads_poll_get(&self, thread_id: i64) -> Result<ThreadsPollGetResponse> {
-        self.client
-            .request(
-                "get",
-                &format!("/threads/{thread_id}/poll"),
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+    pub async fn threads_poll_get(
+        &self,
+        thread_id: i64,
+    ) -> Result<ThreadsPollGetResponse> {
+        self.client.request(
+            "get",
+            &format!("/threads/{thread_id}/poll"),
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Vote Poll
@@ -3163,28 +2129,14 @@ impl crate::forum::ForumApi {
         response_ids: Option<Vec<i64>>,
     ) -> Result<serde_json::Value> {
         let mut body = serde_json::Map::new();
-        if let Some(v) = &response_id {
-            body.insert(
-                "response_id".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &response_ids {
-            body.insert(
-                "response_ids".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        self.client
-            .request(
-                "post",
-                &format!("/threads/{thread_id}/poll/votes"),
-                None::<&[(&str, String)]>,
-                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
-                    body,
-                ))),
-            )
-            .await
+        if let Some(v) = &response_id { body.insert("response_id".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &response_ids { body.insert("response_ids".into(), serde_json::to_value(v).unwrap_or_default()); }
+        self.client.request(
+            "post",
+            &format!("/threads/{thread_id}/poll/votes"),
+            None::<&[(&str, String)]>,
+            Some(crate::client::RequestBody::Json(serde_json::Value::Object(body))),
+        ).await
     }
 
     /// Get Recent Threads
@@ -3194,52 +2146,44 @@ impl crate::forum::ForumApi {
         params: ForumThreadsRecentParams,
     ) -> Result<ThreadsRecentResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
-        if let Some(v) = &params.days {
-            query.push(("days", v.to_string()));
-        }
-        if let Some(v) = &params.limit {
-            query.push(("limit", v.to_string()));
-        }
-        if let Some(v) = &params.forum_id {
-            query.push(("forum_id", v.to_string()));
-        }
-        if let Some(v) = &params.data_limit {
-            query.push(("data_limit", v.to_string()));
-        }
-        self.client
-            .request(
-                "get",
-                "/threads/recent",
-                Some(&query),
-                None::<crate::client::RequestBody>,
-            )
-            .await
+        if let Some(v) = &params.days { query.push(("days", v.to_string())); }
+        if let Some(v) = &params.limit { query.push(("limit", v.to_string())); }
+        if let Some(v) = &params.forum_id { query.push(("forum_id", v.to_string())); }
+        if let Some(v) = &params.data_limit { query.push(("data_limit", v.to_string())); }
+        self.client.request(
+            "get",
+            "/threads/recent",
+            Some(&query),
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Bookmark Thread
     /// `POST /threads/{thread_id}/star`
-    pub async fn threads_star(&self, thread_id: i64) -> Result<serde_json::Value> {
-        self.client
-            .request(
-                "post",
-                &format!("/threads/{thread_id}/star"),
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+    pub async fn threads_star(
+        &self,
+        thread_id: i64,
+    ) -> Result<serde_json::Value> {
+        self.client.request(
+            "post",
+            &format!("/threads/{thread_id}/star"),
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Unfollow Thread
     /// `DELETE /threads/{thread_id}/followers`
-    pub async fn threads_unfollow(&self, thread_id: i64) -> Result<serde_json::Value> {
-        self.client
-            .request(
-                "delete",
-                &format!("/threads/{thread_id}/followers"),
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+    pub async fn threads_unfollow(
+        &self,
+        thread_id: i64,
+    ) -> Result<serde_json::Value> {
+        self.client.request(
+            "delete",
+            &format!("/threads/{thread_id}/followers"),
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Get Unread Threads
@@ -3251,37 +2195,31 @@ impl crate::forum::ForumApi {
         data_limit: Option<i64>,
     ) -> Result<ThreadsUnreadResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
-        if let Some(v) = &limit {
-            query.push(("limit", v.to_string()));
-        }
-        if let Some(v) = &forum_id {
-            query.push(("forum_id", v.to_string()));
-        }
-        if let Some(v) = &data_limit {
-            query.push(("data_limit", v.to_string()));
-        }
-        self.client
-            .request(
-                "get",
-                "/threads/new",
-                Some(&query),
-                None::<crate::client::RequestBody>,
-            )
-            .await
+        if let Some(v) = &limit { query.push(("limit", v.to_string())); }
+        if let Some(v) = &forum_id { query.push(("forum_id", v.to_string())); }
+        if let Some(v) = &data_limit { query.push(("data_limit", v.to_string())); }
+        self.client.request(
+            "get",
+            "/threads/new",
+            Some(&query),
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Unbookmark Thread
     /// `DELETE /threads/{thread_id}/star`
-    pub async fn threads_unstar(&self, thread_id: i64) -> Result<serde_json::Value> {
-        self.client
-            .request(
-                "delete",
-                &format!("/threads/{thread_id}/star"),
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+    pub async fn threads_unstar(
+        &self,
+        thread_id: i64,
+    ) -> Result<serde_json::Value> {
+        self.client.request(
+            "delete",
+            &format!("/threads/{thread_id}/star"),
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
+
 
     // ── Users ──
 
@@ -3295,38 +2233,29 @@ impl crate::forum::ForumApi {
         y: Option<i64>,
     ) -> Result<UsersAvatarCropResponse> {
         let mut body = serde_json::Map::new();
-        if let Some(v) = &crop {
-            body.insert("crop".into(), serde_json::to_value(v).unwrap_or_default());
-        }
-        if let Some(v) = &x {
-            body.insert("x".into(), serde_json::to_value(v).unwrap_or_default());
-        }
-        if let Some(v) = &y {
-            body.insert("y".into(), serde_json::to_value(v).unwrap_or_default());
-        }
-        self.client
-            .request(
-                "post",
-                &format!("/users/{user_id}/avatar/crop"),
-                None::<&[(&str, String)]>,
-                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
-                    body,
-                ))),
-            )
-            .await
+        if let Some(v) = &crop { body.insert("crop".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &x { body.insert("x".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &y { body.insert("y".into(), serde_json::to_value(v).unwrap_or_default()); }
+        self.client.request(
+            "post",
+            &format!("/users/{user_id}/avatar/crop"),
+            None::<&[(&str, String)]>,
+            Some(crate::client::RequestBody::Json(serde_json::Value::Object(body))),
+        ).await
     }
 
     /// Delete Avatar
     /// `DELETE /users/{user_id}/avatar`
-    pub async fn users_avatar_delete(&self, user_id: i64) -> Result<serde_json::Value> {
-        self.client
-            .request(
-                "delete",
-                &format!("/users/{user_id}/avatar"),
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+    pub async fn users_avatar_delete(
+        &self,
+        user_id: i64,
+    ) -> Result<serde_json::Value> {
+        self.client.request(
+            "delete",
+            &format!("/users/{user_id}/avatar"),
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Upload Avatar
@@ -3338,23 +2267,15 @@ impl crate::forum::ForumApi {
     ) -> Result<UsersAvatarUploadResponse> {
         let mut body = crate::client::MultipartForm::new();
         body.file("avatar", params.avatar.clone());
-        if let Some(v) = &params.crop {
-            body.text("crop", v.to_string());
-        }
-        if let Some(v) = &params.x {
-            body.text("x", v.to_string());
-        }
-        if let Some(v) = &params.y {
-            body.text("y", v.to_string());
-        }
-        self.client
-            .request(
-                "post",
-                &format!("/users/{user_id}/avatar"),
-                None::<&[(&str, String)]>,
-                Some(crate::client::RequestBody::Multipart(body)),
-            )
-            .await
+        if let Some(v) = &params.crop { body.text("crop", v.to_string()); }
+        if let Some(v) = &params.x { body.text("x", v.to_string()); }
+        if let Some(v) = &params.y { body.text("y", v.to_string()); }
+        self.client.request(
+            "post",
+            &format!("/users/{user_id}/avatar"),
+            None::<&[(&str, String)]>,
+            Some(crate::client::RequestBody::Multipart(body)),
+        ).await
     }
 
     /// Crop Background
@@ -3367,38 +2288,29 @@ impl crate::forum::ForumApi {
         y: Option<i64>,
     ) -> Result<UsersBackgroundCropResponse> {
         let mut body = serde_json::Map::new();
-        if let Some(v) = &crop {
-            body.insert("crop".into(), serde_json::to_value(v).unwrap_or_default());
-        }
-        if let Some(v) = &x {
-            body.insert("x".into(), serde_json::to_value(v).unwrap_or_default());
-        }
-        if let Some(v) = &y {
-            body.insert("y".into(), serde_json::to_value(v).unwrap_or_default());
-        }
-        self.client
-            .request(
-                "post",
-                &format!("/users/{user_id}/background/crop"),
-                None::<&[(&str, String)]>,
-                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
-                    body,
-                ))),
-            )
-            .await
+        if let Some(v) = &crop { body.insert("crop".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &x { body.insert("x".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &y { body.insert("y".into(), serde_json::to_value(v).unwrap_or_default()); }
+        self.client.request(
+            "post",
+            &format!("/users/{user_id}/background/crop"),
+            None::<&[(&str, String)]>,
+            Some(crate::client::RequestBody::Json(serde_json::Value::Object(body))),
+        ).await
     }
 
     /// Delete Background
     /// `DELETE /users/{user_id}/background`
-    pub async fn users_background_delete(&self, user_id: i64) -> Result<serde_json::Value> {
-        self.client
-            .request(
-                "delete",
-                &format!("/users/{user_id}/background"),
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+    pub async fn users_background_delete(
+        &self,
+        user_id: i64,
+    ) -> Result<serde_json::Value> {
+        self.client.request(
+            "delete",
+            &format!("/users/{user_id}/background"),
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Upload Background
@@ -3410,23 +2322,15 @@ impl crate::forum::ForumApi {
     ) -> Result<UsersBackgroundUploadResponse> {
         let mut body = crate::client::MultipartForm::new();
         body.file("background", params.background.clone());
-        if let Some(v) = &params.crop {
-            body.text("crop", v.to_string());
-        }
-        if let Some(v) = &params.x {
-            body.text("x", v.to_string());
-        }
-        if let Some(v) = &params.y {
-            body.text("y", v.to_string());
-        }
-        self.client
-            .request(
-                "post",
-                &format!("/users/{user_id}/background"),
-                None::<&[(&str, String)]>,
-                Some(crate::client::RequestBody::Multipart(body)),
-            )
-            .await
+        if let Some(v) = &params.crop { body.text("crop", v.to_string()); }
+        if let Some(v) = &params.x { body.text("x", v.to_string()); }
+        if let Some(v) = &params.y { body.text("y", v.to_string()); }
+        self.client.request(
+            "post",
+            &format!("/users/{user_id}/background"),
+            None::<&[(&str, String)]>,
+            Some(crate::client::RequestBody::Multipart(body)),
+        ).await
     }
 
     /// Get User Claims
@@ -3438,20 +2342,14 @@ impl crate::forum::ForumApi {
         claim_state: Option<String>,
     ) -> Result<UsersClaimsResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
-        if let Some(v) = &r#type {
-            query.push(("type", v.to_string()));
-        }
-        if let Some(v) = &claim_state {
-            query.push(("claim_state", v.to_string()));
-        }
-        self.client
-            .request(
-                "get",
-                &format!("/users/{user_id}/claims"),
-                Some(&query),
-                None::<crate::client::RequestBody>,
-            )
-            .await
+        if let Some(v) = &r#type { query.push(("type", v.to_string())); }
+        if let Some(v) = &claim_state { query.push(("claim_state", v.to_string())); }
+        self.client.request(
+            "get",
+            &format!("/users/{user_id}/claims"),
+            Some(&query),
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Get Contents
@@ -3463,20 +2361,14 @@ impl crate::forum::ForumApi {
         limit: Option<i64>,
     ) -> Result<UsersContentsResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
-        if let Some(v) = &page {
-            query.push(("page", v.to_string()));
-        }
-        if let Some(v) = &limit {
-            query.push(("limit", v.to_string()));
-        }
-        self.client
-            .request(
-                "get",
-                &format!("/users/{user_id}/timeline"),
-                Some(&query),
-                None::<crate::client::RequestBody>,
-            )
-            .await
+        if let Some(v) = &page { query.push(("page", v.to_string())); }
+        if let Some(v) = &limit { query.push(("limit", v.to_string())); }
+        self.client.request(
+            "get",
+            &format!("/users/{user_id}/timeline"),
+            Some(&query),
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Edit User
@@ -3487,182 +2379,52 @@ impl crate::forum::ForumApi {
         params: ForumUsersEditParams,
     ) -> Result<serde_json::Value> {
         let mut body = serde_json::Map::new();
-        if let Some(v) = &params.activity_visible {
-            body.insert(
-                "activity_visible".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.alert {
-            body.insert("alert".into(), serde_json::to_value(v).unwrap_or_default());
-        }
-        if let Some(v) = &params.allow_invite_group {
-            body.insert(
-                "allow_invite_group".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.allow_post_profile {
-            body.insert(
-                "allow_post_profile".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.allow_receive_news_feed {
-            body.insert(
-                "allow_receive_news_feed".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.allow_send_personal_conversation {
-            body.insert(
-                "allow_send_personal_conversation".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.allow_view_profile {
-            body.insert(
-                "allow_view_profile".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.conv_welcome_message {
-            body.insert(
-                "conv_welcome_message".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.display_banner_id {
-            body.insert(
-                "display_banner_id".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.display_group_id {
-            body.insert(
-                "display_group_id".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.display_icon_group_id {
-            body.insert(
-                "display_icon_group_id".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.fields {
-            body.insert("fields".into(), serde_json::to_value(v).unwrap_or_default());
-        }
-        if let Some(v) = &params.gender {
-            body.insert("gender".into(), serde_json::to_value(v).unwrap_or_default());
-        }
-        if let Some(v) = &params.hide_username_change_logs {
-            body.insert(
-                "hide_username_change_logs".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.language_id {
-            body.insert(
-                "language_id".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.receive_admin_email {
-            body.insert(
-                "receive_admin_email".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.secret_answer {
-            body.insert(
-                "secret_answer".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.secret_answer_type {
-            body.insert(
-                "secret_answer_type".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.short_link {
-            body.insert(
-                "short_link".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.show_dob_date {
-            body.insert(
-                "show_dob_date".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.show_dob_year {
-            body.insert(
-                "show_dob_year".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.timezone {
-            body.insert(
-                "timezone".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.user_dob_day {
-            body.insert(
-                "user_dob_day".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.user_dob_month {
-            body.insert(
-                "user_dob_month".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.user_dob_year {
-            body.insert(
-                "user_dob_year".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.user_title {
-            body.insert(
-                "user_title".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        if let Some(v) = &params.username {
-            body.insert(
-                "username".into(),
-                serde_json::to_value(v).unwrap_or_default(),
-            );
-        }
-        self.client
-            .request(
-                "put",
-                &format!("/users/{user_id}"),
-                None::<&[(&str, String)]>,
-                Some(crate::client::RequestBody::Json(serde_json::Value::Object(
-                    body,
-                ))),
-            )
-            .await
+        if let Some(v) = &params.activity_visible { body.insert("activity_visible".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.alert { body.insert("alert".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.allow_invite_group { body.insert("allow_invite_group".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.allow_post_profile { body.insert("allow_post_profile".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.allow_receive_news_feed { body.insert("allow_receive_news_feed".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.allow_send_personal_conversation { body.insert("allow_send_personal_conversation".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.allow_view_profile { body.insert("allow_view_profile".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.conv_welcome_message { body.insert("conv_welcome_message".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.display_banner_id { body.insert("display_banner_id".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.display_group_id { body.insert("display_group_id".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.display_icon_group_id { body.insert("display_icon_group_id".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.fields { body.insert("fields".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.gender { body.insert("gender".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.hide_username_change_logs { body.insert("hide_username_change_logs".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.language_id { body.insert("language_id".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.receive_admin_email { body.insert("receive_admin_email".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.secret_answer { body.insert("secret_answer".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.secret_answer_type { body.insert("secret_answer_type".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.short_link { body.insert("short_link".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.show_dob_date { body.insert("show_dob_date".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.show_dob_year { body.insert("show_dob_year".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.timezone { body.insert("timezone".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.user_dob_day { body.insert("user_dob_day".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.user_dob_month { body.insert("user_dob_month".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.user_dob_year { body.insert("user_dob_year".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.user_title { body.insert("user_title".into(), serde_json::to_value(v).unwrap_or_default()); }
+        if let Some(v) = &params.username { body.insert("username".into(), serde_json::to_value(v).unwrap_or_default()); }
+        self.client.request(
+            "put",
+            &format!("/users/{user_id}"),
+            None::<&[(&str, String)]>,
+            Some(crate::client::RequestBody::Json(serde_json::Value::Object(body))),
+        ).await
     }
 
     /// Get User Fields
     /// `GET /users/fields`
-    pub async fn users_fields(&self) -> Result<UsersFieldsResponse> {
-        self.client
-            .request(
-                "get",
-                "/users/fields",
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+    pub async fn users_fields(
+        &self,
+    ) -> Result<UsersFieldsResponse> {
+        self.client.request(
+            "get",
+            "/users/fields",
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Find Users
@@ -3674,42 +2436,29 @@ impl crate::forum::ForumApi {
         fields_include: Option<Vec<String>>,
     ) -> Result<UsersFindResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
-        if let Some(v) = &username {
-            query.push(("username", v.to_string()));
-        }
-        if let Some(v) = &custom_fields {
-            query.push(("custom_fields", v.to_string()));
-        }
-        if let Some(v) = &fields_include {
-            query.push((
-                "fields_include",
-                v.iter()
-                    .map(|x| x.to_string())
-                    .collect::<Vec<_>>()
-                    .join(","),
-            ));
-        }
-        self.client
-            .request(
-                "get",
-                "/users/find",
-                Some(&query),
-                None::<crate::client::RequestBody>,
-            )
-            .await
+        if let Some(v) = &username { query.push(("username", v.to_string())); }
+        if let Some(v) = &custom_fields { query.push(("custom_fields", v.to_string())); }
+        if let Some(v) = &fields_include { query.push(("fields_include", v.iter().map(|x| x.to_string()).collect::<Vec<_>>().join(","))); }
+        self.client.request(
+            "get",
+            "/users/find",
+            Some(&query),
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Follow User
     /// `POST /users/{user_id}/followers`
-    pub async fn users_follow(&self, user_id: i64) -> Result<serde_json::Value> {
-        self.client
-            .request(
-                "post",
-                &format!("/users/{user_id}/followers"),
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+    pub async fn users_follow(
+        &self,
+        user_id: i64,
+    ) -> Result<serde_json::Value> {
+        self.client.request(
+            "post",
+            &format!("/users/{user_id}/followers"),
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Get User Followers
@@ -3722,23 +2471,15 @@ impl crate::forum::ForumApi {
         limit: Option<i64>,
     ) -> Result<UsersFollowersResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
-        if let Some(v) = &order {
-            query.push(("order", v.to_string()));
-        }
-        if let Some(v) = &page {
-            query.push(("page", v.to_string()));
-        }
-        if let Some(v) = &limit {
-            query.push(("limit", v.to_string()));
-        }
-        self.client
-            .request(
-                "get",
-                &format!("/users/{user_id}/followers"),
-                Some(&query),
-                None::<crate::client::RequestBody>,
-            )
-            .await
+        if let Some(v) = &order { query.push(("order", v.to_string())); }
+        if let Some(v) = &page { query.push(("page", v.to_string())); }
+        if let Some(v) = &limit { query.push(("limit", v.to_string())); }
+        self.client.request(
+            "get",
+            &format!("/users/{user_id}/followers"),
+            Some(&query),
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Get Followed Users By User
@@ -3751,23 +2492,15 @@ impl crate::forum::ForumApi {
         limit: Option<i64>,
     ) -> Result<UsersFollowingsResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
-        if let Some(v) = &order {
-            query.push(("order", v.to_string()));
-        }
-        if let Some(v) = &page {
-            query.push(("page", v.to_string()));
-        }
-        if let Some(v) = &limit {
-            query.push(("limit", v.to_string()));
-        }
-        self.client
-            .request(
-                "get",
-                &format!("/users/{user_id}/followings"),
-                Some(&query),
-                None::<crate::client::RequestBody>,
-            )
-            .await
+        if let Some(v) = &order { query.push(("order", v.to_string())); }
+        if let Some(v) = &page { query.push(("page", v.to_string())); }
+        if let Some(v) = &limit { query.push(("limit", v.to_string())); }
+        self.client.request(
+            "get",
+            &format!("/users/{user_id}/followings"),
+            Some(&query),
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Get User
@@ -3778,36 +2511,27 @@ impl crate::forum::ForumApi {
         fields_include: Option<Vec<String>>,
     ) -> Result<UsersGetResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
-        if let Some(v) = &fields_include {
-            query.push((
-                "fields_include",
-                v.iter()
-                    .map(|x| x.to_string())
-                    .collect::<Vec<_>>()
-                    .join(","),
-            ));
-        }
-        self.client
-            .request(
-                "get",
-                &format!("/users/{user_id}"),
-                Some(&query),
-                None::<crate::client::RequestBody>,
-            )
-            .await
+        if let Some(v) = &fields_include { query.push(("fields_include", v.iter().map(|x| x.to_string()).collect::<Vec<_>>().join(","))); }
+        self.client.request(
+            "get",
+            &format!("/users/{user_id}"),
+            Some(&query),
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Ignore User
     /// `POST /users/{user_id}/ignore`
-    pub async fn users_ignore(&self, user_id: i64) -> Result<serde_json::Value> {
-        self.client
-            .request(
-                "post",
-                &format!("/users/{user_id}/ignore"),
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+    pub async fn users_ignore(
+        &self,
+        user_id: i64,
+    ) -> Result<serde_json::Value> {
+        self.client.request(
+            "post",
+            &format!("/users/{user_id}/ignore"),
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Edit Ignoring Options
@@ -3820,40 +2544,31 @@ impl crate::forum::ForumApi {
         restrict_view_profile: Option<bool>,
     ) -> Result<serde_json::Value> {
         let mut query: Vec<(&str, String)> = Vec::new();
-        if let Some(v) = &ignore_conversations {
-            query.push(("ignore_conversations", v.to_string()));
-        }
-        if let Some(v) = &ignore_content {
-            query.push(("ignore_content", v.to_string()));
-        }
-        if let Some(v) = &restrict_view_profile {
-            query.push(("restrict_view_profile", v.to_string()));
-        }
-        self.client
-            .request(
-                "put",
-                &format!("/users/{user_id}/ignore"),
-                Some(&query),
-                None::<crate::client::RequestBody>,
-            )
-            .await
+        if let Some(v) = &ignore_conversations { query.push(("ignore_conversations", v.to_string())); }
+        if let Some(v) = &ignore_content { query.push(("ignore_content", v.to_string())); }
+        if let Some(v) = &restrict_view_profile { query.push(("restrict_view_profile", v.to_string())); }
+        self.client.request(
+            "put",
+            &format!("/users/{user_id}/ignore"),
+            Some(&query),
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Get Ignored Users
     /// `GET /users/ignored`
-    pub async fn users_ignored(&self, total: Option<bool>) -> Result<UsersIgnoredResponse> {
+    pub async fn users_ignored(
+        &self,
+        total: Option<bool>,
+    ) -> Result<UsersIgnoredResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
-        if let Some(v) = &total {
-            query.push(("total", v.to_string()));
-        }
-        self.client
-            .request(
-                "get",
-                "/users/ignored",
-                Some(&query),
-                None::<crate::client::RequestBody>,
-            )
-            .await
+        if let Some(v) = &total { query.push(("total", v.to_string())); }
+        self.client.request(
+            "get",
+            "/users/ignored",
+            Some(&query),
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Get User Likes
@@ -3864,35 +2579,19 @@ impl crate::forum::ForumApi {
         params: ForumUsersLikesParams,
     ) -> Result<UsersLikesResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
-        if let Some(v) = &params.node_id {
-            query.push(("node_id", v.to_string()));
-        }
-        if let Some(v) = &params.like_type {
-            query.push(("like_type", v.to_string()));
-        }
-        if let Some(v) = &params.r#type {
-            query.push(("type", v.to_string()));
-        }
-        if let Some(v) = &params.page {
-            query.push(("page", v.to_string()));
-        }
-        if let Some(v) = &params.content_type {
-            query.push(("content_type", v.to_string()));
-        }
-        if let Some(v) = &params.search_user_id {
-            query.push(("search_user_id", v.to_string()));
-        }
-        if let Some(v) = &params.stats {
-            query.push(("stats", v.to_string()));
-        }
-        self.client
-            .request(
-                "get",
-                &format!("/users/{user_id}/likes"),
-                Some(&query),
-                None::<crate::client::RequestBody>,
-            )
-            .await
+        if let Some(v) = &params.node_id { query.push(("node_id", v.to_string())); }
+        if let Some(v) = &params.like_type { query.push(("like_type", v.to_string())); }
+        if let Some(v) = &params.r#type { query.push(("type", v.to_string())); }
+        if let Some(v) = &params.page { query.push(("page", v.to_string())); }
+        if let Some(v) = &params.content_type { query.push(("content_type", v.to_string())); }
+        if let Some(v) = &params.search_user_id { query.push(("search_user_id", v.to_string())); }
+        if let Some(v) = &params.stats { query.push(("stats", v.to_string())); }
+        self.client.request(
+            "get",
+            &format!("/users/{user_id}/likes"),
+            Some(&query),
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Get Users
@@ -3904,106 +2603,96 @@ impl crate::forum::ForumApi {
         fields_include: Option<Vec<String>>,
     ) -> Result<UsersListResponse> {
         let mut query: Vec<(&str, String)> = Vec::new();
-        if let Some(v) = &page {
-            query.push(("page", v.to_string()));
-        }
-        if let Some(v) = &limit {
-            query.push(("limit", v.to_string()));
-        }
-        if let Some(v) = &fields_include {
-            query.push((
-                "fields_include",
-                v.iter()
-                    .map(|x| x.to_string())
-                    .collect::<Vec<_>>()
-                    .join(","),
-            ));
-        }
-        self.client
-            .request(
-                "get",
-                "/users",
-                Some(&query),
-                None::<crate::client::RequestBody>,
-            )
-            .await
+        if let Some(v) = &page { query.push(("page", v.to_string())); }
+        if let Some(v) = &limit { query.push(("limit", v.to_string())); }
+        if let Some(v) = &fields_include { query.push(("fields_include", v.iter().map(|x| x.to_string()).collect::<Vec<_>>().join(","))); }
+        self.client.request(
+            "get",
+            "/users",
+            Some(&query),
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Cancel Secret Answer Reset
     /// `DELETE /account/secret-answer/reset`
-    pub async fn users_sa_cancel_reset(&self) -> Result<serde_json::Value> {
-        self.client
-            .request(
-                "delete",
-                "/account/secret-answer/reset",
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+    pub async fn users_sa_cancel_reset(
+        &self,
+    ) -> Result<serde_json::Value> {
+        self.client.request(
+            "delete",
+            "/account/secret-answer/reset",
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Reset Secret Answer
     /// `POST /account/secret-answer/reset`
-    pub async fn users_sa_reset(&self) -> Result<UsersSaResetResponse> {
-        self.client
-            .request(
-                "post",
-                "/account/secret-answer/reset",
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+    pub async fn users_sa_reset(
+        &self,
+    ) -> Result<UsersSaResetResponse> {
+        self.client.request(
+            "post",
+            "/account/secret-answer/reset",
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Get Secret Answer Types
     /// `GET /users/secret-answer/types`
-    pub async fn users_secret_answer_types(&self) -> Result<UsersSecretAnswerTypesResponse> {
-        self.client
-            .request(
-                "get",
-                "/users/secret-answer/types",
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+    pub async fn users_secret_answer_types(
+        &self,
+    ) -> Result<UsersSecretAnswerTypesResponse> {
+        self.client.request(
+            "get",
+            "/users/secret-answer/types",
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Get Trophies
     /// `GET /users/{user_id}/trophies`
-    pub async fn users_trophies(&self, user_id: i64) -> Result<UsersTrophiesResponse> {
-        self.client
-            .request(
-                "get",
-                &format!("/users/{user_id}/trophies"),
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+    pub async fn users_trophies(
+        &self,
+        user_id: i64,
+    ) -> Result<UsersTrophiesResponse> {
+        self.client.request(
+            "get",
+            &format!("/users/{user_id}/trophies"),
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Unfollow User
     /// `DELETE /users/{user_id}/followers`
-    pub async fn users_unfollow(&self, user_id: i64) -> Result<serde_json::Value> {
-        self.client
-            .request(
-                "delete",
-                &format!("/users/{user_id}/followers"),
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+    pub async fn users_unfollow(
+        &self,
+        user_id: i64,
+    ) -> Result<serde_json::Value> {
+        self.client.request(
+            "delete",
+            &format!("/users/{user_id}/followers"),
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
 
     /// Unignore User
     /// `DELETE /users/{user_id}/ignore`
-    pub async fn users_unignore(&self, user_id: i64) -> Result<serde_json::Value> {
-        self.client
-            .request(
-                "delete",
-                &format!("/users/{user_id}/ignore"),
-                None::<&[(&str, String)]>,
-                None::<crate::client::RequestBody>,
-            )
-            .await
+    pub async fn users_unignore(
+        &self,
+        user_id: i64,
+    ) -> Result<serde_json::Value> {
+        self.client.request(
+            "delete",
+            &format!("/users/{user_id}/ignore"),
+            None::<&[(&str, String)]>,
+            None::<crate::client::RequestBody>,
+        ).await
     }
+
 }

@@ -18,15 +18,15 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .await?;
 
     println!("{} постов", posts.posts.len());
-    for thread in posts.posts.iter().take(5) {
+    for post in posts.posts.iter().take(5) {
         println!(
-            "  [тред #{}] {} от {}",
-            thread.thread_id, thread.thread_title, thread.creator_username
+            "  [пост #{}] от {}",
+            post.post_id, post.poster_username
         );
     }
 
-    if let Some(thread) = posts.posts.first() {
-        let thread_id = thread.thread_id;
+    if let Some(_post) = posts.posts.first() {
+        let thread_id = posts.thread.thread_id;
 
         println!("\n--- посты в треде #{thread_id} ---");
         match forum
