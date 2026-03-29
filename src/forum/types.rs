@@ -3,8 +3,8 @@
 
 #![allow(unused, clippy::all)]
 
-use serde::{Deserialize, Serialize};
 use crate::models::*;
+use serde::{Deserialize, Serialize};
 
 /// Parameters for `Conversations.Create` (POST /conversations).
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -337,7 +337,7 @@ pub struct ForumThreadsClaimParams {
     /// - attach screenshots of correspondence. You may upload to the site [Imgur](https://imgur.com/upload) - for convenience, use Ctrl + V when uploading screenshots to the album.
     /// - other evidence;
     /// - notify the respondent about the complaint you created, familiarize him with hidden content
-    /// 
+    ///
     /// Describe the situation in as much detail as possible.
     pub post_body: String,
     /// Allow to reply only users with chosen or higher group.
@@ -780,4 +780,3 @@ pub struct ForumUsersLikesParams {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub stats: Option<bool>,
 }
-

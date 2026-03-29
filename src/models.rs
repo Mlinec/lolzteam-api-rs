@@ -40,7 +40,9 @@ impl std::fmt::Display for RoomId {
 }
 
 impl Default for RoomId {
-    fn default() -> Self { RoomId::V1 }
+    fn default() -> Self {
+        RoomId::V1
+    }
 }
 
 /// Auto-generated enum for `CategoryId`.
@@ -132,7 +134,9 @@ impl std::fmt::Display for CategoryId {
 }
 
 impl Default for CategoryId {
-    fn default() -> Self { CategoryId::V1 }
+    fn default() -> Self {
+        CategoryId::V1
+    }
 }
 
 /// Auto-generated enum for `Currency`.
@@ -185,7 +189,9 @@ impl std::fmt::Display for Currency {
 }
 
 impl Default for Currency {
-    fn default() -> Self { Currency::Rub }
+    fn default() -> Self {
+        Currency::Rub
+    }
 }
 
 /// Auto-generated enum for `DatePeriod`.
@@ -214,7 +220,9 @@ impl std::fmt::Display for DatePeriod {
 }
 
 impl Default for DatePeriod {
-    fn default() -> Self { DatePeriod::Day }
+    fn default() -> Self {
+        DatePeriod::Day
+    }
 }
 
 /// Auto-generated enum for `YesNoNoMatterScheme`.
@@ -243,7 +251,9 @@ impl std::fmt::Display for YesNoNoMatterScheme {
 }
 
 impl Default for YesNoNoMatterScheme {
-    fn default() -> Self { YesNoNoMatterScheme::Yes }
+    fn default() -> Self {
+        YesNoNoMatterScheme::Yes
+    }
 }
 
 /// Auto-generated enum for `AppId`.
@@ -290,7 +300,9 @@ impl std::fmt::Display for AppId {
 }
 
 impl Default for AppId {
-    fn default() -> Self { AppId::V730 }
+    fn default() -> Self {
+        AppId::V730
+    }
 }
 
 /// Auto-generated enum for `Autorenewal`.
@@ -319,7 +331,9 @@ impl std::fmt::Display for Autorenewal {
 }
 
 impl Default for Autorenewal {
-    fn default() -> Self { Autorenewal::Yes }
+    fn default() -> Self {
+        Autorenewal::Yes
+    }
 }
 
 /// Auto-generated enum for `CategoryName`.
@@ -411,7 +425,9 @@ impl std::fmt::Display for CategoryName {
 }
 
 impl Default for CategoryName {
-    fn default() -> Self { CategoryName::Steam }
+    fn default() -> Self {
+        CategoryName::Steam
+    }
 }
 
 /// Auto-generated enum for `ChangeEmail`.
@@ -440,7 +456,9 @@ impl std::fmt::Display for ChangeEmail {
 }
 
 impl Default for ChangeEmail {
-    fn default() -> Self { ChangeEmail::Yes }
+    fn default() -> Self {
+        ChangeEmail::Yes
+    }
 }
 
 /// Auto-generated enum for `Cookies`.
@@ -469,7 +487,9 @@ impl std::fmt::Display for Cookies {
 }
 
 impl Default for Cookies {
-    fn default() -> Self { Cookies::Yes }
+    fn default() -> Self {
+        Cookies::Yes
+    }
 }
 
 /// Auto-generated enum for `Email`.
@@ -498,7 +518,9 @@ impl std::fmt::Display for Email {
 }
 
 impl Default for Email {
-    fn default() -> Self { Email::Yes }
+    fn default() -> Self {
+        Email::Yes
+    }
 }
 
 /// Auto-generated enum for `LastTransDatePeriod`.
@@ -527,7 +549,9 @@ impl std::fmt::Display for LastTransDatePeriod {
 }
 
 impl Default for LastTransDatePeriod {
-    fn default() -> Self { LastTransDatePeriod::Day }
+    fn default() -> Self {
+        LastTransDatePeriod::Day
+    }
 }
 
 /// Auto-generated enum for `NotEmailProvider`.
@@ -565,7 +589,9 @@ impl std::fmt::Display for NotEmailProvider {
 }
 
 impl Default for NotEmailProvider {
-    fn default() -> Self { NotEmailProvider::Other }
+    fn default() -> Self {
+        NotEmailProvider::Other
+    }
 }
 
 /// Auto-generated enum for `OrderBy`.
@@ -615,7 +641,9 @@ impl std::fmt::Display for OrderBy {
 }
 
 impl Default for OrderBy {
-    fn default() -> Self { OrderBy::PriceToUp }
+    fn default() -> Self {
+        OrderBy::PriceToUp
+    }
 }
 
 /// Auto-generated enum for `Premium`.
@@ -644,7 +672,9 @@ impl std::fmt::Display for Premium {
 }
 
 impl Default for Premium {
-    fn default() -> Self { Premium::Yes }
+    fn default() -> Self {
+        Premium::Yes
+    }
 }
 
 /// Auto-generated enum for `PremiumExpirationPeriod`.
@@ -673,7 +703,9 @@ impl std::fmt::Display for PremiumExpirationPeriod {
 }
 
 impl Default for PremiumExpirationPeriod {
-    fn default() -> Self { PremiumExpirationPeriod::Day }
+    fn default() -> Self {
+        PremiumExpirationPeriod::Day
+    }
 }
 
 /// Auto-generated enum for `RegPeriod`.
@@ -702,7 +734,9 @@ impl std::fmt::Display for RegPeriod {
 }
 
 impl Default for RegPeriod {
-    fn default() -> Self { RegPeriod::Day }
+    fn default() -> Self {
+        RegPeriod::Day
+    }
 }
 
 /// Auto-generated enum for `Show`.
@@ -746,7 +780,9 @@ impl std::fmt::Display for Show {
 }
 
 impl Default for Show {
-    fn default() -> Self { Show::Active }
+    fn default() -> Self {
+        Show::Active
+    }
 }
 
 /// Auto-generated enum for `SubscriptionPeriod`.
@@ -775,7 +811,9 @@ impl std::fmt::Display for SubscriptionPeriod {
 }
 
 impl Default for SubscriptionPeriod {
-    fn default() -> Self { SubscriptionPeriod::Day }
+    fn default() -> Self {
+        SubscriptionPeriod::Day
+    }
 }
 
 /// Auto-generated enum for `Tel`.
@@ -804,7 +842,9 @@ impl std::fmt::Display for Tel {
 }
 
 impl Default for Tel {
-    fn default() -> Self { Tel::Yes }
+    fn default() -> Self {
+        Tel::Yes
+    }
 }
 
 /// Auto-generated enum for `TempEmail`.
@@ -833,7 +873,9 @@ impl std::fmt::Display for TempEmail {
 }
 
 impl Default for TempEmail {
-    fn default() -> Self { TempEmail::Yes }
+    fn default() -> Self {
+        TempEmail::Yes
+    }
 }
 
 /// Auto-generated enum for `Verified`.
@@ -862,7 +904,9 @@ impl std::fmt::Display for Verified {
 }
 
 impl Default for Verified {
-    fn default() -> Self { Verified::Yes }
+    fn default() -> Self {
+        Verified::Yes
+    }
 }
 
 /// Auto-generated enum for `WargamingClan`.
@@ -891,7 +935,9 @@ impl std::fmt::Display for WargamingClan {
 }
 
 impl Default for WargamingClan {
-    fn default() -> Self { WargamingClan::Yes }
+    fn default() -> Self {
+        WargamingClan::Yes
+    }
 }
 
 /// Deserialize a field that may be `null` or have a mismatched type.
@@ -4739,4 +4785,3 @@ pub struct ManagingSteamUpdateValueResponse {
     #[serde(deserialize_with = "null_default", default)]
     pub system_info: SystemInfo,
 }
-

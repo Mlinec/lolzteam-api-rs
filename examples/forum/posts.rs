@@ -19,10 +19,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     println!("{} постов", posts.posts.len());
     for post in posts.posts.iter().take(5) {
-        println!(
-            "  [пост #{}] от {}",
-            post.post_id, post.poster_username
-        );
+        println!("  [пост #{}] от {}", post.post_id, post.poster_username);
     }
 
     if let Some(_post) = posts.posts.first() {
